@@ -1,4 +1,5 @@
 node_modules/
-public/
+Server/public/
 Server/chats/
 Server/dataFolder/
+.idea/
