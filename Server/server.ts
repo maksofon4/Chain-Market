@@ -13,16 +13,47 @@ const app = express();
 
 const server = http.createServer(app);
 const io = socketIO(server);
-const port = 3001;
-const localIp = "192.168.31.196";
+const port = 3001; // should be moved to env variables
+const localIp = "localhost"; // should be moved to env variables
 
 const router = express.Router();
 const routes = require("./router")(router, {});
+
+
+// type Ad = {
+//   name: string
+//   id: string
+// }
+//
+// interface Store {
+//
+//   getAds(): Ad[]
+// }
+//
+// class Rozetka implements Store {
+//
+//     getAds(): Ad[] {
+//         throw new Error("Method not implemented.");
+//     }
+//
+// }
+//
+// class Olx implements Store {
+//     getAds(): Ad[] {
+//         throw new Error("Method not implemented.");
+//     }
+//
+// }
+//
+// const stores = [new Olx(), new Rozetka()]
+//
+// stores.forEach(store => store.getAds())
+
 app.use("/api", routes);
 app.use(require("morgan")("combined"));
 app.use(
   cors({
-    origin: "http://localhost:3000", // Разрешаем доступ с React
+    origin: "http://localhost:3000", // Разрешаем доступ с React // should be moved to env variables
     credentials: true, // Если используешь сессии или куки
   })
 );
@@ -49,6 +80,7 @@ interface CustomSocket extends Socket {
 
 const connectedUsers: Record<string, string> = {};
 
+// move to separate file as for router.js
 io.on("connection", (socket: CustomSocket) => {
   console.log("New user connected");
   // Listen for "join" event where the client sends the userId (session ID)

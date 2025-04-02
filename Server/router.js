@@ -164,7 +164,7 @@ module.exports = (app) => {
         const user =
           usersData.find((user) => user.userId === product.userId) || {};
         return {
-          ...product,
+          ...product.map(product => ({...product, image: `/uploads/${product.image}`})),
           user: {
             username: user.username || "Unknown User",
             userId: user.userId,
@@ -489,8 +489,54 @@ module.exports = (app) => {
     res.status(200).json({ message: "Register successful" });
   });
 
+  // read about SOLID and backend structuration
+  // split controller to several files
+  // REST api naming convention
+
+
+  // User
+  // GET    /users
+  // GET    /users/{id}
+  // PUT    /users/{id}
+  // PATCH  /users/{id}/photo
+  // DELETE /users/{id}
+
+  // Ad
+  // GET    /ads?search=?&category=?&skip=0&limit=10
+  // GET    /ads/{id}
+  // POST   /ads
+  // PUT    /ads/{id}
+  // DELETE /ads/{id}
+
+  // File
+  // POST /files
+
   app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
+    const {email, password} = req.body;
+    // userService.login(email, password)
+    // if (error) return res.status(401).send("Invalid credentials.");
+    // else {
+    //  req.session.userId = user.userId;
+    //  res.status(200).json({ message: "Login successful" });
+    // }
+
+    /*
+    const login = (email, password) => {
+       const user = userData.loadUser(email, password)
+       if (!user) return // error
+       else user.userId
+    }
+
+    const loadUser = (email, password): User | undefined => {
+      const users = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
+      const user = users.find((u) => u.email === email);
+      if (!user || !(await bcrypt.compare(password, user.password))) {
+        return undefined
+      }
+      return user
+    }
+    */
+
     const users = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
     const user = users.find((u) => u.email === email);
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -588,6 +634,7 @@ module.exports = (app) => {
   });
 
   //This endpoint delete the specified product from server data
+  // app.delete("/products", (req, res) => {
   app.post("/delete-product", (req, res) => {
     const dataFilePath = path.join(__dirname, "dataFolder", "data.json");
     const { productId } = req.body;
@@ -641,6 +688,7 @@ module.exports = (app) => {
 
   const readUsers = () => JSON.parse(fs.readFileSync(usersFilePath, "utf-8"));
   // Update profile data
+  // app.put("/me/profile", async (req, res) => {
   app.post("/update-profile", async (req, res) => {
     const { email, username, currentpassword, password } = req.body;
     const userId = req.session.userId;
@@ -714,6 +762,7 @@ module.exports = (app) => {
   });
 
   // Update profile photo
+  // app.patch("/me/profile/photo") ...
   app.post(
     "/update-profile-photo",
     upload.single("profileImg"),

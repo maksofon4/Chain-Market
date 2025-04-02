@@ -38,7 +38,6 @@ interface SessionInfo {
 }
 
 export const ProductModal: React.FC<ProductModalProps> = ({
-  uploadedImgs,
   allUsersData,
   sessionInfo,
   product,
@@ -92,11 +91,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             </button>
           )}
           <img
-            src={
-              uploadedImgs
-                ? `/uploads/${product.images[currentImageIndex]}`
-                : `${product.images[currentImageIndex]}`
-            }
+            src={product.images[currentImageIndex]}
             alt="Product"
           />
           {product.images.length > 1 && (
