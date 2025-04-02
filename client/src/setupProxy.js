@@ -1,5 +1,5 @@
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const serverRoute = "http://192.168.31.196:3001";
+const serverRoute = "http://localhost:3001";
 module.exports = function (app) {
   app.use(
     "/api",

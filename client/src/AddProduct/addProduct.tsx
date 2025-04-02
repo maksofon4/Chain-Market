@@ -198,7 +198,7 @@ const AddProduct = () => {
 
     const isContactDetailsValid =
       email && email.trim().length > 3 && phoneNumber;
-    if (!sessionInfo) return showErrorAlert("network");
+    // if (!sessionInfo) return showErrorAlert("network");
     if (!isNameValid) return showErrorAlert("invalidName");
     if (!productCategory) return showErrorAlert("invalidCategory");
     if (!isFilteredImgsValid) return showErrorAlert("invalidImages");
@@ -217,7 +217,7 @@ const AddProduct = () => {
     const filteredImgs = images.filter((img) => img !== null);
     const product: Product = {
       productId: "none",
-      userId: sessionInfo?.userId!,
+      userId: "fff45a17-11e1-4b9a-98d8-7d74a28e2028",
       name: productName!,
       category: productCategory!,
       description: descriptionText!,
