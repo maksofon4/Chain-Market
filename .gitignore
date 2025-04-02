@@ -1,0 +1,4 @@
+node_modules/
+public/
+Server/chats/
+Server/dataFolder/
