@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import Header from "./mainPage/NavBar/NavBar";
-const serverRoute = "http://192.168.31.196:3001";
 
 interface ProtectedRouteProps {
   children: ReactNode;

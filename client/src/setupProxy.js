@@ -1,24 +1,24 @@
 const { createProxyMiddleware } = require("http-proxy-middleware");
-const serverRoute = "http://192.168.31.196:3001";
+const API_URL = process.env.REACT_APP_API_URL;
 module.exports = function (app) {
   app.use(
     "/api",
     createProxyMiddleware({
-      target: `${serverRoute}/api`,
+      target: `${API_URL}/api`,
       changeOrigin: true,
     })
   );
   app.use(
     "/uploads",
     createProxyMiddleware({
-      target: `${serverRoute}/uploads`,
+      target: `${API_URL}/uploads`,
       changeOrigin: true,
     })
   );
   app.use(
     "/socket.io",
     createProxyMiddleware({
-      target: `${serverRoute}/socket.io`,
+      target: `${API_URL}/socket.io`,
       ws: true,
       secure: false,
       changeOrigin: true,

@@ -3,3 +3,4 @@ Server/public/
 Server/chats/
 Server/dataFolder/
 .idea/
+.env
