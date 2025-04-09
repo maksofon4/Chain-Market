@@ -11,6 +11,11 @@ interface SessionInfo {
   selectedProducts: string[];
 }
 
+interface croppedData {
+  croppedDataUrl: string;
+  croppedImgFile: File;
+}
+
 const ProfileSettings = () => {
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [visiblePasswords, setVisiblePasswords] = useState<number[]>([]);
@@ -23,7 +28,7 @@ const ProfileSettings = () => {
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | undefined>(
     undefined
   );
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [profileImage, setProfileImage] = useState<croppedData | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,13 +87,16 @@ const ProfileSettings = () => {
         console.error("Error:", error);
       }
     } else {
-      if (!sessionInfo || !profileImage || !accountPassword) return;
-      const base64Response = await fetch(profileImage);
-      const blob = await base64Response.blob();
+      if (!sessionInfo || !profileImage?.croppedImgFile || !accountPassword)
+        return;
 
       const formData = new FormData();
       formData.append("userId", sessionInfo.userId);
-      formData.append("profileImg", blob, sessionInfo.userId);
+      formData.append(
+        "profileImg",
+        profileImage.croppedImgFile,
+        sessionInfo.userId
+      );
       formData.append("currentpassword", accountPassword);
       try {
         const response = await fetch("/api/update-profile-photo", {
@@ -341,10 +349,42 @@ const ProfileSettings = () => {
         >
           <span className="borderLine"></span>
           <div className="image-text-container">
-            <ImageUploader
-              currentImg={sessionInfo?.profilePhoto}
-              onImageCropped={setProfileImage}
-            />
+            <div className="image-uploader-container">
+              {!profileImage && (
+                <div className="prevImage">
+                  <h2>Current photo</h2>
+                  <label htmlFor="new-photo-input">
+                    <ImageUploader
+                      onImageCropped={(data) => {
+                        setProfileImage(data);
+                        console.log(data);
+                      }}
+                    />
+                    <div className="imgWrapper">
+                      <p id="change-photo-word">Change</p>
+                      <img src={sessionInfo?.profilePhoto} alt="currentImg" />
+                    </div>
+                  </label>
+                </div>
+              )}
+              {profileImage?.croppedDataUrl && (
+                <div className="prevImage">
+                  <h2>New photo</h2>
+                  <div className="imgWrapper">
+                    <img src={profileImage.croppedDataUrl} alt="Cropped" />
+                    <button
+                      onClick={() => setProfileImage(null)}
+                      id="remove-img-button"
+                    >
+                      <svg className="icon icon-envelop" viewBox="0 0 35 32">
+                        <use xlinkHref="symbol-defs.svg#icon-cross"></use>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div className="sideText">
               <p>
                 Your profile photo is visible for <span>everyone!</span>

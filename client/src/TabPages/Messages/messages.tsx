@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { UserProfile } from "../../Functions/userInfo";
+import { userProfilePhoto, userName } from "Functions/usersInfo";
 import { useNavigate, useLocation } from "react-router-dom";
 import MessagesList from "./chatHistory.tsx";
 import { io, Socket } from "socket.io-client";
@@ -17,9 +17,15 @@ const Messages = () => {
     selectedProducts: string[];
   }
 
+  interface user {
+    userId: string;
+    username: string;
+    profilePhoto: string;
+  }
+
   const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [chats, setChats] = useState<{ [chatId: string]: Message[] }>({});
-  const [usersInfo, setUsersInfo] = useState("");
+  const [usersInfo, setUsersInfo] = useState<user[] | null>(null);
   const [isChatSelected, setIsChatSelected] = useState(false);
   const [messageInput, setMessageInput] = useState("");
   const socketRef = useRef<Socket | null>(null);
@@ -417,16 +423,11 @@ const Messages = () => {
                     </svg>
                   </button>
                 )}
-                <UserProfile
-                  data={usersInfo}
-                  userId={selectedChatId}
-                  dataType="photo"
+                <img
+                  src={userProfilePhoto(usersInfo, selectedChatId)}
+                  alt="userProfilePhoto"
                 />
-                <UserProfile
-                  data={usersInfo}
-                  userId={selectedChatId}
-                  dataType="name"
-                />
+                <p>{userName(usersInfo, selectedChatId)}</p>
               </div>
               {sessionInfo && selectedChatId && chats ? (
                 <MessagesList

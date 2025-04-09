@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { UserProfile } from "./userInfo";
+import { userProfilePhoto, userName } from "./usersInfo";
 import "./productInfo.css";
 
 interface Product {
@@ -67,16 +67,12 @@ export const ProductModal: React.FC<ProductModalProps> = ({
       <div className="overflowWindow" onClick={handleModalContentClick}>
         {allUsersData && (
           <div className="productHeaderInfo">
-            <UserProfile
-              data={allUsersData}
-              userId={product.userId}
-              dataType="photo"
+            <img
+              src={userProfilePhoto(allUsersData, product.userId)}
+              alt="Profile"
             />
-            <UserProfile
-              data={allUsersData}
-              userId={product.userId}
-              dataType="name"
-            />
+
+            <p className="username">{userName(allUsersData, product.userId)}</p>
             <p className="releaseDate">{product.formattedDateTime}</p>
             <button onClick={onClose} className="closeButton">
               Close

@@ -1,5 +1,5 @@
 import React from "react";
-import { UserProfile } from "../../Functions/userInfo";
+import { userProfilePhoto, userName } from "Functions/usersInfo";
 
 // Define Message type
 interface Message {
@@ -17,8 +17,7 @@ interface Message {
   status: string;
 }
 
-// Define UserInfo type
-interface UserInfo {
+interface user {
   userId: string;
   username: string;
   profilePhoto: string;
@@ -65,7 +64,7 @@ export const Chat = ({
   onClick: () => void;
   otherUserId: string;
   selectedChat?: string | null;
-  usersInfo: { [userId: string]: UserInfo };
+  usersInfo: user[];
   messages: Message[];
   isPinned: boolean;
   isPinButtonActive: Boolean;
@@ -77,11 +76,14 @@ export const Chat = ({
   ).length;
   return (
     <div onClick={onClick} key={otherUserId} className="chat">
-      <UserProfile data={usersInfo} userId={otherUserId} dataType="photo" />
+      <img
+        src={userProfilePhoto(usersInfo, otherUserId)}
+        alt="userProfilePhoto"
+      />
 
       <div className="chat-text-container">
         <div className="chatUserNameContainer">
-          <UserProfile data={usersInfo} userId={otherUserId} dataType="name" />
+          <p className="username">{userName(usersInfo, otherUserId)}</p>
           {!isPinButtonActive && !isDeleteButtonActive && isPinned && (
             <p className="pinnedWord">pinned</p>
           )}
