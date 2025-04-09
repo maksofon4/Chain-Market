@@ -1,8 +1,8 @@
-import { Socket } from "socket.io";
-import dotenv from "dotenv";
-
 const express = require("express");
 const http = require("http");
+const session = require("express-session");
+import { Socket } from "socket.io";
+import dotenv from "dotenv";
 const socketIO = require("socket.io");
 const fs = require("fs");
 const path = require("path");
@@ -10,13 +10,17 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 
 // Create an Express app
-dotenv.config();
 const app = express();
+
+dotenv.config();
+
+const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || "localhost";
 
 const server = http.createServer(app);
 const io = socketIO(server);
-const PORT = process.env.PORT;
-const HOST = process.env.HOST;
+const port = 3001;
+const localIp = "192.168.31.196";
 
 const router = express.Router();
 const routes = require("./router")(router, {});
@@ -177,6 +181,6 @@ io.on("connection", (socket: CustomSocket) => {
 });
 
 // Start the server
-server.listen(PORT, "0.0.0.0", () => {
+server.listen(port, "0.0.0.0", () => {
   console.log(`Server running at http://${HOST}:${PORT}/`);
 });
