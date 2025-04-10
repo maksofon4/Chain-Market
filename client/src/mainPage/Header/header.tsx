@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import "./NavBar.css"; // Make sure to add your CSS file for styling
+import React, { useState, useEffect, useContext } from "react";
+import { SessionContext } from "../../protectedRoute";
+import "./header.css"; // Make sure to add your CSS file for styling
 import logo from "./logo_alt.png";
 
 interface SessionInfo {
@@ -13,28 +14,8 @@ interface SessionInfo {
 }
 
 const Header = () => {
-  const [sessionInfo, setSessionInfo] = useState<SessionInfo | undefined>(
-    undefined
-  );
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const sessionReq = await fetch(`/api/session-info`);
-        const sessionInfo = await sessionReq.json();
-        if (!sessionReq.ok || sessionInfo.userId == null) {
-          console.log(sessionInfo);
-          setSessionInfo(undefined);
-        } else {
-          setSessionInfo(sessionInfo);
-        }
-      } catch (error) {
-        console.error("Error fetching chat data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const sessionInfo = useContext(SessionContext);
+  console.log(sessionInfo);
 
   const handleLogout = async () => {
     try {

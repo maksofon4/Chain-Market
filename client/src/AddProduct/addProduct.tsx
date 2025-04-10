@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { SessionContext } from "protectedRoute";
 import ProductImageUploader from "Functions/ProductImageUploader";
 import { ProductModal } from "Functions/productInfo";
 import "./addProudct.css";
@@ -30,7 +31,7 @@ const AddProduct = () => {
     formattedDateTime: string;
   }
 
-  const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
+  const sessionInfo = useContext(SessionContext);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [nameSymbols, setNameSymbols] = useState<number>();
   const [descriptionSymbols, setDescriptionSymbols] = useState<number>();
@@ -279,23 +280,6 @@ const AddProduct = () => {
       console.error("Error uploading product:", error);
     }
   };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const sessionReq = await fetch(`/api/session-info`);
-
-        if (!sessionReq.ok) throw new Error("Failed to fetch chat data");
-        const sessionInfo = await sessionReq.json();
-
-        setSessionInfo(sessionInfo);
-      } catch (error) {
-        console.error("Error fetching chat data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const handleLocationChange = (e) => {
     const inputValue = e.target.value;

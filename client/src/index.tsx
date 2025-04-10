@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import Header from "mainPage/NavBar/NavBar";
+import Header from "mainPage/Header/header";
 import Footer from "./mainPage/Footer/footer.js";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainPage from "mainPage/mainpage";
