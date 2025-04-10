@@ -34,10 +34,8 @@ const BackgroundWrapper: React.FC<{ children: React.ReactNode }> = ({
     // Set the initial background image based on the screen width
     updateBackgroundImage();
 
-    // Update the background when the window is resized
     window.addEventListener("resize", updateBackgroundImage);
 
-    // Cleanup the event listener on component unmount
     return () => {
       window.removeEventListener("resize", updateBackgroundImage);
     };
@@ -46,7 +44,7 @@ const BackgroundWrapper: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     const background = backgroundMap[location.pathname] || "none";
     document.body.style.backgroundImage =
-      background !== "none" ? `url(${background})` : `url(${backgroundImage})`;
+      background !== "none" ? `url(${background})` : `none`;
 
     if (background !== "none") {
       document.body.style.backgroundPosition = "center";

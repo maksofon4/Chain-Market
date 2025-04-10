@@ -26,7 +26,7 @@
   background-color: var(--product-image-uploader-container);
 }
 
-#new-product-img-input {
+.product-image-uploader-container #new-photo-input {
   display: none;
 }
 

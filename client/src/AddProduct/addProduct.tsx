@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, use } from "react";
-import ProductImageUploader from "Functions/productImgCroper";
+import React, { useState, useEffect } from "react";
+import ProductImageUploader from "Functions/ProductImageUploader";
 import { ProductModal } from "Functions/productInfo";
 import "./addProudct.css";
 
@@ -209,10 +209,11 @@ const AddProduct = () => {
     if (!isContactDetailsValid) return showErrorAlert("invalidContactDetails");
     if (!isPhoneNumberValid(phoneNumber))
       return showErrorAlert("invalidPhoneNumber");
+    return true;
   };
 
   const showProductPreview = () => {
-    validateProduct();
+    if (!validateProduct()) return;
     updateTime();
     const filteredImgs = images.filter((img) => img !== null);
     const product: Product = {
@@ -620,35 +621,83 @@ const AddProduct = () => {
           <div className="image-list">
             <ProductImageUploader
               key={0}
-              onImageCropped={(img) => handleImageCropped(img, 0)}
+              onImageCropped={(data) => {
+                if (data && data.croppedDataUrl) {
+                  handleImageCropped(data.croppedDataUrl, 0);
+                } else {
+                  handleImageCropped(data, 0);
+                }
+              }}
             />
             <ProductImageUploader
               key={1}
-              onImageCropped={(img) => handleImageCropped(img, 1)}
+              onImageCropped={(data) => {
+                if (data && data.croppedDataUrl) {
+                  handleImageCropped(data.croppedDataUrl, 1);
+                } else {
+                  handleImageCropped(data, 1);
+                }
+              }}
             />
             <ProductImageUploader
               key={2}
-              onImageCropped={(img) => handleImageCropped(img, 2)}
+              onImageCropped={(data) => {
+                if (data && data.croppedDataUrl) {
+                  handleImageCropped(data.croppedDataUrl, 2);
+                } else {
+                  handleImageCropped(data, 2);
+                }
+              }}
             />
             <ProductImageUploader
               key={3}
-              onImageCropped={(img) => handleImageCropped(img, 3)}
+              onImageCropped={(data) => {
+                if (data && data.croppedDataUrl) {
+                  handleImageCropped(data.croppedDataUrl, 3);
+                } else {
+                  handleImageCropped(data, 3);
+                }
+              }}
             />
             <ProductImageUploader
               key={4}
-              onImageCropped={(img) => handleImageCropped(img, 4)}
+              onImageCropped={(data) => {
+                if (data && data.croppedDataUrl) {
+                  handleImageCropped(data.croppedDataUrl, 4);
+                } else {
+                  handleImageCropped(data, 4);
+                }
+              }}
             />
             <ProductImageUploader
               key={5}
-              onImageCropped={(img) => handleImageCropped(img, 5)}
+              onImageCropped={(data) => {
+                if (data && data.croppedDataUrl) {
+                  handleImageCropped(data.croppedDataUrl, 5);
+                } else {
+                  handleImageCropped(data, 5);
+                }
+              }}
             />
             <ProductImageUploader
               key={6}
-              onImageCropped={(img) => handleImageCropped(img, 6)}
+              onImageCropped={(data) => {
+                if (data && data.croppedDataUrl) {
+                  handleImageCropped(data.croppedDataUrl, 6);
+                } else {
+                  handleImageCropped(data, 6);
+                }
+              }}
             />
             <ProductImageUploader
               key={7}
-              onImageCropped={(img) => handleImageCropped(img, 7)}
+              onImageCropped={(data) => {
+                if (data && data.croppedDataUrl) {
+                  handleImageCropped(data.croppedDataUrl, 7);
+                } else {
+                  handleImageCropped(data, 7);
+                }
+              }}
             />
           </div>
         </div>

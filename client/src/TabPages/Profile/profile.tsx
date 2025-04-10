@@ -354,17 +354,16 @@ const ProfileSettings = () => {
                 <div className="prevImage">
                   <h2>Current photo</h2>
                   <label htmlFor="new-photo-input">
-                    <ImageUploader
-                      onImageCropped={(data) => {
-                        setProfileImage(data);
-                        console.log(data);
-                      }}
-                    />
                     <div className="imgWrapper">
                       <p id="change-photo-word">Change</p>
                       <img src={sessionInfo?.profilePhoto} alt="currentImg" />
                     </div>
                   </label>
+                  <ImageUploader
+                    onImageCropped={(data) => {
+                      setProfileImage(data);
+                    }}
+                  />
                 </div>
               )}
               {profileImage?.croppedDataUrl && (
