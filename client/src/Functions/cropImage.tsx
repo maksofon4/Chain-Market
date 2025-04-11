@@ -1,5 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, ReactElement } from "react";
 import Cropper, { Area } from "react-easy-crop";
+import React from "react";
 
 interface croppedData {
   croppedDataUrl: string;
@@ -7,10 +8,24 @@ interface croppedData {
 }
 
 interface ImageUploaderProps {
+  inputElement: ReactElement<{ onChange }>;
   onImageCropped?: (croppedImg: croppedData | null) => void;
 }
 
-export default function ImageUploader({ onImageCropped }: ImageUploaderProps) {
+const InputWrapper = ({
+  children,
+  onChange,
+}: {
+  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  children: ReactElement<{ onChange }>;
+}) => {
+  return React.cloneElement(children, { onChange });
+};
+
+export default function ImageUploader({
+  inputElement,
+  onImageCropped,
+}: ImageUploaderProps) {
   const [image, setImage] = useState<string | undefined>(undefined);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -95,12 +110,8 @@ export default function ImageUploader({ onImageCropped }: ImageUploaderProps) {
 
   return (
     <div className="image-input-container">
-      <input
-        id="new-photo-input"
-        type="file"
-        accept="image/*"
-        onChange={handleImageUpload}
-      />
+      <InputWrapper onChange={handleImageUpload}>{inputElement}</InputWrapper>
+
       {isCropping && (
         <div className="cropper-wrapper">
           <div className="react-crop-div">

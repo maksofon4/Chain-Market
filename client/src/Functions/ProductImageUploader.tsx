@@ -3,6 +3,7 @@ import ImageUploader from "./cropImage";
 import "./ProductImageUploader.css";
 
 interface ProductImageUploaderProps {
+  inputId: number;
   onImageCropped: (croppedImg: croppedData | null) => void;
 }
 
@@ -12,6 +13,7 @@ interface croppedData {
 }
 
 export default function ProductImageUploader({
+  inputId,
   onImageCropped,
 }: ProductImageUploaderProps) {
   const [croppedImage, setCroppedImage] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export default function ProductImageUploader({
   return (
     <div className="product-image-uploader-container">
       {!croppedImage && (
-        <label htmlFor="new-photo-input">
+        <label htmlFor={`new-photo-input${inputId}`}>
           <div className="img-input-container">
             <div className="input-icons-wrapper">
               <svg className="icon icon-envelop" viewBox="0 0 35 32">
@@ -36,7 +38,15 @@ export default function ProductImageUploader({
         </label>
       )}
       <ImageUploader
+        inputElement={
+          <input
+            type="file"
+            style={{ display: "none" }}
+            id={`new-photo-input${inputId}`}
+          />
+        }
         onImageCropped={(data) => {
+          console.log(data);
           onImageCropped(data);
           if (data?.croppedDataUrl) setCroppedImage(data.croppedDataUrl);
         }}

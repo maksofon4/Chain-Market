@@ -15,7 +15,6 @@ interface SessionInfo {
 
 const Header = () => {
   const sessionInfo = useContext(SessionContext);
-  console.log(sessionInfo);
 
   const handleLogout = async () => {
     try {

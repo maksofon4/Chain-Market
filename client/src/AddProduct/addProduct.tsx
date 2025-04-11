@@ -605,81 +605,85 @@ const AddProduct = () => {
           <div className="image-list">
             <ProductImageUploader
               key={0}
+              inputId={0}
               onImageCropped={(data) => {
                 if (data && data.croppedDataUrl) {
                   handleImageCropped(data.croppedDataUrl, 0);
                 } else {
-                  handleImageCropped(data, 0);
+                  handleImageCropped(null, 0);
                 }
               }}
             />
             <ProductImageUploader
               key={1}
+              inputId={1}
               onImageCropped={(data) => {
                 if (data && data.croppedDataUrl) {
                   handleImageCropped(data.croppedDataUrl, 1);
                 } else {
-                  handleImageCropped(data, 1);
+                  handleImageCropped(null, 1);
                 }
               }}
             />
             <ProductImageUploader
               key={2}
+              inputId={2}
               onImageCropped={(data) => {
                 if (data && data.croppedDataUrl) {
                   handleImageCropped(data.croppedDataUrl, 2);
                 } else {
-                  handleImageCropped(data, 2);
+                  handleImageCropped(null, 2);
                 }
               }}
             />
             <ProductImageUploader
               key={3}
+              inputId={3}
               onImageCropped={(data) => {
                 if (data && data.croppedDataUrl) {
                   handleImageCropped(data.croppedDataUrl, 3);
                 } else {
-                  handleImageCropped(data, 3);
+                  handleImageCropped(null, 3);
                 }
               }}
             />
             <ProductImageUploader
-              key={4}
+              inputId={4}
               onImageCropped={(data) => {
                 if (data && data.croppedDataUrl) {
                   handleImageCropped(data.croppedDataUrl, 4);
                 } else {
-                  handleImageCropped(data, 4);
+                  handleImageCropped(null, 4);
                 }
               }}
             />
             <ProductImageUploader
-              key={5}
+              inputId={5}
               onImageCropped={(data) => {
                 if (data && data.croppedDataUrl) {
                   handleImageCropped(data.croppedDataUrl, 5);
                 } else {
-                  handleImageCropped(data, 5);
+                  handleImageCropped(null, 5);
                 }
               }}
             />
             <ProductImageUploader
-              key={6}
+              inputId={6}
               onImageCropped={(data) => {
                 if (data && data.croppedDataUrl) {
                   handleImageCropped(data.croppedDataUrl, 6);
                 } else {
-                  handleImageCropped(data, 6);
+                  handleImageCropped(null, 6);
                 }
               }}
             />
             <ProductImageUploader
-              key={7}
+              inputId={7}
               onImageCropped={(data) => {
                 if (data && data.croppedDataUrl) {
                   handleImageCropped(data.croppedDataUrl, 7);
                 } else {
-                  handleImageCropped(data, 7);
+                  handleImageCropped(null, 7);
                 }
               }}
             />
