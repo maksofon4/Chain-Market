@@ -118,20 +118,17 @@ module.exports = (app) => {
         const user = users.find((u) => u.userId === req.session.userId);
 
         if (user) {
-          // Filter products posted by this user
-          const userProducts = products.filter(
+          let userProducts = products.filter(
             (product) => product.userId === user.userId
           );
 
-          // Send user details and products as JSON
+          // Add imageBaseUrl to each image in each product
+          userProducts = userProducts.map((product) => ({
+            ...product,
+            images: product.images.map((img) => imageBaseUrl + img),
+          }));
           res.json({
-            user: {
-              userId: user.userId,
-              username: user.username,
-              email: user.email,
-            },
             products: userProducts,
-            imageBaseUrl: imageBaseUrl,
           });
         } else {
           res.status(404).json({ error: "User not found." });

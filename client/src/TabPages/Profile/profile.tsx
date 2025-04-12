@@ -360,6 +360,13 @@ const ProfileSettings = () => {
                     </div>
                   </label>
                   <ImageUploader
+                    inputElement={
+                      <input
+                        type="file"
+                        style={{ display: "none" }}
+                        id="new-photo-input"
+                      />
+                    }
                     onImageCropped={(data) => {
                       setProfileImage(data);
                     }}

@@ -51,7 +51,7 @@ const PostedList = () => {
         setSessionInfo(sessionData);
         const productRes = await fetch(`/api/user-posted-products`);
         if (!productRes.ok) throw new Error("Failed to fetch product data");
-        const { products, imageBaseUrl } = await productRes.json();
+        const { products } = await productRes.json();
         setProducts(products);
         setImageBaseUrl(imageBaseUrl);
       } catch (error) {
