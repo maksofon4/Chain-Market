@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SessionContext } from "protectedRoute";
+import { SessionContext } from "GlobalData";
 import ProductImageUploader from "Functions/ProductImageUploader";
 import { ProductModal } from "Functions/productInfo";
 import "./addProudct.css";

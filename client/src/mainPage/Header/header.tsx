@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useContext } from "react";
-import { SessionContext } from "../../protectedRoute";
+import { useContext } from "react";
+import { SessionContext } from "GlobalData";
 import "./header.css"; // Make sure to add your CSS file for styling
 import logo from "./logo_alt.png";
 
