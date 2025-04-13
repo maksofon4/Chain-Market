@@ -186,7 +186,10 @@ module.exports = (app) => {
     req.session.save(function (err) {
       if (err) next(err);
 
-      req.session = null;
+      req.session.regenerate(function (err) {
+        if (err) next(err);
+        res.redirect("/");
+      });
     });
   });
 

@@ -33,7 +33,10 @@ const AuthForm: React.FC<{ mode: "login" | "register" }> = ({ mode }) => {
         const result = await response.json();
         console.log(result);
         if (mode === "register") navigate("/login");
-        if (mode === "login") navigate("/");
+        if (mode === "login") {
+          navigate("/");
+          navigate(0);
+        }
       } else {
         // Handle error response here
         console.error("Error: ", response.statusText);

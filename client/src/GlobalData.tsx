@@ -17,10 +17,10 @@ const GlobalData: React.FC<GlobalDataProps> = ({ children }) => {
           credentials: "include",
         });
         const sessionInfo = await sessionInfoReq.json();
-        if (sessionInfoReq) {
-          setUser(sessionInfo);
-          setIsAuth(true);
-        }
+
+        sessionInfo.userId ? setIsAuth(true) : setIsAuth(false);
+
+        setUser(sessionInfo);
       } catch (e) {
         setIsAuth(false);
         setUser(undefined);
@@ -31,11 +31,9 @@ const GlobalData: React.FC<GlobalDataProps> = ({ children }) => {
   }, []);
 
   if (isAuth === null) return <div>Loading...</div>;
-  if (isAuth) {
-    return (
-      <SessionContext.Provider value={user}>{children}</SessionContext.Provider>
-    );
-  }
+  return (
+    <SessionContext.Provider value={user}>{children}</SessionContext.Provider>
+  );
 };
 
 export default GlobalData;

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SessionContext } from "GlobalData";
 import "./header.css"; // Make sure to add your CSS file for styling
 import logo from "./logo_alt.png";
@@ -15,6 +15,13 @@ interface SessionInfo {
 
 const Header = () => {
   const sessionInfo = useContext(SessionContext);
+  const [user, setUser] = useState<SessionInfo | null>(null);
+  const [isAuth, setAuth] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setUser(sessionInfo);
+    setAuth(sessionInfo.userId !== null);
+  }, [sessionInfo]);
 
   const handleLogout = async () => {
     try {
@@ -61,23 +68,23 @@ const Header = () => {
             </svg>
             <p id="profile-container-text">My profile</p>
 
-            {sessionInfo && (
+            {isAuth && (
               <svg id="icon-arrowdown" width="24" height="24">
                 <use xlinkHref="symbol-defs.svg#icon-arrowdown"></use>
               </svg>
             )}
           </a>
 
-          {sessionInfo && (
+          {isAuth && user && (
             <ul className="profile-dropdown">
               <li id="profile-options-container">
                 <a id="profile-options" href="/profile-options">
                   <img
                     className="profile-image"
-                    src={sessionInfo.profilePhoto}
+                    src={user.profilePhoto}
                     alt="profile"
                   />
-                  <p id="profile-name">{sessionInfo.username}</p>
+                  <p id="profile-name">{user.username}</p>
                   <p id="profileTextBottom">Your profile</p>
                 </a>
               </li>
