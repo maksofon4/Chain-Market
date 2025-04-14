@@ -1,0 +1,39 @@
+:root {
+  --border-color: #797979;
+  --filter-item: rgb(131, 131, 131);
+  --input-container-color: #464646;
+  --svg-color: white;
+  --dark-overlay: #0000007c;
+}
+
+.searchAds-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  background-color: rgb(48, 48, 48);
+  width: 60%;
+  margin-top: min(15em, 14%);
+  margin-bottom: min(10vh, 10%);
+  padding: min(5em, 5%);
+}
+
+.search-filters {
+  width: 100%;
+  display: flex;
+}
+
+.filter-item {
+  padding: 10px 20px 10px 20px;
+  background-color: var(--filter-item);
+  color: white;
+  border-radius: 5px;
+}
+
+@media (max-width: 1500px) {
+  .searchAds-container {
+    width: 80%;
+  }
+}

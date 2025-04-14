@@ -16,6 +16,8 @@ import ProfileSettings from "TabPages/Profile/profile";
 import AddProduct from "AddProduct/addProduct";
 import BackgroundWrapper from "BackgroundWrapper";
 import GlobalData from "GlobalData";
+import SearchAds from "SearchAds/searchAds";
+
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
   <React.StrictMode>
@@ -85,7 +87,15 @@ root.render(
                 </ProtectedRoute>
               }
             />
-            {/* <Route path="/search-Ads" element={} /> */}
+            <Route
+              path="/search-Ads"
+              element={
+                <>
+                  <Header />
+                  <SearchAds />{" "}
+                </>
+              }
+            />
 
             <Route path="*" element={<Navigate to="/" replace={true} />} />
           </Routes>
