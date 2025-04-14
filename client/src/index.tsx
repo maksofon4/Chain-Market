@@ -85,6 +85,7 @@ root.render(
                 </ProtectedRoute>
               }
             />
+            {/* <Route path="/search-Ads" element={} /> */}
 
             <Route path="*" element={<Navigate to="/" replace={true} />} />
           </Routes>

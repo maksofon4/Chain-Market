@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import "./SearchBar.css";
 
-function SearchBar() {
+interface SearchBarProps {
+  onSearchChange: (value: string) => void;
+  onLocationChange: (value: string) => void;
+  onSearch: () => void;
+}
+
+const SearchBar: React.FC<SearchBarProps> = ({
+  onSearchChange,
+  onLocationChange,
+  onSearch,
+}) => {
   // State for managing search input and location input
   const [searchTerm, setSearchTerm] = useState("");
   const [location, setLocation] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<string[] | []>([]);
 
   const cities = [
     "Kyiv",
@@ -103,6 +113,7 @@ function SearchBar() {
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+    onSearchChange(e.target.value);
   };
 
   // Handle location input change
@@ -117,19 +128,21 @@ function SearchBar() {
       );
       setSuggestions(filteredCities);
     } else {
+      onLocationChange("");
       setSuggestions([]);
     }
   };
 
   // Handle suggestion click (select a city)
   const handleSuggestionClick = (city) => {
+    onLocationChange(city);
     setLocation(city); // Set the location input field to the selected city
     setSuggestions([]); // Clear the suggestions
   };
 
   // Handle search button click
   const handleSearchClick = () => {
-    console.log("Searching for:", searchTerm, "in location:", location);
+    onSearch();
   };
 
   return (
@@ -171,6 +184,6 @@ function SearchBar() {
       <button onClick={handleSearchClick}>Search</button>
     </div>
   );
-}
+};
 
 export default SearchBar;
