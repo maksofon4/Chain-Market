@@ -82,14 +82,15 @@ const MessagesList: React.FC<Props> = ({
         typeof msg.message.product === "string"
           ? JSON.parse(msg.message.product)
           : msg.message.product;
+
       return (
         <div key={index} className={`message-product ${messageClass}`}>
           <div className="redirected-product-container">
             <img
-              src={product.imageBaseUrl + product.images[0]}
+              src={"/uploads/" + product.images[0]}
               alt={product.productName}
             />
-            <p className="product-name">{product.productName}</p>
+            <p className="product-name">{product.name}</p>
             <p className="product-price">{product.price}$</p>
             <p className="product-location">{product.location}</p>
             <p className="product-date-posted">{product.formattedDateTime}</p>

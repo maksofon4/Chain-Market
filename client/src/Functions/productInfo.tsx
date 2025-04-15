@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { userProfilePhoto, userName } from "./usersInfo";
+import { useNavigate } from "react-router-dom";
 import "./productInfo.css";
 
 interface Product {
@@ -9,7 +10,7 @@ interface Product {
   category: string;
   description: string;
   location: string;
-  priceUSD: string; // If it's always a string, otherwise use `number`
+  price: string; // If it's always a string, otherwise use `number`
   condition: string;
   tradePossible: boolean; // Consider using `boolean` if possible
   contactDetails: {
@@ -45,7 +46,13 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   onClose,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  console.log(product);
+  const navigate = useNavigate();
 
+  const navigateUserToChat = (userId, product) => {
+    localStorage.setItem("product", JSON.stringify(product));
+    navigate(`/messages/chat/${userId}`);
+  };
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex < product.images.length - 1 ? prevIndex + 1 : 0
@@ -114,11 +121,16 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             </li>
           </ul>
           {sessionInfo && sessionInfo.userId !== product.userId && (
-            <button className="messageUserButton">Message</button>
+            <button
+              className="messageUserButton"
+              onClick={() => navigateUserToChat(product.userId, product)}
+            >
+              Message
+            </button>
           )}
 
           <p className="currentProductName">{product.name}</p>
-          <p className="currentProductPrice">{product.priceUSD}$</p>
+          <p className="currentProductPrice">{product.price}$</p>
           <p className="currentProductLocation">{product.location}</p>
           <p className="description">{product.description}</p>
         </div>

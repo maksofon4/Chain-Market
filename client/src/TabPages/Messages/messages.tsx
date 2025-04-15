@@ -42,6 +42,7 @@ const Messages = () => {
 
   const location = useLocation();
   const navigate = useNavigate();
+  const redirectedProduct = localStorage.getItem("product");
 
   const chatIdFromURL = location.pathname.split("/").pop();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(
@@ -221,9 +222,22 @@ const Messages = () => {
 
   const handleSendMessage = async (
     selectedChatId: string,
-    messageData: string | object
+    messageText: string | object
   ) => {
+    let messageData = messageText;
     let messageFiles = [];
+
+    if (redirectedProduct) {
+      const productJSON = JSON.parse(redirectedProduct);
+      if (productJSON.user.userId === selectedChatId) {
+        console.log(productJSON);
+        messageData = {
+          class: "redirectedProduct",
+          product: redirectedProduct,
+          additionalMessage: messageText,
+        };
+      }
+    }
     if (attachedFiles) {
       const files = attachedFiles;
 
@@ -254,7 +268,6 @@ const Messages = () => {
       }
     }
     if (socketRef.current) {
-      console.log("executed times ");
       socketRef.current.emit("private message", {
         toUserId: selectedChatId,
         message: messageData,
@@ -264,6 +277,7 @@ const Messages = () => {
       markAsChecked(selectedChatId);
       setMessageInput("");
     }
+    if (redirectedProduct) localStorage.removeItem("product");
   };
 
   const handleAttachFile = (event: React.ChangeEvent<HTMLInputElement>) => {

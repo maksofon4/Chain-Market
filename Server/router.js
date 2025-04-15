@@ -326,9 +326,9 @@ module.exports = (app) => {
             product.tradePossible.toString().toLowerCase() ===
               tradePossible.toLowerCase()) &&
           (priceFrom === "empty" ||
-            parseFloat(product.priceUSD) >= parseFloat(priceFrom)) &&
+            parseFloat(product.price) >= parseFloat(priceFrom)) &&
           (priceTo === "empty" ||
-            parseFloat(product.priceUSD) <= parseFloat(priceTo))
+            parseFloat(product.price) <= parseFloat(priceTo))
         );
       });
 
@@ -535,7 +535,7 @@ module.exports = (app) => {
         category,
         description,
         location,
-        priceUSD,
+        price,
         condition,
         tradePossible,
         userContactDetails,
@@ -568,7 +568,7 @@ module.exports = (app) => {
         category,
         description,
         location,
-        priceUSD,
+        price,
         condition,
         tradePossible,
         contactDetails,

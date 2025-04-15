@@ -9,7 +9,7 @@ interface Product {
   category: string;
   description: string;
   location: string;
-  priceUSD: string;
+  price: string;
   condition: string;
   tradePossible: boolean;
   contactDetails: {
@@ -147,7 +147,7 @@ const ProductList = () => {
                 <li className="product-location">{product.location}</li>
                 <li className="release-date">{product.formattedDateTime}</li>
               </ul>
-              <p className="price">{product.priceUSD}$</p>
+              <p className="price">{product.price}$</p>
             </div>
 
             <button

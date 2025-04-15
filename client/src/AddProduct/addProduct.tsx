@@ -2,17 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { SessionContext } from "GlobalData";
 import ProductImageUploader from "Functions/ProductImageUploader";
 import { ProductModal } from "Functions/productInfo";
+import { categories, cities } from "clientSideInfo";
 import "./addProudct.css";
 
 const AddProduct = () => {
-  interface SessionInfo {
-    userId: string;
-    username: string;
-    email: string;
-    profilePhoto: string;
-    pinnedChats: string[];
-    selectedProducts: string[];
-  }
   interface Product {
     productId: string;
     userId: string;
@@ -72,98 +65,6 @@ const AddProduct = () => {
     });
   };
 
-  const cities = [
-    "Kyiv",
-    "Kharkiv",
-    "Odesa",
-    "Dnipro",
-    "Lviv",
-    "Kryvyi Rih",
-    "Mykolaiv",
-    "Mariupol",
-    "Sevastopol",
-    "Luhansk",
-    "Vinnytsia",
-    "Zaporizhzhia",
-    "Simferopol",
-    "Kherson",
-    "Poltava",
-    "Chernihiv",
-    "Cherkasy",
-    "Zhytomyr",
-    "Sumy",
-    "Rivne",
-    "Ivano-Frankivsk",
-    "Ternopil",
-    "Chernivtsi",
-    "Lutsk",
-    "Kropyvnytskyi",
-    "Uzhhorod",
-    "Khmelnytskyi",
-    "Kremenchuk",
-    "Bila Tserkva",
-    "Melitopol",
-    "Nikopol",
-    "Sloviansk",
-    "Brovary",
-    "Berdiansk",
-    "Pavlohrad",
-    "Kamianets-Podilskyi",
-    "Alchevsk",
-    "Yevpatoria",
-    "Konotop",
-    "Uman",
-    "Shostka",
-    "Oleksandriia",
-    "Mukachevo",
-    "Kostopil",
-    "Netishyn",
-    "Enerhodar",
-    "Horlivka",
-    "Kadiivka",
-    "Druzhkivka",
-    "Lysychansk",
-    "Rubizhne",
-    "Bakhmut",
-    "Kramatorsk",
-    "Pokrovsk",
-    "Sieverodonetsk",
-    "Toretsk",
-    "Dniprorudne",
-    "Nova Kakhovka",
-    "Pryluky",
-    "Smila",
-    "Fastiv",
-    "Obukhiv",
-    "Yalta",
-    "Boryspil",
-    "Irpin",
-    "Boyarka",
-    "Vyshneve",
-    "Chornobyl",
-    "Slavutych",
-    "Borodianka",
-    "Vyshhorod",
-    "Vasylkiv",
-    "Bilhorod-Dnistrovskyi",
-    "Yuzhne",
-    "Izmail",
-    "Chornomorsk",
-    "Reni",
-    "Berezan",
-    "Boryslav",
-    "Drohobych",
-    "Stryi",
-    "Truskavets",
-    "Novovolynsk",
-    "Chervonohrad",
-    "Volodymyr",
-    "Drohobych",
-    "Zhovkva",
-    "Zhytomyr",
-    "Zolochiv",
-    "Zvenyhorodka",
-  ];
   const updateTime = () => {
     const date = new Date();
     const formattedDate = date.toLocaleDateString("en-GB", {
@@ -354,105 +255,6 @@ const AddProduct = () => {
     setAlertText(errorMessage);
     return false;
   };
-
-  const categories = [
-    {
-      id: "Family",
-      svgId: "icon-pencil2",
-      href: "categories-defs.svg#icon-pencil2",
-      name: "Family",
-    },
-    {
-      id: "Paint",
-      svgId: "icon-paint-format",
-      href: "categories-defs.svg#icon-paint-format",
-      name: "Paint",
-    },
-    {
-      id: "Media",
-      svgId: "icon-image",
-      href: "categories-defs.svg#icon-image",
-      name: "Media",
-    },
-    {
-      id: "Headset",
-      svgId: "icon-headphones",
-      href: "categories-defs.svg#icon-headphones",
-      name: "Headset",
-    },
-    {
-      id: "Books",
-      svgId: "icon-book",
-      href: "categories-defs.svg#icon-book",
-      name: "Books",
-    },
-    {
-      id: "Work",
-      svgId: "icon-profile",
-      href: "categories-defs.svg#icon-profile",
-      name: "Work",
-    },
-    {
-      id: "PC",
-      svgId: "icon-display",
-      href: "categories-defs.svg#icon-display",
-      name: "PC",
-    },
-    {
-      id: "Phones",
-      svgId: "icon-mobile",
-      href: "categories-defs.svg#icon-mobile",
-      name: "Phones",
-    },
-    {
-      id: "TV",
-      svgId: "icon-tv",
-      href: "categories-defs.svg#icon-tv",
-      name: "TV",
-    },
-    {
-      id: "Tools",
-      svgId: "icon-wrench",
-      href: "categories-defs.svg#icon-wrench",
-      name: "Tools",
-    },
-    {
-      id: "Medicine",
-      svgId: "icon-aid-kit",
-      href: "categories-defs.svg#icon-aid-kit",
-      name: "Medicine",
-    },
-    {
-      id: "Cutlery",
-      svgId: "icon-spoon-knife",
-      href: "categories-defs.svg#icon-spoon-knife",
-      name: "Cutlery",
-    },
-    {
-      id: "Garden",
-      svgId: "icon-leaf",
-      href: "categories-defs.svg#icon-leaf",
-      name: "Garden",
-    },
-    {
-      id: "Fuel",
-      svgId: "icon-fire",
-      href: "categories-defs.svg#icon-fire",
-      name: "Fuel",
-    },
-    {
-      id: "Vehicles",
-      svgId: "icon-truck",
-      href: "categories-defs.svg#icon-truck",
-      name: "Vehicles",
-    },
-    {
-      id: "Toys",
-      svgId: "icon-reddit",
-      href: "categories-defs.svg#icon-reddit",
-      name: "Toys",
-    },
-  ];
 
   return (
     <div className="add-product-parent">
