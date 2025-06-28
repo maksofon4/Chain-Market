@@ -461,6 +461,9 @@ module.exports = (app) => {
     const { username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const chatFolderPath = path.join(__dirname, "chats"); // Folder for chat files
+    if (!fs.existsSync(chatFolderPath)) {
+      fs.mkdirSync(chatFolderPath, { recursive: true });
+    }
     const users = JSON.parse(fs.readFileSync(usersFilePath, "utf8"));
 
     const newUser = {
