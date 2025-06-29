@@ -1,19 +1,21 @@
 import { promises as fs } from "fs";
-import { getUsersDataPath } from "../config/env";
+import { usersDir } from "../config/env";
 import { User } from "../models/User";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 
-const filePath = getUsersDataPath();
-
+const filePath = usersDir;
 export class UserRepository {
   static async getAllUsers(): Promise<User[]> {
+    console.log("filepath:", filePath);
     const data = await fs.readFile(filePath, "utf-8");
+
     return JSON.parse(data);
   }
 
   static async findByEmail(email: string): Promise<User | null> {
     const users = await this.getAllUsers();
+
     return users.find((user) => user.email === email) || null;
   }
 

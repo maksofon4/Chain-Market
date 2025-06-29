@@ -19,8 +19,11 @@ class AuthController {
       }
 
       const newUser = { username, email, password };
-
-      UserRepository.create(newUser);
+      const result = await UserRepository.create(newUser);
+      if (!result) {
+        return next(ApiError.internal("Unexpected Error"));
+      }
+      res.json("User Registered Successfully");
     } catch (error) {
       next(error); // пробрасываем в error middleware
     }
@@ -31,9 +34,6 @@ class AuthController {
   }
 
   async authCheck(req: Request, res: Response, next: NextFunction) {
-    if (req) {
-      return next(ApiError.badRequest("bad request"));
-    }
     res.json("authenticated");
   }
 }
