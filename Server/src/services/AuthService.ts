@@ -1,6 +1,5 @@
 import { UserRepository } from "../repositories/UserRepository";
 import bcrypt from "bcrypt";
-import { generateToken } from "../utils/jwt";
 import { User } from "../models/User";
 
 export class AuthService {
@@ -9,11 +8,6 @@ export class AuthService {
     email: string;
     password: string;
   }): Promise<User> {
-    const existingUser = await UserRepository.findByEmail(data.email);
-    if (existingUser) {
-      throw new Error("User already exists");
-    }
-
     const newUser = await UserRepository.create({
       username: data.username,
       email: data.email,
@@ -36,8 +30,6 @@ export class AuthService {
     if (!isMatch) {
       throw new Error("Invalid credentials");
     }
-
-    const token = generateToken({ id: user._id, email: user.email });
 
     return { token };
   }

@@ -1,10 +1,10 @@
 import { promises as fs } from "fs";
-import path from "path";
+import { getUsersDataPath } from "../config/env";
 import { User } from "../models/User";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
 
-const filePath = path.join(__dirname, "..", "data", "users.json");
+const filePath = getUsersDataPath();
 
 export class UserRepository {
   static async getAllUsers(): Promise<User[]> {
@@ -34,7 +34,6 @@ export class UserRepository {
 
     users.push(newUser);
     await fs.writeFile(filePath, JSON.stringify(users, null, 2));
-
     return newUser;
   }
 

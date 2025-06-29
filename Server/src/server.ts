@@ -8,6 +8,8 @@ const fs = require("fs");
 const path = require("path");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const router = require("./routers/index");
+const errorHandler = require("./middleware/errorHandlingMiddleware");
 
 // Create an Express app
 const app = express();
@@ -19,12 +21,9 @@ const HOST = process.env.HOST || "localhost";
 
 const server = http.createServer(app);
 const io = socketIO(server);
-const port = 3001;
-const localIp = "192.168.31.196";
 
-const router = express.Router();
-const routes = require("./router")(router, {});
-app.use("/api", routes);
+app.use(express.json());
+app.use("/api", router);
 app.use(require("morgan")("combined"));
 app.use(
   cors({
@@ -39,10 +38,11 @@ app.use(
   "/uploads",
   express.static(path.join(__dirname, "dataFolder", "uploads"))
 );
-app.use(express.json());
+
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "..", "client", "build")));
+app.use(errorHandler);
 
 const chatDirectory = path.join(__dirname, "chats");
 if (!fs.existsSync(chatDirectory)) {
@@ -181,6 +181,6 @@ io.on("connection", (socket: CustomSocket) => {
 });
 
 // Start the server
-server.listen(port, "0.0.0.0", () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running at http://${HOST}:${PORT}/`);
 });

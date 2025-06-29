@@ -56,14 +56,9 @@ module.exports = (app) => {
   app.get("/search-Ads", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "searchAds.html"));
   });
-  app.get("/register", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "register.html"));
-  });
+
   app.get("/api/server-ip", (req, res) => {
     res.json({ ip: localIp + ":" + port });
-  });
-  app.get("/login", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "login.html"));
   });
   app.get("/add-product", checkLogin, (req, res) => {
     res.sendFile(path.join(__dirname, "public", "AddProduct.html"));
