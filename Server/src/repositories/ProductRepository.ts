@@ -2,7 +2,6 @@ import { promises as fs } from "fs";
 import { productsDir } from "../config/env";
 import { Product } from "../models/Product";
 import { v4 as uuidv4 } from "uuid";
-import bcrypt from "bcrypt";
 
 const filePath = productsDir;
 export class ProductRepository {
@@ -24,7 +23,7 @@ export class ProductRepository {
     category: string;
     description: string;
     location: string;
-    priceUSD: string;
+    price: string;
     condition: string;
     tradePossible: boolean;
     contactDetails: {
@@ -35,17 +34,26 @@ export class ProductRepository {
     formattedDateTime: string;
   }): Promise<Product> {
     const products = await this.getAllProducts();
-
-    const hashedPassword = await bcrypt.hash(user.password, 10);
-    const newUser: User = {
-      id: uuidv4(),
-      username: user.username,
-      email: user.email,
-      password: hashedPassword,
+    const newProduct: Product = {
+      productId: uuidv4(),
+      userId: product.userId,
+      name: product.name,
+      category: product.category,
+      description: product.description,
+      location: product.location,
+      priceUSD: product.price,
+      condition: product.condition,
+      tradePossible: product.tradePossible,
+      contactDetails: {
+        email: product.contactDetails.email,
+        phoneNumber: product.contactDetails.phoneNumber,
+      },
+      images: product.images,
+      formattedDateTime: product.formattedDateTime,
     };
 
-    users.push(newUser);
-    await fs.writeFile(filePath, JSON.stringify(users, null, 2));
-    return newUser;
+    products.push(newProduct);
+    await fs.writeFile(filePath, JSON.stringify(products, null, 2));
+    return newProduct;
   }
 }
