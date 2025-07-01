@@ -23,7 +23,7 @@ export class ProductRepository {
     category: string;
     description: string;
     location: string;
-    price: string;
+    price: number;
     condition: string;
     tradePossible: boolean;
     contactDetails: {
@@ -41,7 +41,7 @@ export class ProductRepository {
       category: product.category,
       description: product.description,
       location: product.location,
-      priceUSD: product.price,
+      price: product.price,
       condition: product.condition,
       tradePossible: product.tradePossible,
       contactDetails: {
@@ -55,5 +55,18 @@ export class ProductRepository {
     products.push(newProduct);
     await fs.writeFile(filePath, JSON.stringify(products, null, 2));
     return newProduct;
+  }
+  static async remove(productId: string): Promise<boolean> {
+    const targetProduct = await this.findById(productId);
+    console.log(targetProduct);
+    if (!targetProduct) {
+      throw new Error(`Product with ID ${productId} not found.`);
+    }
+
+    const products = await this.getAllProducts();
+    const updatedProducts = products.filter((p) => p.productId !== productId);
+
+    await fs.writeFile(filePath, JSON.stringify(updatedProducts, null, 2));
+    return true;
   }
 }

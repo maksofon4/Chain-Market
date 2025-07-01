@@ -5,7 +5,7 @@ export interface Product {
   category: string;
   description: string;
   location: string;
-  priceUSD: string;
+  price: number;
   condition: string;
   tradePossible: boolean;
   contactDetails: {

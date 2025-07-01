@@ -36,18 +36,24 @@ class ProductController {
       if (!result) {
         return next(ApiError.internal("Unexpected Error"));
       }
-      res.json("User Registered Successfully");
+      res.json("Product Uploaded Successfully");
     } catch (error) {
       next(error); // пробрасываем в error middleware
     }
   }
 
-  async login(req: Request, res: Response) {
-    // реализация
-  }
+  async removing(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { productId } = req.body;
 
-  async authCheck(req: Request, res: Response, next: NextFunction) {
-    res.json("authenticated");
+      const result = await ProductRepository.remove(productId);
+      if (!result) {
+        return next(ApiError.internal("Unexpected Error"));
+      }
+      res.json("Product Removed Successfully");
+    } catch (error) {
+      next(error); // пробрасываем в error middleware
+    }
   }
 }
 
