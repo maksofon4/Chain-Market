@@ -1,1 +1,172 @@
-[]
+[
+  {
+    "productId": "1",
+    "userId": "user001",
+    "name": "iPhone 13 Pro",
+    "category": "Electronics",
+    "description": "Used iPhone 13 Pro in good condition.",
+    "location": "Kyiv, Ukraine",
+    "price": 750,
+    "condition": "Used",
+    "tradePossible": false,
+    "contactDetails": {
+      "email": "iphoneuser@example.com",
+      "phoneNumber": "+380931234567"
+    },
+    "images": ["image1.jpg"],
+    "formattedDateTime": "2025-07-01 14:00"
+  },
+  {
+    "productId": "2",
+    "userId": "user002",
+    "name": "Gaming Laptop MSI",
+    "category": "Computers",
+    "description": "High-performance gaming laptop, barely used.",
+    "location": "Lviv, Ukraine",
+    "price": 1200,
+    "condition": "Like New",
+    "tradePossible": true,
+    "contactDetails": {
+      "email": "msilover@example.com",
+      "phoneNumber": "+380991112233"
+    },
+    "images": ["msi1.jpg", "msi2.jpg"],
+    "formattedDateTime": "2025-06-30 18:45"
+  },
+  {
+    "productId": "3",
+    "userId": "user003",
+    "name": "Mountain Bike",
+    "category": "Sports",
+    "description": "Sturdy mountain bike for rough terrains.",
+    "location": "Kharkiv, Ukraine",
+    "price": 350,
+    "condition": "Used",
+    "tradePossible": true,
+    "contactDetails": {
+      "email": "biker@example.com",
+      "phoneNumber": "+380501234567"
+    },
+    "images": ["bike1.jpg"],
+    "formattedDateTime": "2025-07-02 09:15"
+  },
+  {
+    "productId": "4",
+    "userId": "user004",
+    "name": "Leather Sofa",
+    "category": "Furniture",
+    "description": "Comfortable leather sofa, minor scratches.",
+    "location": "Odesa, Ukraine",
+    "price": 400,
+    "condition": "Good",
+    "tradePossible": false,
+    "contactDetails": {
+      "email": "sofaseller@example.com",
+      "phoneNumber": "+380673334455"
+    },
+    "images": ["sofa.jpg"],
+    "formattedDateTime": "2025-07-01 16:30"
+  },
+  {
+    "productId": "5",
+    "userId": "user005",
+    "name": "Sony PlayStation 5",
+    "category": "Electronics",
+    "description": "PS5 with two controllers and 3 games.",
+    "location": "Dnipro, Ukraine",
+    "price": 600,
+    "condition": "Like New",
+    "tradePossible": true,
+    "contactDetails": {
+      "email": "ps5gamer@example.com",
+      "phoneNumber": "+380632221122"
+    },
+    "images": ["ps5.jpg"],
+    "formattedDateTime": "2025-06-28 12:00"
+  },
+  {
+    "productId": "6",
+    "userId": "user006",
+    "name": "Electric Guitar Fender",
+    "category": "Music",
+    "description": "Fender Stratocaster, American model.",
+    "location": "Zaporizhzhia, Ukraine",
+    "price": 900,
+    "condition": "Excellent",
+    "tradePossible": false,
+    "contactDetails": {
+      "email": "guitarhero@example.com",
+      "phoneNumber": "+380934445566"
+    },
+    "images": ["fender1.jpg"],
+    "formattedDateTime": "2025-07-02 08:00"
+  },
+  {
+    "productId": "7",
+    "userId": "user007",
+    "name": "Samsung 55\" 4K TV",
+    "category": "Electronics",
+    "description": "Crystal UHD 4K Smart TV, still boxed.",
+    "location": "Vinnytsia, Ukraine",
+    "price": 500,
+    "condition": "New",
+    "tradePossible": false,
+    "contactDetails": {
+      "email": "tvshop@example.com",
+      "phoneNumber": "+380994445566"
+    },
+    "images": ["tv1.jpg", "tv2.jpg"],
+    "formattedDateTime": "2025-06-29 21:00"
+  },
+  {
+    "productId": "8",
+    "userId": "user008",
+    "name": "Kitchen Set IKEA",
+    "category": "Furniture",
+    "description": "Modern kitchen set from IKEA, barely used.",
+    "location": "Poltava, Ukraine",
+    "price": 1000,
+    "condition": "Like New",
+    "tradePossible": true,
+    "contactDetails": {
+      "email": "ikeakitchen@example.com",
+      "phoneNumber": "+380932223344"
+    },
+    "images": ["kitchen.jpg"],
+    "formattedDateTime": "2025-07-01 11:45"
+  },
+  {
+    "productId": "9",
+    "userId": "user009",
+    "name": "Nikon D750 Camera",
+    "category": "Photography",
+    "description": "Professional DSLR with 24-120mm lens.",
+    "location": "Chernihiv, Ukraine",
+    "price": 950,
+    "condition": "Good",
+    "tradePossible": false,
+    "contactDetails": {
+      "email": "photoguy@example.com",
+      "phoneNumber": "+380931111999"
+    },
+    "images": ["nikon.jpg"],
+    "formattedDateTime": "2025-06-27 10:20"
+  },
+  {
+    "productId": "10",
+    "userId": "user010",
+    "name": "Xbox Series X",
+    "category": "Electronics",
+    "description": "Latest model Xbox with Game Pass subscription.",
+    "location": "Uzhhorod, Ukraine",
+    "price": 550,
+    "condition": "Like New",
+    "tradePossible": true,
+    "contactDetails": {
+      "email": "xboxfan@example.com",
+      "phoneNumber": "+380933336677"
+    },
+    "images": ["xbox.jpg"],
+    "formattedDateTime": "2025-07-02 13:30"
+  }
+]

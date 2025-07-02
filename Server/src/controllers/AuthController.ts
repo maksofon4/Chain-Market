@@ -28,6 +28,30 @@ class AuthController {
       next(error); // пробрасываем в error middleware
     }
   }
+  async removing(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.body;
+
+      // 1. Проверка, переданы ли данные
+      if (!userId) {
+        return next(ApiError.badRequest("User Id is required"));
+      }
+
+      // 2. Проверка, существует ли пользователь
+      const user = await UserRepository.findById(userId);
+      if (!user) {
+        return next(ApiError.badRequest("User does not exist"));
+      }
+
+      const result = await UserRepository.remove(userId);
+      if (!result) {
+        return next(ApiError.internal("Unexpected Error"));
+      }
+      res.json("User has been removed ");
+    } catch (error) {
+      next(error); // пробрасываем в error middleware
+    }
+  }
 
   async login(req: Request, res: Response) {
     // реализация

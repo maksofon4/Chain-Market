@@ -69,4 +69,60 @@ export class ProductRepository {
     await fs.writeFile(filePath, JSON.stringify(updatedProducts, null, 2));
     return true;
   }
+
+  static async findProducts(
+    category?: string,
+    location?: string,
+    condition?: string,
+    tradePossible?: boolean,
+    priceMin?: number,
+    priceMax?: number,
+    name?: string
+  ): Promise<Product[]> {
+    const products = await this.getAllProducts();
+
+    let filtered = products;
+
+    if (category) {
+      filtered = filtered.filter(
+        (p) => p.category.toLowerCase() === String(category).toLowerCase()
+      );
+    }
+
+    if (location) {
+      filtered = filtered.filter((p) =>
+        p.location.toLowerCase().includes(String(location).toLowerCase())
+      );
+    }
+
+    if (condition) {
+      filtered = filtered.filter(
+        (p) => p.condition.toLowerCase() === String(condition).toLowerCase()
+      );
+    }
+
+    if (tradePossible) {
+      filtered = filtered.filter((p) => p.tradePossible === true);
+    }
+
+    if (tradePossible === false) {
+      filtered = filtered.filter((p) => p.tradePossible === false);
+    }
+
+    if (priceMin) {
+      filtered = filtered.filter((p) => p.price >= Number(priceMin));
+    }
+
+    if (priceMax) {
+      filtered = filtered.filter((p) => p.price <= Number(priceMax));
+    }
+
+    if (name) {
+      filtered = filtered.filter((p) =>
+        p.name.toLowerCase().includes(String(name).toLowerCase())
+      );
+    }
+
+    return filtered;
+  }
 }

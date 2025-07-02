@@ -5,6 +5,7 @@ import AuthController from "../controllers/AuthController"; // path adjusted as 
 const router = Router();
 
 router.post("/register", AuthController.registration);
+router.delete("/remove-user", AuthController.removing);
 router.post("/login", AuthController.login);
 router.get("/auth", AuthController.authCheck);
 

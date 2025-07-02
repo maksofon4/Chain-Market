@@ -39,6 +39,19 @@ export class UserRepository {
     return newUser;
   }
 
+  static async remove(userId: string): Promise<boolean> {
+    const targetUser = await this.findById(userId);
+    if (!targetUser) {
+      throw new Error(`User with ID ${userId} not found.`);
+    }
+
+    const users = await this.getAllUsers();
+    const updatedUsers = users.filter((u) => u.id !== userId);
+
+    await fs.writeFile(filePath, JSON.stringify(updatedUsers, null, 2));
+    return true;
+  }
+
   static async findById(id: string): Promise<User | null> {
     const users = await this.getAllUsers();
     return users.find((user) => user.id === id) || null;
