@@ -6,6 +6,6 @@ const router = Router();
 
 router.post("/upload-product", ProductController.uploading);
 router.delete("/remove-product", ProductController.removing);
-router.get("/search/products", ProductController.search);
+router.get("/search/products/:id", ProductController.searchOne);
 
 module.exports = router;

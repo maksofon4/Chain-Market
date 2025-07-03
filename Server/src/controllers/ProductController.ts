@@ -103,6 +103,21 @@ class ProductController {
       next(error); // пробрасываем в error middleware
     }
   }
+
+  async searchOne(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+
+      const result = await ProductRepository.findById(id);
+
+      if (!result) {
+        return next(ApiError.internal("Unexpected Error"));
+      }
+      res.json(result);
+    } catch (error) {
+      next(error); // пробрасываем в error middleware
+    }
+  }
 }
 
 export default new ProductController();
