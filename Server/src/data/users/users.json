@@ -1,8 +1,14 @@
 [
   {
-    "id": "3c8f2c3d-e3a0-48bc-8581-8ef8b4e67370",
+    "userId": "3c8f2c3d-e3a0-48bc-8581-8ef8b4e67370",
     "username": "maksofonchcik",
     "email": "emsail@gmail.com",
     "password": "$2b$10$80xtYlbRTonXsPSIUIc.5OYvPD0fREhh49pm2Ecsxmrw2buK.z2zK"
+  },
+  {
+    "userId": "29346fa8-5637-40c4-aa92-ee4f18e4dad5",
+    "username": "maksofon4",
+    "email": "skamaneg@gmail.com",
+    "password": "$2b$10$mC08iEL15QQKzmMDgVoS7.LIPAo8dLIzaSgrkAJaCy7.GPanj03yS"
   }
 ]

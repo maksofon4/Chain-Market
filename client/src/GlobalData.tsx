@@ -13,7 +13,7 @@ const GlobalData: React.FC<GlobalDataProps> = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sessionInfoReq = await fetch(`/api/session-info`, {
+        const sessionInfoReq = await fetch(`/api/auth`, {
           credentials: "include",
         });
         const sessionInfo = await sessionInfoReq.json();

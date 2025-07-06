@@ -23,7 +23,6 @@ const server = http.createServer(app);
 const io = socketIO(server);
 
 app.use(express.json());
-app.use("/api", router);
 app.use(require("morgan")("combined"));
 app.use(
   cors({
@@ -42,6 +41,7 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "..", "client", "build")));
+app.use("/api", router);
 app.use(errorHandler);
 
 const chatDirectory = path.join(__dirname, "chats");

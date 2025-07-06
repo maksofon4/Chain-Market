@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from "express";
+import { SessionRequest } from "../models/express-session";
 import { UserRepository } from "../repositories/UserRepository";
 import ApiError from "../error/ApiError";
+import bcrypt from "bcrypt";
 
 class AuthController {
   async registration(req: Request, res: Response, next: NextFunction) {
@@ -53,12 +55,43 @@ class AuthController {
     }
   }
 
-  async login(req: Request, res: Response) {
-    // реализация
+  async login(req: SessionRequest, res: Response, next: NextFunction) {
+    const { email, password } = req.body;
+    const user = await UserRepository.findByEmail(email);
+
+    if (!user) {
+      return next(ApiError.badRequest("User does not exist"));
+    }
+
+    const validCredentials = await bcrypt.compare(password, user.password);
+    if (!validCredentials) {
+      return next(ApiError.badRequest("Invalid Credentials"));
+    }
+
+    if (validCredentials) {
+      req.session.userId = user.userId;
+      res.status(200).json({
+        userId: user.userId,
+        username: user.userId,
+        email: user.email,
+      });
+    }
   }
 
-  async authCheck(req: Request, res: Response, next: NextFunction) {
-    res.json("authenticated");
+  async authCheck(req: SessionRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.session.userId) {
+        return next(ApiError.badRequest("Not authenticated"));
+      }
+      const session = req.session;
+      res.status(200).json({
+        userId: session.userId,
+        username: session.userId,
+        email: session.email,
+      });
+    } catch (error) {
+      return next(ApiError.internal("Unexpected Error"));
+    }
   }
 }
 

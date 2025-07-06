@@ -28,7 +28,7 @@ export class UserRepository {
 
     const hashedPassword = await bcrypt.hash(user.password, 10);
     const newUser: User = {
-      id: uuidv4(),
+      userId: uuidv4(),
       username: user.username,
       email: user.email,
       password: hashedPassword,
@@ -46,7 +46,7 @@ export class UserRepository {
     }
 
     const users = await this.getAllUsers();
-    const updatedUsers = users.filter((u) => u.id !== userId);
+    const updatedUsers = users.filter((u) => u.userId !== userId);
 
     await fs.writeFile(filePath, JSON.stringify(updatedUsers, null, 2));
     return true;
@@ -54,6 +54,6 @@ export class UserRepository {
 
   static async findById(id: string): Promise<User | null> {
     const users = await this.getAllUsers();
-    return users.find((user) => user.id === id) || null;
+    return users.find((user) => user.userId === id) || null;
   }
 }
