@@ -118,6 +118,18 @@ class ProductController {
       next(error); // пробрасываем в error middleware
     }
   }
+  async getRecentProducts(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await ProductRepository.getRecentProducts(10);
+
+      if (!result) {
+        return next(ApiError.internal("Unexpected Error"));
+      }
+      res.json(result);
+    } catch (error) {
+      next(error); // пробрасываем в error middleware
+    }
+  }
 }
 
 export default new ProductController();

@@ -11,6 +11,13 @@ export class ProductRepository {
     return JSON.parse(data);
   }
 
+  static async getRecentProducts(quantity: number): Promise<Product[]> {
+    const products = await this.getAllProducts();
+    const newProducts = products.slice(-quantity);
+
+    return newProducts;
+  }
+
   static async findById(id: string): Promise<Product | null> {
     const products = await this.getAllProducts();
 
