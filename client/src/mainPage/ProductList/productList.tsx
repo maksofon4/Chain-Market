@@ -1,33 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { SessionInfo } from "models/express-session";
+import { Product } from "models/product";
 import { ProductModal } from "Functions/productInfo";
 import "./productList.css";
-
-interface Product {
-  productId: string;
-  userId: string;
-  name: string;
-  category: string;
-  description: string;
-  location: string;
-  price: string;
-  condition: string;
-  tradePossible: boolean;
-  contactDetails: {
-    email: string;
-    phoneNumber: string;
-  };
-  images: string[];
-  formattedDateTime: string;
-}
-interface SessionInfo {
-  userId: string;
-  username: string;
-  email: string;
-  password: string;
-  profilePhoto: string;
-  pinnedChats: string[];
-  selectedProducts: string[];
-}
+import { SessionContext } from "GlobalData";
 
 interface userInfo {
   profilePhoto: string;
@@ -36,10 +12,9 @@ interface userInfo {
 }
 
 const ProductList = () => {
+  const sessionInfo: SessionInfo = useContext(SessionContext);
   const [products, setProducts] = useState<Product[]>([]);
-  const [sessionInfo, setSessionInfo] = useState<SessionInfo | undefined>(
-    undefined
-  );
+
   const [selectedProducts, setSelectedProducts] = useState<string[] | null>(
     null
   );
@@ -50,16 +25,15 @@ const ProductList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sessionRes = await fetch(`/api/session-info`);
-        const sessionData = await sessionRes.json();
-        const usersRes = await fetch(`/api/users`);
-        const usersInfo = await usersRes.json();
-        const productRes = await fetch(`/api/New-ads`);
+        const sessionData = sessionInfo;
+        // const usersRes = await fetch(`/api/users`);
+        // const usersInfo = await usersRes.json();
+        const productRes = await fetch(`/api/recent-products`);
         if (!productRes.ok) throw new Error("Failed to fetch product data");
-        const { products } = await productRes.json();
-
+        const products = await productRes.json();
+        console.log(products);
         // Set session info and directly use sessionData to set selected products
-        setSessionInfo(sessionData);
+
         setSelectedProducts(sessionData.selectedProducts); // Now using sessionData directly
         setUsersInfo(usersInfo);
 
