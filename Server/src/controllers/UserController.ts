@@ -105,6 +105,65 @@ class AuthController {
       return next(ApiError.internal("Unexpected Error"));
     }
   }
+
+  async updateProfilePhoto(req: SessionRequest, res: Response, next: NextFunction) {
+    try {
+      if (!req.session.userId) {
+        return next(ApiError.badRequest("Not authenticated"));
+      }
+      const userData = await UserRepository.findById(req.session.userId);
+      if (!userData) {
+        return next(ApiError.badRequest("User Data is not available"));
+      }
+     
+      res.status(200).json({
+        userId: userData.userId,
+        username: userData.username,
+        email: userData.email,
+        profilePhoto: profilePhoto,
+        pinnedChats: userData.pinnedChats,
+        selectedProducts: userData.selectedProducts,
+      });
+    } catch (error) {
+      return next(ApiError.internal("Unexpected Error"));
+    }
+  }
+
+   // Update profile photo
+  app.post(
+    "/update-profile-photo",
+    upload.single("profileImg"),
+    async (req, res) => {
+      const { userId, currentpassword, profileImg } = req.body;
+      const users = readUsers();
+      const user = users.find((u) => u.userId === userId);
+
+      if (!user) return res.status(404).json({ message: "User not found." });
+
+      if (currentpassword) {
+        const isMatch = await bcrypt.compare(currentpassword, user.password);
+
+        if (!isMatch) {
+          return res
+            .status(400)
+            .json({ message: "Account password is incorrect." });
+        }
+      }
+
+      // Move file to permanent location
+      const newPath = path.join(
+        __dirname,
+        "public",
+        "uploads",
+        req.file.filename
+      );
+      fs.renameSync(req.file.path, newPath);
+      user.profilePhoto = `/uploads/${req.file.filename}`;
+
+      fs.writeFileSync(usersFilePath, JSON.stringify(users, null, 2));
+      res.json({ message: "Profile photo updated successfully." });
+    }
+  );
 }
 
 export default new AuthController();
