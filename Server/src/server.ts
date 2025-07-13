@@ -31,7 +31,7 @@ app.use(
   })
 );
 
-app.use(express.static(path.join(__dirname, "public")));
+app.use("/imgs", express.static(path.join(__dirname, "../data/default/imgs")));
 
 app.use(
   "/uploads",

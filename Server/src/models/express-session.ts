@@ -8,3 +8,4 @@ export interface SessionRequest extends Request {
     email?: string;
   };
 }
+export interface SessionInfo {}

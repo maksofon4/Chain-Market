@@ -1,42 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { userProfilePhoto, userName } from "./usersInfo";
+import { ProductModalProps } from "models/product";
 import { useNavigate } from "react-router-dom";
 import "./productInfo.css";
-
-interface Product {
-  productId: string;
-  userId: string;
-  name: string;
-  category: string;
-  description: string;
-  location: string;
-  price: string; // If it's always a string, otherwise use `number`
-  condition: string;
-  tradePossible: boolean; // Consider using `boolean` if possible
-  contactDetails: {
-    email: string;
-    phoneNumber: string;
-  };
-  images: string[];
-  formattedDateTime: string;
-}
-
-interface ProductModalProps {
-  uploadedImgs: boolean;
-  allUsersData: any;
-  sessionInfo?: SessionInfo;
-  product: Product;
-  onClose: () => void;
-}
-
-interface SessionInfo {
-  userId: string;
-  username: string;
-  email: string;
-  profilePhoto: string;
-  pinnedChats: string[];
-  selectedProducts: string[];
-}
 
 export const ProductModal: React.FC<ProductModalProps> = ({
   uploadedImgs,
@@ -46,7 +12,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   onClose,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  console.log(product);
+
   const navigate = useNavigate();
 
   const navigateUserToChat = (userId, product) => {

@@ -30,7 +30,6 @@ const AuthForm: React.FC<{ mode: "login" | "register" }> = ({ mode }) => {
       });
 
       if (response.ok) {
-        const result = await response.json();
         if (mode === "register") navigate("/login");
         if (mode === "login") {
           navigate("/");

@@ -3,7 +3,7 @@ import { productsDir } from "../config/env";
 import { Product } from "../models/Product";
 import { v4 as uuidv4 } from "uuid";
 
-const filePath = productsDir;
+const filePath = `../${productsDir}`;
 export class ProductRepository {
   static async getAllProducts(): Promise<Product[]> {
     const data = await fs.readFile(filePath, "utf-8");

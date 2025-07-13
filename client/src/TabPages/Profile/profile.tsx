@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import ImageUploader from "Functions/cropImage";
 import "./profile.css";
+import { SessionContext } from "GlobalData";
 
 interface SessionInfo {
   userId: string;
@@ -17,6 +18,7 @@ interface croppedData {
 }
 
 const ProfileSettings = () => {
+  const sessionInfo = useContext(SessionContext);
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [visiblePasswords, setVisiblePasswords] = useState<number[]>([]);
   const [email, setEmail] = useState<string | undefined>(undefined);
@@ -25,24 +27,7 @@ const ProfileSettings = () => {
   );
   const [username, setUsername] = useState<string | undefined>(undefined);
   const [newPassword, setNewPassword] = useState<string | undefined>(undefined);
-  const [sessionInfo, setSessionInfo] = useState<SessionInfo | undefined>(
-    undefined
-  );
   const [profileImage, setProfileImage] = useState<croppedData | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const sessionRes = await fetch(`/api/session-info`);
-        const sessionData = await sessionRes.json();
-        setSessionInfo(sessionData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   const toggleDropdown = (id: number | null) => {
     setOpenDropdown(openDropdown === id ? null : id);

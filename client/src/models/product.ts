@@ -1,3 +1,5 @@
+import { SessionInfo } from "./express-session";
+
 export interface Product {
   productId: string;
   userId: string;
@@ -14,4 +16,12 @@ export interface Product {
   };
   images: string[];
   formattedDateTime: string;
+}
+
+export interface ProductModalProps {
+  uploadedImgs: boolean;
+  allUsersData: any;
+  sessionInfo?: SessionInfo;
+  product: Product;
+  onClose: () => void;
 }
