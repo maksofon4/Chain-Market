@@ -1,6 +1,5 @@
 const express = require("express");
 const http = require("http");
-const session = require("express-session");
 import { Socket } from "socket.io";
 import dotenv from "dotenv";
 const socketIO = require("socket.io");

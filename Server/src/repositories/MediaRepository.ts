@@ -1,31 +1,21 @@
-// import path from "path";
-// import { promises as fs } from "fs";
-// import multer, { StorageEngine } from "multer";
-// import { v4 as uuidv4 } from "uuid";
-// import { profilePhotosDir } from "../config/env"; // пример: 'uploads/profiles'
+// src/middleware/uploadMiddleware.ts
+import multer, { StorageEngine } from "multer";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
+import { profilePhotosDir } from "../config/env"; // e.g., 'uploads/profiles'
 
-// // Абсолютный путь к директории сохранения
-// const filePath = path.join(__dirname, "..", "..", profilePhotosDir);
+// Full absolute path to upload folder
+const destination = path.join(__dirname, "..", "..", profilePhotosDir);
 
-// // Multer Storage
-// const storage: StorageEngine = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, filePath); // сохранить файл в нужную папку
-//   },
-//   filename: (req, file, cb) => {
-//     const uniqueName = uuidv4() + path.extname(file.originalname);
-//     cb(null, uniqueName);
-//   },
-// });
+const storage: StorageEngine = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, destination);
+  },
 
-// export const upload = multer({ storage });
+  filename: (req, file, cb) => {
+    const uniqueName = uuidv4() + path.extname(file.originalname);
+    cb(null, uniqueName);
+  },
+});
 
-// // Репозиторий
-// export class MediaRepository {
-
-//   static async uploadPriflePhoto(): Promise<string> {
-//    upload.single("photo");
-//   }
-// }
-
-не работает multer как функция. Это MiddleWare
+export const upload = multer({ storage });

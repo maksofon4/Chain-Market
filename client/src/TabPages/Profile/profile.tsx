@@ -3,15 +3,6 @@ import ImageUploader from "Functions/cropImage";
 import "./profile.css";
 import { SessionContext } from "GlobalData";
 
-interface SessionInfo {
-  userId: string;
-  username: string;
-  email: string;
-  profilePhoto: string;
-  pinnedChats: string[];
-  selectedProducts: string[];
-}
-
 interface croppedData {
   croppedDataUrl: string;
   croppedImgFile: File;
@@ -52,6 +43,7 @@ const ProfileSettings = () => {
       currentpassword: accountPassword,
       password: newPassword,
     };
+
     if (infoType !== "profile-photo" && accountPassword) {
       console.log(data);
       try {
@@ -76,13 +68,9 @@ const ProfileSettings = () => {
         return;
 
       const formData = new FormData();
-      formData.append("userId", sessionInfo.userId);
-      formData.append(
-        "profileImg",
-        profileImage.croppedImgFile,
-        sessionInfo.userId
-      );
-      formData.append("currentpassword", accountPassword);
+      console.log(profileImage.croppedImgFile);
+      formData.append("profilePhoto", profileImage.croppedImgFile);
+      formData.append("currentPassword", accountPassword);
       try {
         const response = await fetch("/api/update-profile-photo", {
           method: "POST",

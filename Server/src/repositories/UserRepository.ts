@@ -56,4 +56,20 @@ export class UserRepository {
     const users = await this.getAllUsers();
     return users.find((user) => user.userId === id) || null;
   }
+
+  static async saveUsers(users: User[]): Promise<void> {
+    await fs.writeFile(filePath, JSON.stringify(users, null, 2), "utf-8");
+  }
+
+  static async saveUser(updatedUser: User): Promise<User | null> {
+    const users = await this.getAllUsers();
+    const index = users.findIndex((u) => u.userId === updatedUser.userId);
+
+    if (index === -1) return null;
+
+    users[index] = updatedUser;
+    await this.saveUsers(users);
+
+    return updatedUser;
+  }
 }
