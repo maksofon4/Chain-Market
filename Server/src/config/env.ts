@@ -8,9 +8,3 @@ export const usersDir = `${dataDir}/users/users.json`;
 export const productsDir = `${dataDir}/products/products.json`;
 export const defaultImagesDir = `${dataDir}/default/imgs`;
 export const profilePhotosDir = `${dataDir}/profilePhotos`;
-
-function showpaths() {
-  console.log(`usersDir ${usersDir}`);
-}
-
-showpaths();

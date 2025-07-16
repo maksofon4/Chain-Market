@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { SessionRequest } from "../models/express-session";
 import { UserRepository } from "../repositories/UserRepository";
-import { upload } from "../repositories/MediaRepository";
 import ApiError from "../error/ApiError";
 import bcrypt from "bcrypt";
 
@@ -119,7 +118,7 @@ class AuthController {
 
       const profilePhoto =
         user.profilePhoto && user.profilePhoto !== ""
-          ? user.profilePhoto
+          ? `http://localhost:3001/profilePhotos/${user.profilePhoto}`
           : "http://localhost:3001/imgs/userImgDefault.png";
 
       res.status(200).json({
@@ -143,7 +142,6 @@ class AuthController {
     next: NextFunction
   ) {
     try {
-      console.log("req.body:", req.body);
       const password = req.body.currentPassword;
 
       // 1. Проверка авторизации
@@ -171,7 +169,7 @@ class AuthController {
       user.profilePhoto = `${req.file.filename}`;
       const updatedUser = await UserRepository.saveUser(user);
 
-      res.status(200).json(updatedUser);
+      res.status(200).json({ message: "success" });
     } catch (error) {
       return next(ApiError.internal("Unexpected Error"));
     }
