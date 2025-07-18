@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import ImageUploader from "Functions/cropImage";
 import "./profile.css";
 import { SessionContext } from "GlobalData";
@@ -9,7 +9,7 @@ interface croppedData {
 }
 
 const ProfileSettings = () => {
-  const sessionInfo = useContext(SessionContext);
+  const { user, refreshUser } = useContext(SessionContext);
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [visiblePasswords, setVisiblePasswords] = useState<number[]>([]);
   const [email, setEmail] = useState<string | undefined>(undefined);
@@ -56,6 +56,7 @@ const ProfileSettings = () => {
         if (response.ok) {
           const result = await response.json();
           alert(result.message);
+          refreshUser();
         } else {
           const error = await response.json();
           alert(error.message || "An error occurred.");
@@ -64,8 +65,7 @@ const ProfileSettings = () => {
         console.error("Error:", error);
       }
     } else {
-      if (!sessionInfo || !profileImage?.croppedImgFile || !accountPassword)
-        return;
+      if (!user || !profileImage?.croppedImgFile || !accountPassword) return;
 
       const formData = new FormData();
       console.log(profileImage.croppedImgFile);
@@ -80,6 +80,7 @@ const ProfileSettings = () => {
         if (response.ok) {
           const result = await response.json();
           alert(result.message);
+          refreshUser();
         } else {
           const error = await response.json();
           alert(error.message || "An error occurred.");
@@ -329,7 +330,7 @@ const ProfileSettings = () => {
                   <label htmlFor="new-photo-input">
                     <div className="imgWrapper">
                       <p id="change-photo-word">Change</p>
-                      <img src={sessionInfo?.profilePhoto} alt="currentImg" />
+                      <img src={user?.profilePhoto} alt="currentImg" />
                     </div>
                   </label>
                   <ImageUploader

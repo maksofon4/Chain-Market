@@ -10,7 +10,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const sessionInfo = useContext(SessionContext);
   console.log(sessionInfo);
-  if (!sessionInfo.userId) {
+  if (!sessionInfo.user.userId) {
     return <Navigate to="/login" replace />;
   }
   return (

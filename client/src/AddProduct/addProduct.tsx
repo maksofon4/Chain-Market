@@ -23,7 +23,7 @@ const AddProduct = () => {
     images: string[];
     formattedDateTime: string;
   }
-
+  // Убедиться что контекст передает верную информацию и ее формат
   const sessionInfo = useContext(SessionContext);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [nameSymbols, setNameSymbols] = useState<number>();

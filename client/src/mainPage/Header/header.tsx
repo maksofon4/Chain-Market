@@ -19,8 +19,8 @@ const Header = () => {
   const [isAuth, setAuth] = useState<boolean | null>(null);
 
   useEffect(() => {
-    setUser(sessionInfo);
-    setAuth(sessionInfo.userId !== null);
+    setUser(sessionInfo.user);
+    setAuth(sessionInfo.user.userId !== null);
   }, [sessionInfo]);
 
   const handleLogout = async () => {

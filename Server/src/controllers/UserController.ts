@@ -133,47 +133,6 @@ class AuthController {
       return next(ApiError.internal("Unexpected error"));
     }
   }
-
-  // Update profile photo
-
-  async updateProfilePhoto(
-    req: SessionRequest,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const password = req.body.currentPassword;
-
-      // 1. Проверка авторизации
-      if (!req.session.userId) {
-        return next(ApiError.badRequest("Not authenticated"));
-      }
-
-      // 2. Найти пользователя
-      const user = await UserRepository.findById(req.session.userId);
-      if (!user) {
-        return next(ApiError.badRequest("User not found"));
-      }
-      const validCredentials = await bcrypt.compare(password, user.password);
-
-      if (!validCredentials) {
-        return next(ApiError.badRequest("Invalid Credentials"));
-      }
-
-      // 3. Проверка файла
-      if (!req.file) {
-        return next(ApiError.badRequest("No file uploaded"));
-      }
-
-      // 4. Обновить путь к фото
-      user.profilePhoto = `${req.file.filename}`;
-      const updatedUser = await UserRepository.saveUser(user);
-
-      res.status(200).json({ message: "success" });
-    } catch (error) {
-      return next(ApiError.internal("Unexpected Error"));
-    }
-  }
 }
 
 export default new AuthController();
