@@ -124,11 +124,12 @@ const AddProduct = () => {
     };
 
     const formData = new FormData();
+    formData.append("type", "product");
     formData.append("name", productName!); // Correct value for name
     formData.append("category", productCategory!); // Correct value for category
     formData.append("description", descriptionText!); // Correct value for description
     formData.append("location", location!); // Correct value for location
-    formData.append("priceUSD", price!); // Correct value for price
+    formData.append("price", price!); // Correct value for price
     formData.append("condition", condition!); // Correct value for condition
     formData.append("tradePossible", JSON.stringify(tradePossibleCondition)); // Correct value for tradePossible
     formData.append("userContactDetails", JSON.stringify(contactDetails)); // Correct contactDetails

@@ -63,7 +63,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           <img
             src={
               uploadedImgs
-                ? `/uploads/${product.images[currentImageIndex]}`
+                ? `${product.images[currentImageIndex]}`
                 : `${product.images[currentImageIndex]}`
             }
             alt="Product"

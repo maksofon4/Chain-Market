@@ -20,7 +20,6 @@ const ProductList = () => {
   );
   const [usersInfo, setUsersInfo] = useState<userInfo[] | null>(null);
   const [openedProduct, setOpenedProduct] = useState<Product | null>(null);
-  const imageBaseUrl = "/uploads/";
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,6 +30,7 @@ const ProductList = () => {
         const productRes = await fetch(`/api/recent-products`);
         if (!productRes.ok) throw new Error("Failed to fetch product data");
         const products = await productRes.json();
+        console.log(products);
         const userIds = products.map((product) => product.userId);
         const userRes = await fetch("/api/users-public-data", {
           method: "POST",
@@ -118,10 +118,7 @@ const ProductList = () => {
             key={product.productId}
             className={`product`}
           >
-            <img
-              src={`${imageBaseUrl}${product.images?.[0]}`}
-              alt={product.name}
-            />
+            <img src={`${product.images?.[0]}`} alt={product.name} />
             <div className="product-info">
               <p className="name">{product.name}</p>
               <ul>

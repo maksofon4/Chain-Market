@@ -45,7 +45,6 @@ const ProfileSettings = () => {
     };
 
     if (infoType !== "profile-photo" && accountPassword) {
-      console.log(data);
       try {
         const response = await fetch("/api/update-profile", {
           method: "POST",
@@ -69,6 +68,7 @@ const ProfileSettings = () => {
 
       const formData = new FormData();
       console.log(profileImage.croppedImgFile);
+      formData.append("type", "profilePhoto");
       formData.append("profilePhoto", profileImage.croppedImgFile);
       formData.append("currentPassword", accountPassword);
       try {

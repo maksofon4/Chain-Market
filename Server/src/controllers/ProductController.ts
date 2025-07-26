@@ -14,10 +14,14 @@ class ProductController {
         price,
         condition,
         tradePossible,
-        contactDetails: { email, phoneNumber },
-        images,
+        email,
+        phoneNumber,
         formattedDateTime,
       } = req.body;
+
+      const files = req.files as Express.Multer.File[];
+
+      const imageFilenames = files?.map((file) => file.filename) || [];
 
       const newProduct = {
         userId,
@@ -29,9 +33,10 @@ class ProductController {
         condition,
         tradePossible,
         contactDetails: { email, phoneNumber },
-        images,
+        images: imageFilenames,
         formattedDateTime,
       };
+
       const result = await ProductRepository.create(newProduct);
       if (!result) {
         return next(ApiError.internal("Unexpected Error"));

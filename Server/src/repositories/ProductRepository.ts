@@ -13,7 +13,17 @@ export class ProductRepository {
 
   static async getRecentProducts(quantity: number): Promise<Product[]> {
     const products = await this.getAllProducts();
-    const newProducts = products.slice(-quantity);
+    const slicedProducts = products.slice(-quantity);
+    const newProducts = slicedProducts.map((product) => {
+      const validLinksImages = product.images.map(
+        (image) => `http://localhost:3001/productPhotos/${image}`
+      );
+
+      return {
+        ...product,
+        images: validLinksImages,
+      };
+    });
 
     return newProducts;
   }

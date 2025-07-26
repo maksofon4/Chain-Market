@@ -36,6 +36,10 @@ app.use(
   express.static(path.join(__dirname, "../data/profilePhotos"))
 );
 app.use(
+  "/productPhotos",
+  express.static(path.join(__dirname, "../data/productPhotos"))
+);
+app.use(
   "/uploads",
   express.static(path.join(__dirname, "dataFolder", "uploads"))
 );
