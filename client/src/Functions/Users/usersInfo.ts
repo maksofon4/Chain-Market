@@ -6,7 +6,6 @@ interface user {
 
 export const userProfilePhoto = (data: user[], userId: string) => {
   const user = data.find((user) => user.userId === userId);
-
   return user ? user.profilePhoto : null;
 };
 

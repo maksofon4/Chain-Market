@@ -1,29 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { SessionContext } from "GlobalData";
 import ProductImageUploader from "Functions/ProductImageUploader";
-import { ProductModal } from "Functions/productInfo";
+import { ProductModal } from "Functions/ProductModal/ProductModal";
 import { categories, cities } from "clientSideInfo";
 import "./addProudct.css";
+import { Product } from "models/product";
+import { validateProduct } from "./validateProduct";
+import Alert from "./alert";
 
 const AddProduct = () => {
-  interface Product {
-    productId: string;
-    userId: string;
-    name: string;
-    category: string;
-    description: string;
-    location: string;
-    priceUSD: string;
-    condition: string;
-    tradePossible: boolean;
-    contactDetails: {
-      email: string;
-      phoneNumber: string;
-    };
-    images: string[];
-    formattedDateTime: string;
-  }
-  // Убедиться что контекст передает верную информацию и ее формат
+  const [status, setStatus] = useState<string | null>(null);
   const sessionInfo = useContext(SessionContext);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [nameSymbols, setNameSymbols] = useState<number>();
@@ -52,11 +38,6 @@ const AddProduct = () => {
   const [images, setImages] = useState<string[]>([]);
   const [time, setTime] = useState<string>("");
 
-  const [customActiveAlert, setCustomActiveAlert] = useState<
-    string | undefined
-  >();
-  const [alertText, setAlertText] = useState<string | undefined>();
-
   const handleImageCropped = (croppedImg: string | null, index: number) => {
     setImages((prev) => {
       const newImages = [...prev];
@@ -77,55 +58,44 @@ const AddProduct = () => {
   };
   const userdata = [
     {
-      userId: sessionInfo?.userId,
-      username: sessionInfo?.username,
-      profilePhoto: sessionInfo?.profilePhoto,
+      userId: sessionInfo?.user.userId,
+      username: sessionInfo?.user.username,
+      profilePhoto: sessionInfo?.user.profilePhoto,
     },
   ];
 
-  const validateProduct = () => {
-    const filteredImgs = images.filter((img) => img !== null);
-    const isFilteredImgsValid = filteredImgs.length > 0;
-    const isNameValid = productName && productName.trim().length > 9;
-    const isDescriptionValid =
-      descriptionText && descriptionText?.trim().length > 49;
-    const isLocationValid = location && cities.includes(location.trim());
-    const validatePrice = (price: string) => {
-      if (!price) return false;
-      const normalizedPrice = price.replace(/\s/g, "").trim(); // Remove spaces
-      return /^\d+$/.test(normalizedPrice); // Check if only digits remain
-    };
-
-    const isPhoneNumberValid = (phone: string) => /^\d+$/.test(phone.trim());
-
-    const isContactDetailsValid =
-      email && email.trim().length > 3 && phoneNumber;
-    if (!sessionInfo) return showErrorAlert("network");
-    if (!isNameValid) return showErrorAlert("invalidName");
-    if (!productCategory) return showErrorAlert("invalidCategory");
-    if (!isFilteredImgsValid) return showErrorAlert("invalidImages");
-    if (!isDescriptionValid) return showErrorAlert("invalidDescription");
-    if (!condition) return showErrorAlert("invalidStatus");
-    if (!price || !validatePrice(price)) return showErrorAlert("invalidPrice");
-    if (!isLocationValid) return showErrorAlert("invalidLocation");
-    if (!isContactDetailsValid) return showErrorAlert("invalidContactDetails");
-    if (!isPhoneNumberValid(phoneNumber))
-      return showErrorAlert("invalidPhoneNumber");
-    return true;
+  const productData = {
+    images: images,
+    productName: productName,
+    description: descriptionText,
+    location: location,
+    price: price,
+    contactDetails: {
+      email: email,
+      phoneNumber: phoneNumber,
+    },
+    productCategory: productCategory,
+    condition: condition,
+    sessionInfo: sessionInfo,
   };
 
   const showProductPreview = () => {
-    if (!validateProduct()) return;
+    const vlidateResult = validateProduct(productData);
+
+    if (vlidateResult !== true) {
+      showErrorAlert(vlidateResult);
+      return;
+    }
     updateTime();
     const filteredImgs = images.filter((img) => img !== null);
     const product: Product = {
       productId: "none",
-      userId: sessionInfo?.userId!,
+      userId: sessionInfo?.user.userId!,
       name: productName!,
       category: productCategory!,
       description: descriptionText!,
       location: location!,
-      priceUSD: price!,
+      price: price!,
       condition: condition!,
       tradePossible: tradePossibleCondition!,
       contactDetails: {
@@ -140,7 +110,12 @@ const AddProduct = () => {
   };
 
   const uploadProduct = async () => {
-    validateProduct();
+    const vlidateResult = validateProduct(productData);
+
+    if (vlidateResult !== true) {
+      showErrorAlert(vlidateResult);
+      return;
+    }
     updateTime();
     const filteredImgs = images.filter((img) => img !== null);
     const contactDetails = {
@@ -167,7 +142,7 @@ const AddProduct = () => {
     }
 
     try {
-      const response = await fetch("/api/add-product", {
+      const response = await fetch("/api/upload-product", {
         method: "POST",
         body: formData,
       });
@@ -175,7 +150,7 @@ const AddProduct = () => {
       if (response.ok) {
         showSuccessAlert();
       } else {
-        alert("Failed to upload product.");
+        showErrorAlert("Unexpected");
       }
     } catch (error) {
       console.error("Error uploading product:", error);
@@ -204,60 +179,15 @@ const AddProduct = () => {
   };
 
   const showSuccessAlert = () => {
-    setCustomActiveAlert("success");
+    setStatus("success");
   };
-
   const showErrorAlert = (errorType: string) => {
-    setCustomActiveAlert("error");
-
-    let errorMessage = "";
-
-    switch (errorType) {
-      case "network":
-        errorMessage = "Network error. Please check your connection."; //   userId: sessionInfo?.userId
-        break;
-      case "server":
-        errorMessage = "Server error. Try again later."; //Bad request or server-side issue
-        break;
-      case "invalidName":
-        errorMessage = "Invalid product name. Please check the form."; //   name: productName
-        break;
-      case "invalidCategory":
-        errorMessage =
-          "You haven't specified the product category, perform this action first."; //   category: productCategory
-        break;
-      case "invalidDescription":
-        errorMessage = "The description is in a lack of symbols or empty"; //   description: descriptionText
-        break;
-      case "invalidLocation":
-        errorMessage =
-          "The location field is empty or consists of non-existent city or typo"; //   location: location
-        break;
-      case "invalidPrice":
-        errorMessage = "The price field is empty or consist typo"; //   priceUSD: price
-        break;
-      case "invalidStatus":
-        errorMessage = `The product status: "new or used" has to be specified`; //   condition: condition
-        break;
-      case "invalidContactDetails":
-        errorMessage = `Your contact details have to be specified and will be visible for all users`; //   contactDetails
-        break;
-      case "invalidPhoneNumber":
-        errorMessage = `Your phone number is empty or has a typo`; //   contactDetails
-        break;
-      case "invalidImages":
-        errorMessage = `The product doesn't have images. At least add one.`; //   images: filteredImgs
-        break;
-      default:
-        errorMessage = "An unexpected error occurred.";
-    }
-
-    setAlertText(errorMessage);
-    return false;
+    setStatus(errorType);
   };
 
   return (
     <div className="add-product-parent">
+      <Alert status={status} onClose={() => setStatus(null)} />
       {openedProduct && sessionInfo && (
         <ProductModal
           uploadedImgs={false}
@@ -288,42 +218,6 @@ const AddProduct = () => {
                 </li>
               ))}
             </ul>
-          </div>
-        </div>
-      )}
-
-      {customActiveAlert === "error" && alertText && (
-        <div className="errorAlert">
-          <h1>
-            <svg className="icon icon-warning">
-              <use xlinkHref="/symbol-defs.svg#icon-warning"></use>
-            </svg>
-            Error
-          </h1>
-          <p> {alertText}</p>
-          <div className="wrapper">
-            <button onClick={() => setCustomActiveAlert(undefined)}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-      {customActiveAlert === "success" && (
-        <div className="successMessage">
-          <h1>
-            <svg className="icon icon-checkmark">
-              <use xlinkHref="/symbol-defs.svg#icon-checkmark"></use>
-            </svg>
-            Success
-          </h1>
-          <p>Your product has been uploaded successfully!</p>
-          <div className="wrapper">
-            <button
-              className="successCloseButton"
-              onClick={() => setCustomActiveAlert(undefined)}
-            >
-              Close
-            </button>
           </div>
         </div>
       )}

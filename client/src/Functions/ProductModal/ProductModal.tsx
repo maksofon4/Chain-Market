@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { userProfilePhoto, userName } from "./usersInfo";
+import { userProfilePhoto, userName } from "../Users/usersInfo";
 import { ProductModalProps } from "models/product";
 import { useNavigate } from "react-router-dom";
-import "./productInfo.css";
+import "./ProductModal.css";
 
 export const ProductModal: React.FC<ProductModalProps> = ({
   uploadedImgs,

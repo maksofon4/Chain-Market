@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ProductModal } from "Functions/productInfo";
+import { ProductModal } from "Functions/ProductModal/ProductModal";
 import "./posted.css";
 const PostedList = () => {
   const [products, setProducts] = useState<Product[]>([]);

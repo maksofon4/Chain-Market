@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { userProfilePhoto, userName } from "Functions/usersInfo";
+import { userProfilePhoto, userName } from "Functions/Users/usersInfo.ts";
 import { useNavigate, useLocation } from "react-router-dom";
 import MessagesList from "./chatHistory.tsx";
 import { io, Socket } from "socket.io-client";

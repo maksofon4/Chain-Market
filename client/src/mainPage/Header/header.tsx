@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { SessionContext } from "GlobalData";
 import "./header.css"; // Make sure to add your CSS file for styling
 import logo from "./logo_alt.png";
+import userIcon from "./UserIcon.png";
 
 interface SessionInfo {
   userId: string;
@@ -20,7 +21,8 @@ const Header = () => {
 
   useEffect(() => {
     setUser(sessionInfo.user);
-    setAuth(sessionInfo.user.userId !== null);
+    setAuth(sessionInfo.user.userId !== undefined);
+    console.log(sessionInfo.user.userId);
   }, [sessionInfo]);
 
   const handleLogout = async () => {
@@ -68,40 +70,36 @@ const Header = () => {
             </svg>
             <p id="profile-container-text">My profile</p>
 
-            {isAuth && (
-              <svg id="icon-arrowdown" width="24" height="24">
-                <use xlinkHref="symbol-defs.svg#icon-arrowdown"></use>
-              </svg>
-            )}
+            <svg id="icon-arrowdown" width="24" height="24">
+              <use xlinkHref="symbol-defs.svg#icon-arrowdown"></use>
+            </svg>
           </a>
 
-          {isAuth && user && (
-            <ul className="profile-dropdown">
-              <li id="profile-options-container">
-                <a id="profile-options" href="/profile-options">
-                  <img
-                    className="profile-image"
-                    src={user.profilePhoto}
-                    alt="profile"
-                  />
-                  <p id="profile-name">{user.username}</p>
-                  <p id="profileTextBottom">Your profile</p>
-                </a>
-              </li>
-              <li>
-                <a href="/posted-products">My ads</a>
-              </li>
-              <li>
-                <a href="/selected-products">Selected</a>
-              </li>
-              <li id="profileMessages">
-                <a href="/messages">Messages</a>
-              </li>
-              <li className="exit-btn" onClick={handleLogout}>
-                <a href="/logout">Exit</a>
-              </li>
-            </ul>
-          )}
+          <ul className="profile-dropdown">
+            <li id="profile-options-container">
+              <a id="profile-options" href="/profile-options">
+                <img
+                  className="profile-image"
+                  src={isAuth ? user.profilePhoto : userIcon}
+                  alt="profile"
+                />
+                <p id="profile-name">{isAuth ? user.username : "User Name"}</p>
+                <p id="profileTextBottom">Your profile</p>
+              </a>
+            </li>
+            <li>
+              <a href="/posted-products">My ads</a>
+            </li>
+            <li>
+              <a href="/selected-products">Selected</a>
+            </li>
+            <li id="profileMessages">
+              <a href="/messages">Messages</a>
+            </li>
+            <li className="exit-btn" onClick={handleLogout}>
+              <a href="/logout">Exit</a>
+            </li>
+          </ul>
         </li>
       </ul>
 

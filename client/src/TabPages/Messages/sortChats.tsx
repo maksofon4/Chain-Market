@@ -1,5 +1,5 @@
 import React from "react";
-import { userProfilePhoto, userName } from "Functions/usersInfo";
+import { userProfilePhoto, userName } from "Functions/Users/usersInfo";
 
 // Define Message type
 interface Message {

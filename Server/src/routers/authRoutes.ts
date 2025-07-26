@@ -1,8 +1,9 @@
 import { Router } from "express";
 import { upload } from "../repositories/MediaRepository";
 
-import AuthController from "../controllers/UserController"; // path adjusted as needed
+import AuthController from "../controllers/AuthController"; // path adjusted as needed
 import UserProfileController from "../controllers/UserProfileController";
+import UsersController from "../controllers/UsersController";
 
 const router = Router();
 
@@ -21,5 +22,6 @@ router.post(
   upload.single("profilePhoto"),
   UserProfileController.updateProfilePhoto
 );
+router.post("/users-public-data", UsersController.sendUsersPublicData);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { SessionInfo } from "models/express-session";
 import { Product } from "models/product";
-import { ProductModal } from "Functions/productInfo";
+import { ProductModal } from "Functions/ProductModal/ProductModal";
 import "./productList.css";
 import { SessionContext } from "GlobalData";
 
@@ -31,11 +31,18 @@ const ProductList = () => {
         const productRes = await fetch(`/api/recent-products`);
         if (!productRes.ok) throw new Error("Failed to fetch product data");
         const products = await productRes.json();
-        console.log(products);
+        const userIds = products.map((product) => product.userId);
+        const userRes = await fetch("/api/users-public-data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ids: userIds }),
+        });
+        const users = await userRes.json();
+        console.log(users);
         // Set session info and directly use sessionData to set selected products
 
         setSelectedProducts(sessionData.selectedProducts); // Now using sessionData directly
-        setUsersInfo(usersInfo);
+        setUsersInfo(users);
 
         setProducts(products);
       } catch (error) {
