@@ -13,7 +13,6 @@ class AuthController {
         return next(ApiError.badRequest("Email and password are required"));
       }
 
-      // 2. Проверка, существует ли пользователь
       const candidate = await UserRepository.findByEmail(email);
 
       if (candidate) {
@@ -27,30 +26,6 @@ class AuthController {
         res.json(result);
       }
       res.json("User Registered Successfully");
-    } catch (error) {
-      next(error); // пробрасываем в error middleware
-    }
-  }
-  async removing(req: Request, res: Response, next: NextFunction) {
-    try {
-      const { userId } = req.body;
-
-      // 1. Проверка, переданы ли данные
-      if (!userId) {
-        return next(ApiError.badRequest("User Id is required"));
-      }
-
-      // 2. Проверка, существует ли пользователь
-      const user = await UserRepository.findById(userId);
-      if (!user) {
-        return next(ApiError.badRequest("User does not exist"));
-      }
-
-      const result = await UserRepository.remove(userId);
-      if (!result) {
-        return next(ApiError.internal("Unexpected Error"));
-      }
-      res.json("User has been removed ");
     } catch (error) {
       next(error); // пробрасываем в error middleware
     }
@@ -70,14 +45,14 @@ class AuthController {
     }
 
     if (validCredentials) {
-      req.session.userId = user.userId;
+      req.session.userId = user.user_id;
       res.status(200).json({
-        userId: user.userId,
-        username: user.username,
+        userId: user.user_id,
+        username: user.user_name,
         email: user.email,
-        profilePhoto: user.profilePhoto,
-        pinnedChats: user.pinnedChats,
-        selectedProducts: user.selectedProducts,
+        profilePhoto: user.profile_photo,
+        pinnedChats: user.pinned_chats,
+        selectedProducts: user.selected_products,
       });
     }
   }
@@ -89,19 +64,18 @@ class AuthController {
       if (!userId) {
         return next(ApiError.badRequest("Not authenticated"));
       }
-
-      const userData = await UserRepository.findById(userId);
+      const userData = await UserRepository.findOneById(userId);
 
       if (!userData) {
         return next(ApiError.badRequest("User not found"));
       }
 
-      req.session.userId = userData.userId;
-      req.session.username = userData.username;
+      req.session.userId = userData.user_id;
+      req.session.username = userData.user_name;
       req.session.email = userData.email;
-      req.session.profilePhoto = userData.profilePhoto;
-      req.session.pinnedChats = userData.pinnedChats;
-      req.session.selectedProducts = userData.selectedProducts;
+      req.session.profilePhoto = userData.profile_photo;
+      req.session.pinnedChats = userData.pinned_chats;
+      req.session.selectedProducts = userData.selected_products;
       next();
     } catch (error) {
       return next(ApiError.internal("Unexpected Error"));
@@ -128,6 +102,17 @@ class AuthController {
         profilePhoto,
         pinnedChats: user.pinnedChats,
         selectedProducts: user.selectedProducts,
+      });
+    } catch (error) {
+      return next(ApiError.internal("Unexpected error"));
+    }
+  }
+
+  async logOut(req: SessionRequest, res: Response, next: NextFunction) {
+    try {
+      req.session.destroy(() => {
+        res.clearCookie("connect.sid");
+        res.send("Logged out successfully");
       });
     } catch (error) {
       return next(ApiError.internal("Unexpected error"));

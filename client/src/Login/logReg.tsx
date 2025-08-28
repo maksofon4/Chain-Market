@@ -48,10 +48,16 @@ const AuthForm: React.FC<{ mode: "login" | "register" }> = ({ mode }) => {
     <div className="authentication-container">
       <div className="divider1">
         <div className="mode-name">
-          <a href="/register" className={mode === "register" ? "active" : ""}>
+          <a
+            onClick={() => navigate("/register")}
+            className={mode === "register" ? "active" : ""}
+          >
             Register
-          </a>{" "}
-          <a href="/login" className={mode === "login" ? "active" : ""}>
+          </a>
+          <a
+            onClick={() => navigate("/login")}
+            className={mode === "login" ? "active" : ""}
+          >
             Log in
           </a>
         </div>

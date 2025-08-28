@@ -37,6 +37,8 @@ class ProductController {
         formattedDateTime,
       };
 
+      console.log(newProduct);
+
       const result = await ProductRepository.create(newProduct);
       if (!result) {
         return next(ApiError.internal("Unexpected Error"));

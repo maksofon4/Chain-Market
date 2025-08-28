@@ -30,7 +30,6 @@ const ProductList = () => {
         const productRes = await fetch(`/api/recent-products`);
         if (!productRes.ok) throw new Error("Failed to fetch product data");
         const products = await productRes.json();
-        console.log(products);
         const userIds = products.map((product) => product.userId);
         const userRes = await fetch("/api/users-public-data", {
           method: "POST",
@@ -100,7 +99,7 @@ const ProductList = () => {
   };
 
   return (
-    <div className="product-list-container">
+    <div className="product-list-container pb-3">
       {openedProduct && (
         <ProductModal
           uploadedImgs={true}
@@ -111,35 +110,37 @@ const ProductList = () => {
         />
       )}
       <h1>New Ads</h1>
-      <div className="product-list">
+      <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3  gx-1 gy-1">
         {products.map((product) => (
-          <div
-            onClick={() => setOpenedProduct(product)}
-            key={product.productId}
-            className={`product`}
-          >
-            <img src={`${product.images?.[0]}`} alt={product.name} />
-            <div className="product-info">
-              <p className="name">{product.name}</p>
-              <ul>
-                <li className="product-location">{product.location}</li>
-                <li className="release-date">{product.formattedDateTime}</li>
-              </ul>
-              <p className="price">{product.price}$</p>
-            </div>
-
-            <button
-              onClick={(e) => addRemoveFavorites(e, product.productId)}
-              className={
-                isFavorite(product.productId)
-                  ? "selectedButton Added"
-                  : "selectedButton"
-              }
+          <div className="col">
+            <div
+              onClick={() => setOpenedProduct(product)}
+              key={product.productId}
+              className={`product w-100`}
             >
-              <svg className="icon icon-envelop" viewBox="0 0 35 32">
-                <use xlinkHref="symbol-defs.svg#icon-heart"></use>
-              </svg>
-            </button>
+              <img src={`${product.images?.[0]}`} alt={product.name} />
+              <div className="product-info">
+                <p className="name">{product.name}</p>
+                <ul className="list-unstyled">
+                  <li className="product-location">{product.location}</li>
+                  <li className="release-date">{product.formattedDateTime}</li>
+                </ul>
+                <p className="price">{product.price}$</p>
+              </div>
+
+              <button
+                onClick={(e) => addRemoveFavorites(e, product.productId)}
+                className={
+                  isFavorite(product.productId)
+                    ? "selectedButton Added"
+                    : "selectedButton"
+                }
+              >
+                <svg className="icon icon-envelop" viewBox="0 0 35 32">
+                  <use xlinkHref="symbol-defs.svg#icon-heart"></use>
+                </svg>
+              </button>
+            </div>
           </div>
         ))}
       </div>

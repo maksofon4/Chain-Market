@@ -1,75 +1,82 @@
-import { promises as fs } from "fs";
 import { usersDir, defaultImagesDir } from "../config/env";
-import { User } from "../models/User";
-import { v4 as uuidv4 } from "uuid";
+import { User, UserPublic } from "../models/User";
 import bcrypt from "bcrypt";
+import postgreSql from "../../data/dataBase/postgre";
 
 const filePath = `../${usersDir}`;
 export class UserRepository {
-  static async getAllUsers(): Promise<User[]> {
-    const data = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(data);
-  }
-
   static async findByEmail(email: string): Promise<User | null> {
-    const users = await this.getAllUsers();
-    return users.find((user) => user.email === email) || null;
+    const result = await postgreSql.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
+
+    return result.rows[0] || null; // возвращаем пользователя или null
   }
 
   static async create(user: {
     username: string;
     email: string;
     password: string;
-  }): Promise<User> {
-    const users = await this.getAllUsers();
-
+  }): Promise<boolean> {
     const hashedPassword = await bcrypt.hash(user.password, 10);
-    const newUser: User = {
-      userId: uuidv4(),
-      username: user.username,
-      email: user.email,
-      password: hashedPassword,
-      profilePhoto: `${defaultImagesDir}/userImgDefault.png`,
-      pinnedChats: [],
-      selectedProducts: [],
-    };
+    const profilePhoto = null;
 
-    users.push(newUser);
-    await fs.writeFile(filePath, JSON.stringify(users, null, 2));
-    return newUser;
-  }
-
-  static async remove(userId: string): Promise<boolean> {
-    const targetUser = await this.findById(userId);
-    if (!targetUser) {
-      throw new Error(`User with ID ${userId} not found.`);
-    }
-
-    const users = await this.getAllUsers();
-    const updatedUsers = users.filter((u) => u.userId !== userId);
-
-    await fs.writeFile(filePath, JSON.stringify(updatedUsers, null, 2));
+    await postgreSql.query(
+      `INSERT INTO users (user_name, email, password, profile_photo)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
+      [user.username, user.email, hashedPassword, profilePhoto]
+    );
     return true;
   }
 
-  static async findById(id: string): Promise<User | null> {
-    const users = await this.getAllUsers();
-    return users.find((user) => user.userId === id) || null;
+  static async findManyById(ids: string[]): Promise<UserPublic[] | null> {
+    const userIds = ids; // массив id
+
+    const result = await postgreSql.query(
+      `
+  SELECT user_id, user_name, profile_photo, pinned_chats, selected_products
+  FROM users
+  WHERE user_id = ANY($1)
+  `,
+      [userIds]
+    );
+
+    return result.rows || null;
   }
 
-  static async saveUsers(users: User[]): Promise<void> {
-    await fs.writeFile(filePath, JSON.stringify(users, null, 2), "utf-8");
+  static async findOneById(id: string): Promise<User | null> {
+    const result = await postgreSql.query(
+      `SELECT user_id, user_name, email, profile_photo, pinned_chats,selected_products,password
+       FROM users WHERE user_id = $1`,
+      [id]
+    );
+    return result.rows[0] || null; // возвращаем пользователя или null
   }
 
-  static async saveUser(updatedUser: User): Promise<User | null> {
-    const users = await this.getAllUsers();
-    const index = users.findIndex((u) => u.userId === updatedUser.userId);
+  static async saveUser(user: User): Promise<User | null> {
+    const result = await postgreSql.query(
+      `UPDATE users
+   SET user_name = $1,
+       email = $2,
+       profile_photo = $3,
+       pinned_chats = $4,
+       selected_products = $5,
+       password = $6
+   WHERE user_id = $7
+   RETURNING *`,
+      [
+        user.user_name, // $1 -> user_name
+        user.email, // $2 -> email
+        user.profile_photo, // $3 -> profile_photo
+        user.pinned_chats, // $4 -> pinned_chats
+        user.selected_products, // $5 -> favorite_ads
+        user.password, // $6 -> password
+        user.user_id, // $7 -> user_id
+      ]
+    );
 
-    if (index === -1) return null;
-
-    users[index] = updatedUser;
-    await this.saveUsers(users);
-
-    return updatedUser;
+    return result.rows[0] ?? null;
   }
 }

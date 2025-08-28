@@ -17,6 +17,8 @@ import AddProduct from "AddProduct/addProduct";
 import BackgroundWrapper from "BackgroundWrapper";
 import GlobalData from "GlobalData";
 import SearchAds from "SearchAds/searchAds";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(

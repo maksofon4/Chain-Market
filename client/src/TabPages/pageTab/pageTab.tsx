@@ -1,4 +1,4 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "./pageTab.css";
 import React from "react";
 
@@ -8,12 +8,13 @@ interface PageTabProps {
 
 export const PageTab: React.FC<PageTabProps> = ({ content }) => {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Mapping routes to heading text
   const headings: Record<string, React.ReactNode> = {
     "/posted-products": (
       <>
-        <span className="hide">Your</span> <span>Posted</span>{" "}
+        <span className="hide">Your</span> <span>Posted</span>
         <span className="hide">Products</span>
       </>
     ),
@@ -47,7 +48,7 @@ export const PageTab: React.FC<PageTabProps> = ({ content }) => {
           <ul>
             {Object.keys(headings).map((path) => (
               <li key={path} className={activePath === path ? "active" : ""}>
-                <a href={path}>{headings[path]}</a>
+                <a onClick={() => navigate(`${path}`)}>{headings[path]}</a>
               </li>
             ))}
           </ul>

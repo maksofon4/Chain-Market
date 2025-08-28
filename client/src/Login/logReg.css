@@ -53,6 +53,7 @@
   font-weight: bold;
   color: var(--text-hover-color);
   padding: 5px;
+  cursor: pointer;
 }
 
 .mode-name a.active {
@@ -73,7 +74,7 @@
   border-radius: 20px;
   width: 40%;
   max-height: 1000px;
-  max-width: 600px;
+  max-width: 500px;
 }
 
 .authentication-container form {
@@ -102,17 +103,21 @@
   margin-bottom: 5px;
   font-weight: bold;
   width: 100%;
+  box-sizing: content-box;
 }
 
 .authentication-container .showPasswordButton {
   position: absolute;
   right: 10px;
-  bottom: 0;
+  bottom: 50%;
   padding: 0;
+  transform: translateY(50%);
+  height: 20px;
 }
 
 .authentication-container svg {
   fill: white;
+  vertical-align: baseline;
 }
 
 .authentication-container input {
@@ -219,7 +224,7 @@
 
 @media (max-width: 985px) {
   .divider1 {
-    width: 80%;
+    width: 90%;
   }
 }
 

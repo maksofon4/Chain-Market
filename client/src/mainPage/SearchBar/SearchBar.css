@@ -27,6 +27,7 @@
 
 .location-input {
   display: flex;
+  align-items: center;
   background: rgb(131, 131, 131);
   border: 2px solid #797979;
   padding: 5px;

@@ -96,6 +96,7 @@
   height: 40%;
   width: 40%;
   display: block;
+  fill: #fff;
 }
 
 .category-Section p {
@@ -317,11 +318,13 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  margin: 0;
 }
 
 .custom-select-placeholder svg {
   width: 50px;
   height: 50px;
+  fill: #fff;
 }
 
 .custom-select #icon-arrowdown {
@@ -401,15 +404,6 @@
   font-size: 20px;
   color: var(--h3-color);
 }
-
-.image-list {
-  width: 40%;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-}
-
-/*The rest of .image-list styles is in the folder where component is located*/
 
 .divider3 textarea {
   all: unset;
@@ -501,6 +495,7 @@
 .priceInputContainer p {
   font-weight: lighter;
   color: white;
+  margin: 0;
 }
 
 .add-product-price p {
@@ -926,12 +921,6 @@
   }
 }
 @media (max-width: 1000px) {
-  .image-list {
-    width: 40%;
-    display: grid;
-    gap: 10px;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-  }
   .divider3 .text-field {
     width: 80%;
   }
@@ -962,9 +951,6 @@
 }
 
 @media (max-width: 750px) {
-  .image-list {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
   .divider3 .text-field {
     width: 100%;
   }
@@ -1009,9 +995,6 @@
     width: 100%;
   }
 
-  .image-list {
-    grid-template-columns: 1fr 1fr;
-  }
   .divider4 input {
     width: 80%;
   }

@@ -5,8 +5,6 @@ import ApiError from "../error/ApiError";
 import bcrypt from "bcrypt";
 
 class UserProfileController {
-  // Update profile photo
-
   async updateProfilePhoto(
     req: SessionRequest,
     res: Response,
@@ -21,7 +19,7 @@ class UserProfileController {
       }
 
       // 2. Найти пользователя
-      const user = await UserRepository.findById(req.session.userId);
+      const user = await UserRepository.findOneById(req.session.userId);
       if (!user) {
         return next(ApiError.badRequest("User not found"));
       }
@@ -37,7 +35,7 @@ class UserProfileController {
       }
 
       // 4. Обновить путь к фото
-      user.profilePhoto = `${req.file.filename}`;
+      user.profile_photo = `${req.file.filename}`;
       const updatedUser = await UserRepository.saveUser(user);
 
       res.status(200).json({ message: "success", user: updatedUser });
@@ -58,16 +56,16 @@ class UserProfileController {
     const userId = req.session.userId;
 
     try {
-      const user = await UserRepository.findById(userId);
+      const user = await UserRepository.findOneById(userId);
 
       if (!user) {
         res.status(404).json({ message: "User not found." });
         return;
       }
 
-      let updated = false; // Flag to track if any update was made
-
+      let updated = false;
       // Update email or username if provided
+
       if (email && currentpassword) {
         const isMatch = await bcrypt.compare(currentpassword, user.password);
         if (isMatch) {
@@ -84,9 +82,10 @@ class UserProfileController {
       }
       if (username && currentpassword) {
         const isMatch = await bcrypt.compare(currentpassword, user.password);
+
         if (isMatch) {
-          user.username = username;
-          const updateUserRes = await UserRepository.saveUser(user);
+          user.user_name = username;
+          const updateUserRes = await UserRepository.saveUser(user); //ERROR
           if (updateUserRes) {
             updated = true;
           } else {

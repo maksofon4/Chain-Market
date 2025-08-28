@@ -12,13 +12,17 @@ class UsersController {
       }
 
       // Получаем пользователей параллельно
-      const users = await UserRepository.getAllUsers();
+      const users = await UserRepository.findManyById(ids);
+
+      if (!users) {
+        return next(ApiError.internal("The data request has failed"));
+      }
       const userData = users.map((user) => ({
-        userId: user.userId,
-        username: user.username,
+        user_id: user.user_id,
+        username: user.user_name,
         profilePhoto:
-          user.profilePhoto !== ""
-            ? `http://localhost:3001/profilePhotos/${user.profilePhoto}`
+          user.profile_photo !== ""
+            ? `http://localhost:3001/profilePhotos/${user.profile_photo}`
             : "http://localhost:3001/imgs/userImgDefault.png",
       }));
       res.json(userData);

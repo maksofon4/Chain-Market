@@ -59,7 +59,7 @@ html {
 }
 
 .tab-links a {
-  color: var(--text-color);
+  color: var(--text-color) !important;
 }
 
 .tab-links .active {
@@ -69,7 +69,7 @@ html {
 }
 
 .tab-links .active a {
-  color: var(--button-background);
+  color: var(--button-background) !important;
 }
 
 @media (max-width: 1130px) {

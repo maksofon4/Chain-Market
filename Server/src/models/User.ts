@@ -1,9 +1,17 @@
 export interface User {
-  userId: string;
-  username: string;
+  user_id: string;
+  user_name: string;
   email: string;
   password: string;
-  profilePhoto: string;
-  pinnedChats: string[];
-  selectedProducts: string[];
+  profile_photo: string;
+  pinned_chats: string[];
+  selected_products: string[];
+}
+
+export interface UserPublic {
+  user_id: string;
+  user_name: string;
+  profile_photo: string;
+  pinned_chats: string[];
+  selected_products: string[];
 }

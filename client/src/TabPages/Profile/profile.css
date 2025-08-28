@@ -22,7 +22,8 @@
 .profileItemContainer {
   display: flex;
   flex-direction: column;
-  width: 60%;
+  width: 90%;
+  max-width: 900px;
   padding: 5px 30px 5px 30px;
   background-color: var(--text-hover-color);
   overflow: hidden;
@@ -30,6 +31,10 @@
 
 .profileItemContainer .icon-arrow-down {
   transition: transform 0.3s ease-in-out;
+}
+
+.profileItem svg {
+  fill: #ffff;
 }
 
 .profileItem {
@@ -129,6 +134,7 @@
 
 .profileSettingsContainer .showPasswordButton svg {
   margin: 0;
+  vertical-align: baseline;
 }
 
 .profileOptionDropDown input {

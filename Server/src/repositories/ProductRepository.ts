@@ -2,6 +2,7 @@ import { promises as fs } from "fs";
 import { productsDir } from "../config/env";
 import { Product } from "../models/Product";
 import { v4 as uuidv4 } from "uuid";
+import postgreSql from "../../data/dataBase/postgre";
 
 const filePath = `../${productsDir}`;
 export class ProductRepository {
@@ -50,7 +51,6 @@ export class ProductRepository {
     images: string[];
     formattedDateTime: string;
   }): Promise<Product> {
-    const products = await this.getAllProducts();
     const newProduct: Product = {
       productId: uuidv4(),
       userId: product.userId,
@@ -73,6 +73,59 @@ export class ProductRepository {
     await fs.writeFile(filePath, JSON.stringify(products, null, 2));
     return newProduct;
   }
+
+  // static async create(product: Product): Promise<Product | null> {
+  //   const result = await postgreSql.query(
+  //     `INSERT INTO products (
+  //     product_id,
+  //     user_id,
+  //     name,
+  //     category,
+  //     description,
+  //     location,
+  //     price,
+  //     condition,
+  //     trade_possible,
+  //     email,
+  //     phone_number,
+  //   ) VALUES (
+  //     $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11
+  //   ) RETURNING *;`,
+  //     [
+  //       product.productId,
+  //       product.userId,
+  //       product.name,
+  //       product.category,
+  //       product.description,
+  //       product.location,
+  //       product.price,
+  //       product.condition,
+  //       product.tradePossible,
+  //       product.contactDetails.email,
+  //       product.contactDetails.phoneNumber,
+  //     ]
+  //   );
+
+  //   const productId = product.productId;
+  //   const images = product.images;
+  //   const values: string[] = [];
+  //   const placeholders: string[] = [];
+
+  //   images.forEach((imageUrl, index) => {
+  //     placeholders.push(`($1, $${index + 2}, ${index + 1})`);
+  //     values.push(imageUrl);
+  //   });
+
+  //   const query = `
+  //     INSERT INTO product_images (product_id, image_url, position)
+  //     VALUES ${placeholders.join(", ")}
+  //   `;
+
+  //   await postgreSql.query(query, [productId, ...values]);
+
+  //   return result.rows[0] ?? null;
+  // }
+
   static async remove(productId: string): Promise<boolean> {
     const targetProduct = await this.findById(productId);
     console.log(targetProduct);

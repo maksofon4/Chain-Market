@@ -7,8 +7,10 @@ import "./addProudct.css";
 import { Product } from "models/product";
 import { validateProduct } from "./validateProduct";
 import Alert from "./alert";
+import { useNavigate } from "react-router-dom";
 
 const AddProduct = () => {
+  const navigate = useNavigate();
   const [status, setStatus] = useState<string | null>(null);
   const sessionInfo = useContext(SessionContext);
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -118,10 +120,6 @@ const AddProduct = () => {
     }
     updateTime();
     const filteredImgs = images.filter((img) => img !== null);
-    const contactDetails = {
-      email: email!,
-      phoneNumber: phoneNumber!,
-    };
 
     const formData = new FormData();
     formData.append("type", "product");
@@ -132,7 +130,8 @@ const AddProduct = () => {
     formData.append("price", price!); // Correct value for price
     formData.append("condition", condition!); // Correct value for condition
     formData.append("tradePossible", JSON.stringify(tradePossibleCondition)); // Correct value for tradePossible
-    formData.append("userContactDetails", JSON.stringify(contactDetails)); // Correct contactDetails
+    formData.append("email", email);
+    formData.append("phoneNumber", phoneNumber);
     formData.append("formattedDateTime", time); // Correctly append formattedDateTime
 
     for await (const img of filteredImgs) {
@@ -188,7 +187,13 @@ const AddProduct = () => {
 
   return (
     <div className="add-product-parent">
-      <Alert status={status} onClose={() => setStatus(null)} />
+      <Alert
+        status={status}
+        onClose={() => {
+          setStatus(null);
+          if (status === "success") navigate("/");
+        }}
+      />
       {openedProduct && sessionInfo && (
         <ProductModal
           uploadedImgs={false}
@@ -274,7 +279,7 @@ const AddProduct = () => {
               {!productCategory && !categoryIcon ? (
                 <p className="custom-select-placeholder">Choose category</p>
               ) : (
-                <p className="custom-select-placeholder">
+                <p className="custom-select-placeholder gap-1">
                   <svg width="24" height="24">
                     <use xlinkHref={categoryIcon}></use>
                   </svg>
@@ -299,91 +304,107 @@ const AddProduct = () => {
           <h1 className="majorHeading">Photo</h1>
           <h3>The first photo will be on the cover of the ad</h3>
 
-          <div className="image-list">
-            <ProductImageUploader
-              key={0}
-              inputId={0}
-              onImageCropped={(data) => {
-                if (data && data.croppedDataUrl) {
-                  handleImageCropped(data.croppedDataUrl, 0);
-                } else {
-                  handleImageCropped(null, 0);
-                }
-              }}
-            />
-            <ProductImageUploader
-              key={1}
-              inputId={1}
-              onImageCropped={(data) => {
-                if (data && data.croppedDataUrl) {
-                  handleImageCropped(data.croppedDataUrl, 1);
-                } else {
-                  handleImageCropped(null, 1);
-                }
-              }}
-            />
-            <ProductImageUploader
-              key={2}
-              inputId={2}
-              onImageCropped={(data) => {
-                if (data && data.croppedDataUrl) {
-                  handleImageCropped(data.croppedDataUrl, 2);
-                } else {
-                  handleImageCropped(null, 2);
-                }
-              }}
-            />
-            <ProductImageUploader
-              key={3}
-              inputId={3}
-              onImageCropped={(data) => {
-                if (data && data.croppedDataUrl) {
-                  handleImageCropped(data.croppedDataUrl, 3);
-                } else {
-                  handleImageCropped(null, 3);
-                }
-              }}
-            />
-            <ProductImageUploader
-              inputId={4}
-              onImageCropped={(data) => {
-                if (data && data.croppedDataUrl) {
-                  handleImageCropped(data.croppedDataUrl, 4);
-                } else {
-                  handleImageCropped(null, 4);
-                }
-              }}
-            />
-            <ProductImageUploader
-              inputId={5}
-              onImageCropped={(data) => {
-                if (data && data.croppedDataUrl) {
-                  handleImageCropped(data.croppedDataUrl, 5);
-                } else {
-                  handleImageCropped(null, 5);
-                }
-              }}
-            />
-            <ProductImageUploader
-              inputId={6}
-              onImageCropped={(data) => {
-                if (data && data.croppedDataUrl) {
-                  handleImageCropped(data.croppedDataUrl, 6);
-                } else {
-                  handleImageCropped(null, 6);
-                }
-              }}
-            />
-            <ProductImageUploader
-              inputId={7}
-              onImageCropped={(data) => {
-                if (data && data.croppedDataUrl) {
-                  handleImageCropped(data.croppedDataUrl, 7);
-                } else {
-                  handleImageCropped(null, 7);
-                }
-              }}
-            />
+          <div className="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 gx-1 gy-1">
+            <div className="col">
+              <ProductImageUploader
+                key={0}
+                inputId={0}
+                onImageCropped={(data) => {
+                  if (data && data.croppedDataUrl) {
+                    handleImageCropped(data.croppedDataUrl, 0);
+                  } else {
+                    handleImageCropped(null, 0);
+                  }
+                }}
+              />
+            </div>
+            <div className="col">
+              <ProductImageUploader
+                key={1}
+                inputId={1}
+                onImageCropped={(data) => {
+                  if (data && data.croppedDataUrl) {
+                    handleImageCropped(data.croppedDataUrl, 1);
+                  } else {
+                    handleImageCropped(null, 1);
+                  }
+                }}
+              />
+            </div>
+            <div className="col">
+              <ProductImageUploader
+                key={2}
+                inputId={2}
+                onImageCropped={(data) => {
+                  if (data && data.croppedDataUrl) {
+                    handleImageCropped(data.croppedDataUrl, 2);
+                  } else {
+                    handleImageCropped(null, 2);
+                  }
+                }}
+              />
+            </div>
+            <div className="col">
+              <ProductImageUploader
+                key={3}
+                inputId={3}
+                onImageCropped={(data) => {
+                  if (data && data.croppedDataUrl) {
+                    handleImageCropped(data.croppedDataUrl, 3);
+                  } else {
+                    handleImageCropped(null, 3);
+                  }
+                }}
+              />
+            </div>
+            <div className="col">
+              <ProductImageUploader
+                inputId={4}
+                onImageCropped={(data) => {
+                  if (data && data.croppedDataUrl) {
+                    handleImageCropped(data.croppedDataUrl, 4);
+                  } else {
+                    handleImageCropped(null, 4);
+                  }
+                }}
+              />
+            </div>
+            <div className="col">
+              <ProductImageUploader
+                inputId={5}
+                onImageCropped={(data) => {
+                  if (data && data.croppedDataUrl) {
+                    handleImageCropped(data.croppedDataUrl, 5);
+                  } else {
+                    handleImageCropped(null, 5);
+                  }
+                }}
+              />
+            </div>
+            <div className="col">
+              <ProductImageUploader
+                inputId={6}
+                onImageCropped={(data) => {
+                  if (data && data.croppedDataUrl) {
+                    handleImageCropped(data.croppedDataUrl, 6);
+                  } else {
+                    handleImageCropped(null, 6);
+                  }
+                }}
+              />
+            </div>
+            <div className="col">
+              <ProductImageUploader
+                inputId={7}
+                onImageCropped={(data) => {
+                  if (data && data.croppedDataUrl) {
+                    handleImageCropped(data.croppedDataUrl, 7);
+                  } else {
+                    handleImageCropped(null, 7);
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
         <div className="divider3">
