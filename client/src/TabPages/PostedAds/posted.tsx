@@ -1,59 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { ProductModal } from "Functions/ProductModal/ProductModal";
+import { Product } from "models/product";
+import { SessionInfo } from "models/express-session";
+import { SessionContext } from "GlobalData";
+
 import "./posted.css";
+
 const PostedList = () => {
+  const sessionInfo = useContext(SessionContext);
   const [products, setProducts] = useState<Product[]>([]);
-  const [imageBaseUrl, setImageBaseUrl] = useState("");
-  const [sessionInfo, setSessionInfo] = useState<SessionInfo | undefined>(
-    undefined
-  );
+
   // const [postedProducts, setPostedProducts] = useState<Product[]>([]);
   const [openedProduct, setOpenedProduct] = useState<Product | null>(null);
   const [usersInfo, setUsersInfo] = useState("");
 
-  interface Product {
-    productId: string;
-    userId: string;
-    name: string;
-    category: string;
-    description: string;
-    location: string;
-    priceUSD: string;
-    condition: string;
-    tradePossible: string;
-    contactDetails: {
-      email: string;
-      phoneNumber: string;
-    };
-    images: string[];
-    formattedDateTime: string;
-  }
-  interface SessionInfo {
-    userId: string;
-    username: string;
-    email: string;
-    password: string;
-    profilePhoto: string;
-    pinnedChats: string[];
-    selectedProducts: string[];
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sessionRes = await fetch(`/api/session-info`);
-        const sessionData = await sessionRes.json();
+        // const usersRes = await fetch(`/api/users`);
+        // const usersInfo = await usersRes.json();
+        // setUsersInfo(usersInfo);
 
-        const usersRes = await fetch(`/api/users`);
-        const usersInfo = await usersRes.json();
-        setUsersInfo(usersInfo);
-
-        setSessionInfo(sessionData);
         const productRes = await fetch(`/api/user-posted-products`);
         if (!productRes.ok) throw new Error("Failed to fetch product data");
-        const { products } = await productRes.json();
+        const products = await productRes.json();
         setProducts(products);
-        setImageBaseUrl(imageBaseUrl);
+        console.log(products);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -103,10 +75,7 @@ const PostedList = () => {
             className={`posted-product`}
             onClick={() => setOpenedProduct(product)}
           >
-            <img
-              src={`${imageBaseUrl}${product.images?.[0]}`}
-              alt={product.name}
-            />
+            <img src={`${product.images?.[0]}`} alt={product.name} />
             <div className="product-info">
               <p className="posted-name">{product.name}</p>
               <ul>
@@ -115,7 +84,7 @@ const PostedList = () => {
                   {product.formattedDateTime}
                 </li>
               </ul>
-              <p className="posted-price">{product.priceUSD}$</p>
+              <p className="posted-price">{product.price}$</p>
             </div>
 
             <button

@@ -34,6 +34,25 @@ header {
   color: #000 !important;
 }
 
+.burger-menu {
+  display: flex;
+  justify-content: center;
+  gap: 13px;
+  flex-wrap: wrap;
+  width: 100%;
+  position: absolute;
+  bottom: 100%; /* прижато к низу родителя */
+  left: 0;
+  background-color: var(--color-dark);
+  color: var(--color-white);
+  transform: translateX(-100%); /* полностью скрыто */
+  transition: transform 0.3s ease;
+}
+
+.burger-menu.show {
+  transform: translateX(0); /* выезжает вверх */
+}
+
 @media (max-width: 768px) {
   .desktop-content {
     display: none !important;
@@ -51,6 +70,9 @@ header {
 
   .mobile-content a {
     cursor: pointer;
+    color: var(--text-color);
+    width: 100px;
+    text-align: center;
   }
 
   .mobile-content svg {

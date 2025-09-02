@@ -60,6 +60,7 @@ html {
 
 .tab-links a {
   color: var(--text-color) !important;
+  cursor: pointer;
 }
 
 .tab-links .active {

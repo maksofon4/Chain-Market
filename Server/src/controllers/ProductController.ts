@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { ProductRepository } from "../repositories/ProductRepository";
 import ApiError from "../error/ApiError";
+import { SessionRequest } from "../models/express-session";
 
 class ProductController {
-  async uploading(req: Request, res: Response, next: NextFunction) {
+  async uploading(req: SessionRequest, res: Response, next: NextFunction) {
     try {
       const {
-        userId,
         name,
         category,
         description,
@@ -16,8 +16,11 @@ class ProductController {
         tradePossible,
         email,
         phoneNumber,
-        formattedDateTime,
       } = req.body;
+
+      const { userId } = req.session;
+
+      if (!userId) return;
 
       const files = req.files as Express.Multer.File[];
 
@@ -34,7 +37,6 @@ class ProductController {
         tradePossible,
         contactDetails: { email, phoneNumber },
         images: imageFilenames,
-        formattedDateTime,
       };
 
       console.log(newProduct);
@@ -47,6 +49,25 @@ class ProductController {
     } catch (error) {
       next(error); // пробрасываем в error middleware
     }
+  }
+
+  async getPostedProducts(
+    req: SessionRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { userId } = req.session;
+
+    if (!userId) {
+      return next(ApiError.badRequest("Not Authenticated"));
+    }
+
+    const result = await ProductRepository.findByUserId(userId);
+
+    if (!result) {
+      return next(ApiError.internal("Unexpected Error"));
+    }
+    res.json(result);
   }
 
   async removing(req: Request, res: Response, next: NextFunction) {
@@ -127,7 +148,7 @@ class ProductController {
   }
   async getRecentProducts(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await ProductRepository.getRecentProducts(10);
+      const result = await ProductRepository.getRecentProducts(20);
 
       if (!result) {
         return next(ApiError.internal("Unexpected Error"));

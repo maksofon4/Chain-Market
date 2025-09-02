@@ -14,5 +14,6 @@ router.post(
 router.delete("/remove-product", ProductController.removing);
 router.get("/search/products/:id", ProductController.searchOne);
 router.get("/recent-products", ProductController.getRecentProducts);
+router.get("/user-posted-products", ProductController.getPostedProducts);
 
 module.exports = router;

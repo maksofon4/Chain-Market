@@ -13,7 +13,6 @@ const productPhotosDest = `../${productPhotosDir}`;
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     let destination: string;
-
     if (req.body.type === "product") {
       destination = productPhotosDest;
     } else if (req.body.type === "profilePhoto") {

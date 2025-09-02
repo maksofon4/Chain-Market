@@ -1,6 +1,6 @@
 import { promises as fs } from "fs";
 import { productsDir } from "../config/env";
-import { Product } from "../models/Product";
+import { Product, ProductInput } from "../models/Product";
 import { v4 as uuidv4 } from "uuid";
 import postgreSql from "../../data/dataBase/postgre";
 
@@ -13,11 +13,45 @@ export class ProductRepository {
   }
 
   static async getRecentProducts(quantity: number): Promise<Product[]> {
-    const products = await this.getAllProducts();
-    const slicedProducts = products.slice(-quantity);
-    const newProducts = slicedProducts.map((product) => {
+    const query = `
+    SELECT 
+        p.product_id AS productId,
+        p.user_id AS userId,
+        p.name,
+        p.category,
+        p.description,
+        p.location,
+        p.price,
+        p.condition,
+        p.trade_possible AS "tradePossible",
+     
+        p.posted_at AS "formattedDateTime",
+        json_build_object(
+        'email', p.email,
+        'phoneNumber', p.phone_number
+    ) AS "contactDetails",
+        COALESCE(
+            json_agg(
+                json_build_object(
+                    'url', pi.image_url,
+                    'position', pi.position
+                ) ORDER BY pi.position
+            ) FILTER (WHERE pi.image_url IS NOT NULL), '[]'
+        ) AS images
+    FROM products p
+    LEFT JOIN product_images pi 
+        ON p.product_id = pi.product_id
+    GROUP BY p.product_id
+    ORDER BY p.posted_at DESC
+    LIMIT ${quantity};
+  `;
+
+    const { rows } = await postgreSql.query(query);
+
+    const newProducts = rows.map((product) => {
       const validLinksImages = product.images.map(
-        (image) => `http://localhost:3001/productPhotos/${image}`
+        (image: { url: string }) =>
+          `http://localhost:3001/productPhotos/${image.url}`
       );
 
       return {
@@ -35,96 +69,122 @@ export class ProductRepository {
     return products.find((product) => product.productId === id) || null;
   }
 
-  static async create(product: {
-    userId: string;
-    name: string;
-    category: string;
-    description: string;
-    location: string;
-    price: number;
-    condition: string;
-    tradePossible: boolean;
-    contactDetails: {
-      email: string;
-      phoneNumber: string;
-    };
-    images: string[];
-    formattedDateTime: string;
-  }): Promise<Product> {
-    const newProduct: Product = {
-      productId: uuidv4(),
-      userId: product.userId,
-      name: product.name,
-      category: product.category,
-      description: product.description,
-      location: product.location,
-      price: product.price,
-      condition: product.condition,
-      tradePossible: product.tradePossible,
-      contactDetails: {
-        email: product.contactDetails.email,
-        phoneNumber: product.contactDetails.phoneNumber,
-      },
-      images: product.images,
-      formattedDateTime: product.formattedDateTime,
-    };
+  static async findByUserId(id: string): Promise<Product[] | null> {
+    const query = `
+    SELECT 
+    p.product_id AS "productId",
+    p.user_id AS "userId",
+    p.name,
+    p.category,
+    p.description,
+    p.location,
+    p.price,
+    p.condition,
+    p.trade_possible AS "tradePossible",
+    p.posted_at AS "formattedDateTime",
+    json_build_object(
+        'email', p.email,
+        'phoneNumber', p.phone_number
+    ) AS "contactDetails",
+    COALESCE(
+        json_agg(
+            json_build_object(
+                'url', pi.image_url,
+                'position', pi.position
+            ) ORDER BY pi.position
+        ) FILTER (WHERE pi.image_url IS NOT NULL),
+        '[]'
+    ) AS images
+FROM products p
+LEFT JOIN product_images pi 
+    ON p.product_id = pi.product_id
+WHERE p.user_id = $1
+GROUP BY p.product_id
+ORDER BY p.posted_at DESC;
 
-    products.push(newProduct);
-    await fs.writeFile(filePath, JSON.stringify(products, null, 2));
-    return newProduct;
+  `;
+
+    const { rows } = await postgreSql.query(query, [id]);
+
+    const postedProducts = rows.map((product) => {
+      const validLinksImages = product.images.map(
+        (image: { url: string }) =>
+          `http://localhost:3001/productPhotos/${image.url}`
+      );
+
+      return {
+        ...product,
+        images: validLinksImages,
+      };
+    });
+
+    return postedProducts;
   }
 
-  // static async create(product: Product): Promise<Product | null> {
-  //   const result = await postgreSql.query(
-  //     `INSERT INTO products (
-  //     product_id,
-  //     user_id,
-  //     name,
-  //     category,
-  //     description,
-  //     location,
-  //     price,
-  //     condition,
-  //     trade_possible,
-  //     email,
-  //     phone_number,
-  //   ) VALUES (
-  //     $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11
-  //   ) RETURNING *;`,
-  //     [
-  //       product.productId,
-  //       product.userId,
-  //       product.name,
-  //       product.category,
-  //       product.description,
-  //       product.location,
-  //       product.price,
-  //       product.condition,
-  //       product.tradePossible,
-  //       product.contactDetails.email,
-  //       product.contactDetails.phoneNumber,
-  //     ]
-  //   );
+  static async create(product: ProductInput): Promise<Product | null> {
+    const client = await postgreSql.connect();
+    try {
+      await client.query("BEGIN");
 
-  //   const productId = product.productId;
-  //   const images = product.images;
-  //   const values: string[] = [];
-  //   const placeholders: string[] = [];
+      // 1. Вставляем сам продукт
+      const productResult = await client.query(
+        `INSERT INTO products (
+        user_id,
+        name,
+        category,
+        description,
+        location,
+        price,
+        condition,
+        trade_possible,
+        email,
+        phone_number
+      ) VALUES (
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10
+      ) RETURNING *;`,
+        [
+          product.userId,
+          product.name,
+          product.category,
+          product.description,
+          product.location,
+          product.price,
+          product.condition,
+          product.tradePossible,
+          product.contactDetails.email,
+          product.contactDetails.phoneNumber,
+        ]
+      );
 
-  //   images.forEach((imageUrl, index) => {
-  //     placeholders.push(`($1, $${index + 2}, ${index + 1})`);
-  //     values.push(imageUrl);
-  //   });
+      const productId = productResult.rows[0].product_id;
 
-  //   const query = `
-  //     INSERT INTO product_images (product_id, image_url, position)
-  //     VALUES ${placeholders.join(", ")}
-  //   `;
+      // 2. Вставляем изображения, если есть
+      if (product.images.length > 0) {
+        const placeholders: string[] = [];
+        const values: string[] = [productId];
 
-  //   await postgreSql.query(query, [productId, ...values]);
+        product.images.forEach((imageUrl, index) => {
+          placeholders.push(`($1, $${index + 2}, ${index + 1})`);
+          values.push(imageUrl);
+        });
 
-  //   return result.rows[0] ?? null;
-  // }
+        const query = `
+        INSERT INTO product_images (product_id, image_url, position)
+        VALUES ${placeholders.join(", ")}
+      `;
+
+        await client.query(query, values);
+      }
+
+      await client.query("COMMIT");
+      return productResult.rows[0] ?? null;
+    } catch (err) {
+      await client.query("ROLLBACK");
+      throw err;
+    } finally {
+      client.release();
+    }
+  }
 
   static async remove(productId: string): Promise<boolean> {
     const targetProduct = await this.findById(productId);

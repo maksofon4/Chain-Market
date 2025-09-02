@@ -70,12 +70,6 @@ class AuthController {
         return next(ApiError.badRequest("User not found"));
       }
 
-      req.session.userId = userData.user_id;
-      req.session.username = userData.user_name;
-      req.session.email = userData.email;
-      req.session.profilePhoto = userData.profile_photo;
-      req.session.pinnedChats = userData.pinned_chats;
-      req.session.selectedProducts = userData.selected_products;
       next();
     } catch (error) {
       return next(ApiError.internal("Unexpected Error"));
