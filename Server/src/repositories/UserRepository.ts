@@ -36,7 +36,8 @@ export class UserRepository {
 
     const result = await postgreSql.query(
       `
-  SELECT user_id, user_name, profile_photo, pinned_chats, selected_products
+  SELECT user_id, user_name, profile_photo, pinned_chats,
+   selected_products
   FROM users
   WHERE user_id = ANY($1)
   `,
@@ -67,13 +68,13 @@ export class UserRepository {
    WHERE user_id = $7
    RETURNING *`,
       [
-        user.user_name, // $1 -> user_name
-        user.email, // $2 -> email
-        user.profile_photo, // $3 -> profile_photo
-        user.pinned_chats, // $4 -> pinned_chats
-        user.selected_products, // $5 -> favorite_ads
-        user.password, // $6 -> password
-        user.user_id, // $7 -> user_id
+        user.user_name,
+        user.email,
+        user.profile_photo,
+        user.pinned_chats,
+        user.selected_products,
+        user.password,
+        user.user_id,
       ]
     );
 

@@ -10,7 +10,7 @@ function Footer() {
   const navigate = useNavigate();
 
   return (
-    <footer>
+    <footer className="py-4">
       <div className="footer-content">
         <div className="links-logo">
           <a className="logo-container">

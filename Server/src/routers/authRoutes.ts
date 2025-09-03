@@ -8,7 +8,6 @@ import UsersController from "../controllers/UsersController";
 const router = Router();
 
 router.post("/register", AuthController.registration);
-// router.delete("/remove-user", AuthController.removing);
 router.post("/login", AuthController.login);
 router.post("/logout", AuthController.logOut);
 router.get("/auth", AuthController.authCheck, AuthController.sendUserData);
@@ -24,5 +23,10 @@ router.post(
   UserProfileController.updateProfilePhoto
 );
 router.post("/users-public-data", UsersController.sendUsersPublicData);
+router.post(
+  "/add-product-to-favorites",
+  AuthController.authCheck,
+  UserProfileController.addProductsToFavorites
+);
 
 module.exports = router;

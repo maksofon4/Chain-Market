@@ -1,14 +1,11 @@
 :root {
   --header-color: rgb(32, 32, 32);
   --text-color: white;
-  --text-hover-color: #a7a7a7;
   --svg-color: white;
 }
 
 footer {
   align-self: flex-end;
-  height: 30vh;
-  max-height: 300px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -54,6 +51,7 @@ footer img {
   flex-direction: column;
   align-items: center;
   width: 200px;
+  color: var(--text-hover-color);
 }
 
 .logo-container:hover {
@@ -119,6 +117,13 @@ footer img {
   }
   .notes {
     display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  footer {
+    min-height: 250px;
+    align-items: start;
   }
 }
 

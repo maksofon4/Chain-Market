@@ -125,6 +125,33 @@ class UserProfileController {
       next(ApiError.internal("Unexpected Error"));
     }
   }
+
+  async addProductsToFavorites(
+    req: SessionRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.session.userId;
+      const { productIds } = req.body;
+      if (!userId || !productIds) return;
+
+      const user = await UserRepository.findOneById(userId);
+      if (!user) {
+        return next(ApiError.badRequest("User not found"));
+      }
+
+      user.selected_products = productIds;
+      const result = await UserRepository.saveUser(user);
+      if (result) {
+        res
+          .status(200)
+          .json({ message: "The Product has been added to favorites" });
+      }
+    } catch {
+      return next(ApiError.internal("Unexpected Error"));
+    }
+  }
 }
 
 export default new UserProfileController();

@@ -18,10 +18,10 @@ class UsersController {
         return next(ApiError.internal("The data request has failed"));
       }
       const userData = users.map((user) => ({
-        user_id: user.user_id,
+        userId: user.user_id,
         username: user.user_name,
         profilePhoto:
-          user.profile_photo !== ""
+          user.profile_photo !== null
             ? `http://localhost:3001/profilePhotos/${user.profile_photo}`
             : "http://localhost:3001/imgs/userImgDefault.png",
       }));

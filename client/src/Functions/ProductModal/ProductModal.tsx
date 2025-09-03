@@ -38,20 +38,26 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   return (
     <div className="transparent-background" onClick={onClose}>
       <div className="overflowWindow" onClick={handleModalContentClick}>
-        {allUsersData && (
-          <div className="productHeaderInfo">
-            <img
-              src={userProfilePhoto(allUsersData, product.userId)}
-              alt="Profile"
-            />
+        <div className="productHeaderInfo">
+          {allUsersData && (
+            <>
+              <img
+                src={userProfilePhoto(allUsersData, product.userId)}
+                alt="Profile"
+              />
 
-            <p className="username">{userName(allUsersData, product.userId)}</p>
-            <p className="releaseDate">{product.formattedDateTime}</p>
-            <button onClick={onClose} className="closeButton">
-              Close
-            </button>
-          </div>
-        )}
+              <p className="username">
+                {userName(allUsersData, product.userId)}
+              </p>
+              <p className="releaseDate">{product.formattedDateTime}</p>
+            </>
+          )}
+
+          <button onClick={onClose} className="closeButton">
+            Close
+          </button>
+        </div>
+
         <div className="productImgs">
           {product.images.length > 1 && (
             <button onClick={prevImage} id="left-button">

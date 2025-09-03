@@ -11,7 +11,7 @@ router.post(
   upload.array("images"),
   ProductController.uploading
 );
-router.delete("/remove-product", ProductController.removing);
+router.delete("/delete-product", ProductController.removing);
 router.get("/search/products/:id", ProductController.searchOne);
 router.get("/recent-products", ProductController.getRecentProducts);
 router.get("/user-posted-products", ProductController.getPostedProducts);

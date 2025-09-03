@@ -78,24 +78,30 @@ class AuthController {
 
   async sendUserData(req: SessionRequest, res: Response, next: NextFunction) {
     try {
-      const user = req.session;
+      const { userId } = req.session;
+
+      if (!userId) {
+        return next(ApiError.badRequest("Not authenticated"));
+      }
+
+      const user = await UserRepository.findOneById(userId);
 
       if (!user) {
-        return next(ApiError.badRequest("No user in request"));
+        return next(ApiError.badRequest("User not found"));
       }
 
       const profilePhoto =
-        user.profilePhoto && user.profilePhoto !== ""
-          ? `http://localhost:3001/profilePhotos/${user.profilePhoto}`
+        user.profile_photo && user.profile_photo !== null
+          ? `http://localhost:3001/profilePhotos/${user.profile_photo}`
           : "http://localhost:3001/imgs/userImgDefault.png";
 
       res.status(200).json({
-        userId: user.userId,
-        username: user.username,
+        userId: user.user_id,
+        username: user.user_name,
         email: user.email,
         profilePhoto,
-        pinnedChats: user.pinnedChats,
-        selectedProducts: user.selectedProducts,
+        pinnedChats: user.pinned_chats,
+        selectedProducts: user.selected_products,
       });
     } catch (error) {
       return next(ApiError.internal("Unexpected error"));

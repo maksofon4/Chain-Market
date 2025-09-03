@@ -3,11 +3,13 @@ import { ProductModal } from "Functions/ProductModal/ProductModal";
 import { Product } from "models/product";
 import { SessionInfo } from "models/express-session";
 import { SessionContext } from "GlobalData";
+import { useNavigate } from "react-router-dom";
 
 import "./posted.css";
 
 const PostedList = () => {
   const sessionInfo = useContext(SessionContext);
+  const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
 
   // const [postedProducts, setPostedProducts] = useState<Product[]>([]);
@@ -17,10 +19,6 @@ const PostedList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // const usersRes = await fetch(`/api/users`);
-        // const usersInfo = await usersRes.json();
-        // setUsersInfo(usersInfo);
-
         const productRes = await fetch(`/api/user-posted-products`);
         if (!productRes.ok) throw new Error("Failed to fetch product data");
         const products = await productRes.json();
@@ -36,7 +34,7 @@ const PostedList = () => {
 
   const removeProduct = async (productId: string) => {
     const removeRes = await fetch("/api/delete-product", {
-      method: "POST",
+      method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
@@ -53,7 +51,7 @@ const PostedList = () => {
       {openedProduct && (
         <ProductModal
           allUsersData={usersInfo}
-          sessionInfo={sessionInfo}
+          sessionInfo={sessionInfo.user}
           product={openedProduct}
           onClose={() => setOpenedProduct(null)}
         />
@@ -63,7 +61,7 @@ const PostedList = () => {
       ) : (
         <h1>
           You haven't posted anything yet, to add product click here{" "}
-          <a href="/add-product" id="add-product-link">
+          <a onClick={() => navigate("/add-product")} id="add-product-link">
             Add product
           </a>
         </h1>

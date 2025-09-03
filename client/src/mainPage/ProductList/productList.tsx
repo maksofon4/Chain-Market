@@ -12,7 +12,7 @@ interface userInfo {
 }
 
 const ProductList = () => {
-  const sessionInfo: SessionInfo = useContext(SessionContext);
+  const sessionInfo = useContext(SessionContext);
   const [products, setProducts] = useState<Product[]>([]);
 
   const [selectedProducts, setSelectedProducts] = useState<string[] | null>(
@@ -25,8 +25,6 @@ const ProductList = () => {
     const fetchData = async () => {
       try {
         const sessionData = sessionInfo;
-        // const usersRes = await fetch(`/api/users`);
-        // const usersInfo = await usersRes.json();
         const productRes = await fetch(`/api/recent-products`);
         if (!productRes.ok) throw new Error("Failed to fetch product data");
         const products = await productRes.json();
@@ -37,10 +35,8 @@ const ProductList = () => {
           body: JSON.stringify({ ids: userIds }),
         });
         const users = await userRes.json();
-        console.log(users);
-        // Set session info and directly use sessionData to set selected products
 
-        setSelectedProducts(sessionData.selectedProducts); // Now using sessionData directly
+        setSelectedProducts(sessionData.user.selectedProducts);
         setUsersInfo(users);
 
         setProducts(products);
@@ -84,13 +80,12 @@ const ProductList = () => {
     } else {
       const updatedSelectedData = [...selectedProducts, productId];
       setSelectedProducts(updatedSelectedData);
-      const selectReq = await fetch("/api/select-product", {
+      const selectReq = await fetch("/api/add-product-to-favorites", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userId: sessionInfo?.userId,
           productIds: [productId],
         }),
       });
@@ -104,7 +99,7 @@ const ProductList = () => {
         <ProductModal
           uploadedImgs={true}
           allUsersData={usersInfo}
-          sessionInfo={sessionInfo}
+          sessionInfo={sessionInfo.user}
           product={openedProduct}
           onClose={() => setOpenedProduct(null)}
         />
