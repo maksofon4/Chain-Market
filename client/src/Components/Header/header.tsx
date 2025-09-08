@@ -48,7 +48,7 @@ const Header = () => {
     <header className=" w-100">
       <div
         className=" mx-auto row row-cols-3 p-2 desktop-content"
-        style={{ maxWidth: "1000px" }}
+        style={{ maxWidth: "1200px" }}
       >
         <div className="col d-flex justify-content-center">
           <a onClick={() => navigate("/")} className="logo mx-auto">
@@ -71,7 +71,7 @@ const Header = () => {
               Favorites
             </a>
             <a
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate("/profile-options")}
               className="m-0 text-decoration-none"
             >
               Profile

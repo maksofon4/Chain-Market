@@ -81,6 +81,12 @@
 .posted-name {
   font-size: clamp(1rem, calc(2vw + 0.2rem), 1.2rem);
   font-weight: bold;
+  width: 100%; /* ограниченная ширина обязательно */
+  overflow: hidden; /* скрываем всё, что выходит за пределы */
+  white-space: nowrap; /* не переносим текст */
+  text-overflow: ellipsis; /* добавляем "..." */
+  display: inline-block; /* или block/flex-item (не inline!) */
+  vertical-align: top;
 }
 
 .posted-product img {

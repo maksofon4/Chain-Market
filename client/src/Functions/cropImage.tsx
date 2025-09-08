@@ -120,6 +120,9 @@ export default function ImageUploader({
               crop={crop}
               zoom={zoom}
               aspect={1}
+              minZoom={1}
+              maxZoom={5}
+              zoomSpeed={0.1}
               onCropChange={setCrop}
               onZoomChange={setZoom}
               onCropComplete={onCropComplete}

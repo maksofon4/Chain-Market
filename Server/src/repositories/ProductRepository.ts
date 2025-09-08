@@ -26,13 +26,9 @@ export class ProductRepository {
         'phoneNumber', p.phone_number
     ) AS "contactDetails",
         COALESCE(
-            json_agg(
-                json_build_object(
-                    'url', pi.image_url,
-                    'position', pi.position
-                ) ORDER BY pi.position
-            ) FILTER (WHERE pi.image_url IS NOT NULL), '[]'
-        ) AS images
+    json_agg(pi.image_url ORDER BY pi.position) FILTER (WHERE pi.image_url IS NOT NULL),
+    '[]'
+) AS images
     FROM products p
     LEFT JOIN product_images pi 
         ON p.product_id = pi.product_id
@@ -43,19 +39,14 @@ export class ProductRepository {
 
     const { rows } = await postgreSql.query(query);
 
-    const newProducts = rows.map((product) => {
-      const validLinksImages = product.images.map(
-        (image: { url: string }) =>
-          `http://localhost:3001/productPhotos/${image.url}`
-      );
+    const products = rows.map((product) => ({
+      ...product,
+      images: product.images.map(
+        (url: string) => `http://localhost:3001/productPhotos/${url}`
+      ),
+    }));
 
-      return {
-        ...product,
-        images: validLinksImages,
-      };
-    });
-
-    return newProducts;
+    return products;
   }
 
   static async findById(id: string): Promise<Product | null> {
@@ -75,15 +66,10 @@ export class ProductRepository {
             'email', p.email,
             'phoneNumber', p.phone_number
         ) AS "contactDetails",
-        COALESCE(
-            json_agg(
-                json_build_object(
-                    'url', pi.image_url,
-                    'position', pi.position
-                ) ORDER BY pi.position
-            ) FILTER (WHERE pi.image_url IS NOT NULL),
-            '[]'
-        ) AS images
+       COALESCE(
+    json_agg(pi.image_url ORDER BY pi.position) FILTER (WHERE pi.image_url IS NOT NULL),
+    '[]'
+) AS images
     FROM products p
     LEFT JOIN product_images pi 
         ON p.product_id = pi.product_id
@@ -100,6 +86,49 @@ export class ProductRepository {
     }
 
     return result.rows[0] as Product;
+  }
+
+  static async findManyById(ids: string[]): Promise<Product[]> {
+    const query = `
+    SELECT 
+        p.product_id AS "productId",
+        p.user_id AS "userId",
+        p.name,
+        p.category,
+        p.description,
+        p.location,
+        p.price,
+        p.condition,
+        p.trade_possible AS "tradePossible",
+        to_char(p.posted_at, 'DD.MM.YYYY') AS "formattedDateTime",
+        json_build_object(
+            'email', p.email,
+            'phoneNumber', p.phone_number
+        ) AS "contactDetails",
+       COALESCE(
+    json_agg(pi.image_url ORDER BY pi.position) FILTER (WHERE pi.image_url IS NOT NULL),
+    '[]'
+) AS images
+
+    FROM products p
+    LEFT JOIN product_images pi 
+        ON p.product_id = pi.product_id
+    WHERE p.product_id = ANY($1)
+    GROUP BY p.product_id
+    ORDER BY p.posted_at DESC;
+  `;
+
+    const values = [ids]; // pass as array
+    const { rows } = await postgreSql.query(query, values);
+
+    const products = rows.map((product) => ({
+      ...product,
+      images: product.images.map(
+        (url: string) => `http://localhost:3001/productPhotos/${url}`
+      ),
+    }));
+
+    return products;
   }
 
   static async findByUserId(id: string): Promise<Product[] | null> {
@@ -265,59 +294,92 @@ ORDER BY p.posted_at DESC;
     }
   }
 
-  // static async findProducts(
-  //   category?: string,
-  //   location?: string,
-  //   condition?: string,
-  //   tradePossible?: boolean,
-  //   priceMin?: number,
-  //   priceMax?: number,
-  //   name?: string
-  // ): Promise<Product[]> {
-  //   const products = await this.getAllProducts();
+  static async findProducts(
+    category?: string,
+    location?: string,
+    condition?: string,
+    tradePossible?: boolean,
+    priceMin?: number,
+    priceMax?: number,
+    name?: string
+  ): Promise<Product[]> {
+    const values: any[] = [];
+    const conditions: string[] = [];
 
-  //   let filtered = products;
+    if (category) {
+      values.push(category.toLowerCase());
+      conditions.push(`LOWER(p.category) = $${values.length}`);
+    }
 
-  //   if (category) {
-  //     filtered = filtered.filter(
-  //       (p) => p.category.toLowerCase() === String(category).toLowerCase()
-  //     );
-  //   }
+    if (location) {
+      values.push(`%${location.toLowerCase()}%`);
+      conditions.push(`LOWER(p.location) LIKE $${values.length}`);
+    }
 
-  //   if (location) {
-  //     filtered = filtered.filter((p) =>
-  //       p.location.toLowerCase().includes(String(location).toLowerCase())
-  //     );
-  //   }
+    if (condition) {
+      values.push(condition.toLowerCase());
+      conditions.push(`LOWER(p.condition) = $${values.length}`);
+    }
 
-  //   if (condition) {
-  //     filtered = filtered.filter(
-  //       (p) => p.condition.toLowerCase() === String(condition).toLowerCase()
-  //     );
-  //   }
+    if (tradePossible !== undefined) {
+      values.push(tradePossible);
+      conditions.push(`p.trade_possible = $${values.length}`);
+    }
 
-  //   if (tradePossible) {
-  //     filtered = filtered.filter((p) => p.tradePossible === true);
-  //   }
+    if (priceMin !== undefined) {
+      values.push(priceMin);
+      conditions.push(`p.price >= $${values.length}`);
+    }
 
-  //   if (tradePossible === false) {
-  //     filtered = filtered.filter((p) => p.tradePossible === false);
-  //   }
+    if (priceMax !== undefined) {
+      values.push(priceMax);
+      conditions.push(`p.price <= $${values.length}`);
+    }
 
-  //   if (priceMin) {
-  //     filtered = filtered.filter((p) => p.price >= Number(priceMin));
-  //   }
+    if (name) {
+      values.push(`%${name.toLowerCase()}%`);
+      conditions.push(`LOWER(p.name) LIKE $${values.length}`);
+    }
 
-  //   if (priceMax) {
-  //     filtered = filtered.filter((p) => p.price <= Number(priceMax));
-  //   }
+    const whereClause = conditions.length
+      ? `WHERE ${conditions.join(" AND ")}`
+      : "";
 
-  //   if (name) {
-  //     filtered = filtered.filter((p) =>
-  //       p.name.toLowerCase().includes(String(name).toLowerCase())
-  //     );
-  //   }
+    const query = `
+    SELECT 
+        p.product_id AS "productId",
+        p.user_id AS "userId",
+        p.name,
+        p.category,
+        p.description,
+        p.location,
+        p.price,
+        p.condition,
+        p.trade_possible AS "tradePossible",
+        to_char(p.posted_at, 'DD.MM.YYYY') AS "formattedDateTime",
+        json_build_object(
+            'email', p.email,
+            'phoneNumber', p.phone_number
+        ) AS "contactDetails",
+        COALESCE(
+            json_agg(pi.image_url ORDER BY pi.position) FILTER (WHERE pi.image_url IS NOT NULL),
+            '[]'
+        ) AS images
+    FROM products p
+    LEFT JOIN product_images pi 
+        ON p.product_id = pi.product_id
+    ${whereClause}
+    GROUP BY p.product_id
+    ORDER BY p.posted_at DESC
+  `;
 
-  //   return filtered;
-  // }
+    const { rows } = await postgreSql.query(query, values);
+
+    return rows.map((product) => ({
+      ...product,
+      images: product.images.map(
+        (url: string) => `http://localhost:3001/productPhotos/${url}`
+      ),
+    }));
+  }
 }

@@ -4,7 +4,7 @@
   gap: 10px;
   background-color: #464646;
   padding: 10px;
-  border: 2px solid #313131;
+
   width: 100%;
   max-width: 1000px;
   box-sizing: border-box;
@@ -19,7 +19,6 @@
   align-items: center;
   gap: 5px;
   background: rgb(131, 131, 131);
-  border: 2px solid #797979;
   padding: 5px;
   flex: 1;
   border-radius: 0; /* Sharp edges */
@@ -29,7 +28,6 @@
   display: flex;
   align-items: center;
   background: rgb(131, 131, 131);
-  border: 2px solid #797979;
   padding: 5px;
   width: 36%;
   border-radius: 0; /* Sharp edges */
@@ -77,7 +75,6 @@
   color: white;
   position: absolute;
   top: 100%;
-  left: -2px;
   right: 0;
   background-color: rgb(121, 121, 121);
   max-height: 200px;
@@ -119,11 +116,12 @@
 
 @media (max-width: 1000px) {
   .search-bar {
-    width: 80%;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .location-input {
-    display: none;
+    width: 100%;
   }
 
   .search-bar {

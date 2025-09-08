@@ -14,6 +14,16 @@ router.post(
 router.delete("/delete-product", ProductController.removing);
 router.get("/search/products/:id", ProductController.searchOne);
 router.get("/recent-products", ProductController.getRecentProducts);
-router.get("/user-posted-products", ProductController.getPostedProducts);
+router.get(
+  "/user-posted-products",
+  AuthController.authCheck,
+  ProductController.getPostedProducts
+);
+router.get(
+  "/user-favorite-products",
+  AuthController.authCheck,
+  ProductController.getFavoriteProducts
+);
+router.get("/search-products", ProductController.search);
 
 module.exports = router;

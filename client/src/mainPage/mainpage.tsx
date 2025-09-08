@@ -1,32 +1,34 @@
 import React, { useState } from "react";
 import "./mainPage.css";
-import Categories from "./Categories/SectionCategories.js";
-import SearchBar from "./SearchBar/SearchBar";
+import Categories from "./Categories/SectionCategories";
+import SearchBar from "../Components/SearchBar/SearchBar";
 import ProductList from "./ProductList/productList";
 import { useNavigate } from "react-router-dom";
 
 function MainPage() {
-  const [searchTerm, setTerm] = useState<string | null>(null);
-  const [location, setLocation] = useState<string | null>(null);
-
   const navigate = useNavigate();
 
-  const handleSearch = () => {
-    if (!searchTerm || !location) return;
-    if (searchTerm.trim() || location.trim()) {
-      navigate(
-        `/results?query=${encodeURIComponent(
-          searchTerm
-        )}&location=${encodeURIComponent(location)}`
-      );
+  const handleSearch = (searchTerm, location) => {
+    const params = new URLSearchParams();
+
+    if (searchTerm && searchTerm.trim()) {
+      params.append("name", searchTerm);
     }
+    if (location && location.trim()) {
+      params.append("location", location);
+    }
+
+    navigate(`/search-ads?${params.toString()}`);
   };
+
   return (
     <div className="main-page">
       <SearchBar
-        onSearchChange={(data) => setTerm(data)}
-        onLocationChange={(data) => setLocation(data)}
-        onSearch={() => handleSearch()}
+        parentLocation=""
+        parentSearchTerm=""
+        onSearch={({ name, location }) => {
+          handleSearch(name, location);
+        }}
       />
       <Categories />
       <ProductList />

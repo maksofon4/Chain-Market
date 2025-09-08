@@ -29,4 +29,10 @@ router.post(
   UserProfileController.addProductsToFavorites
 );
 
+router.post(
+  "/remove-product-from-favorites",
+  AuthController.authCheck,
+  UserProfileController.removeProductsFromFavorites
+);
+
 module.exports = router;

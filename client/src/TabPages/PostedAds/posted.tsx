@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { ProductModal } from "Functions/ProductModal/ProductModal";
+import { ProductModal } from "Components/ProductModal/ProductModal";
 import { Product } from "models/product";
 import { SessionInfo } from "models/express-session";
 import { SessionContext } from "GlobalData";
@@ -14,7 +14,6 @@ const PostedList = () => {
 
   // const [postedProducts, setPostedProducts] = useState<Product[]>([]);
   const [openedProduct, setOpenedProduct] = useState<Product | null>(null);
-  const [usersInfo, setUsersInfo] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,7 +49,7 @@ const PostedList = () => {
     <div className="posted-product-list-container">
       {openedProduct && (
         <ProductModal
-          allUsersData={usersInfo}
+          allUsersData={[sessionInfo?.user]}
           sessionInfo={sessionInfo.user}
           product={openedProduct}
           onClose={() => setOpenedProduct(null)}

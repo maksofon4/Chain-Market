@@ -12,6 +12,7 @@ header {
   color: #828282;
   text-decoration: none;
   font-size: 30px;
+  cursor: pointer;
 }
 
 .logo img {
@@ -53,7 +54,7 @@ header {
   transform: translateX(0); /* выезжает вверх */
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1000px) {
   .desktop-content {
     display: none !important;
   }

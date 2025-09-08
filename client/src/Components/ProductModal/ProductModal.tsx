@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { userProfilePhoto, userName } from "../Users/usersInfo";
+import { userProfilePhoto, userName } from "../../Functions/Users/usersInfo";
 import { ProductModalProps } from "models/product";
 import { useNavigate } from "react-router-dom";
 import "./ProductModal.css";

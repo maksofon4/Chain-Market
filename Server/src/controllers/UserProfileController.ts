@@ -141,7 +141,7 @@ class UserProfileController {
         return next(ApiError.badRequest("User not found"));
       }
 
-      user.selected_products = productIds;
+      user.selected_products = [...user.selected_products, ...productIds];
       const result = await UserRepository.saveUser(user);
       if (result) {
         res
@@ -149,6 +149,42 @@ class UserProfileController {
           .json({ message: "The Product has been added to favorites" });
       }
     } catch {
+      return next(ApiError.internal("Unexpected Error"));
+    }
+  }
+
+  async removeProductsFromFavorites(
+    req: SessionRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.session.userId;
+      const { productIds } = req.body;
+
+      if (!userId || !productIds) {
+        return next(ApiError.badRequest("Missing userId or productIds"));
+      }
+
+      const user = await UserRepository.findOneById(userId);
+      if (!user) {
+        return next(ApiError.badRequest("User not found"));
+      }
+
+      // ✅ remove the given productIds from favorites
+      user.selected_products = user.selected_products.filter(
+        (productId: string) => !productIds.includes(productId)
+      );
+
+      const result = await UserRepository.saveUser(user);
+
+      if (result) {
+        res
+          .status(200)
+          .json({ message: "The products have been removed from favorites" });
+      }
+    } catch (err) {
+      console.error("Error removing favorites:", err);
       return next(ApiError.internal("Unexpected Error"));
     }
   }

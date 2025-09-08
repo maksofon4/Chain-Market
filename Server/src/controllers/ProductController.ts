@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { ProductRepository } from "../repositories/ProductRepository";
+import { UserRepository } from "../repositories/UserRepository";
 import ApiError from "../error/ApiError";
 import { SessionRequest } from "../models/express-session";
 
@@ -51,6 +52,31 @@ class ProductController {
     }
   }
 
+  async getFavoriteProducts(
+    req: SessionRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { userId } = req.session;
+
+    if (!userId) {
+      return next(ApiError.internal("Unexpected Error"));
+    }
+
+    const user = await UserRepository.findOneById(userId);
+
+    if (!user) return next(ApiError.internal("Unexpected Error"));
+
+    const productIds = user.selected_products;
+
+    const result = await ProductRepository.findManyById(productIds);
+
+    if (!result) {
+      return next(ApiError.internal("Unexpected Error"));
+    }
+    res.json(result);
+  }
+
   async getPostedProducts(
     req: SessionRequest,
     res: Response,
@@ -84,53 +110,53 @@ class ProductController {
     }
   }
 
-  // async search(req: Request, res: Response, next: NextFunction) {
-  //   try {
-  //     // Так как в Экспресс другая типизация то мы проверяем является ли он валидным чтобы сохранить
-  //     const category =
-  //       typeof req.query.category === "string" ? req.query.category : undefined;
-  //     const location =
-  //       typeof req.query.location === "string" ? req.query.location : undefined;
-  //     const condition =
-  //       typeof req.query.condition === "string"
-  //         ? req.query.condition
-  //         : undefined;
-  //     const name =
-  //       typeof req.query.name === "string" ? req.query.name : undefined;
+  async search(req: Request, res: Response, next: NextFunction) {
+    try {
+      const category =
+        typeof req.query.category === "string" ? req.query.category : undefined;
+      const location =
+        typeof req.query.location === "string" ? req.query.location : undefined;
+      const condition =
+        typeof req.query.condition === "string"
+          ? req.query.condition
+          : undefined;
+      const name =
+        typeof req.query.name === "string" ? req.query.name : undefined;
 
-  //     const tradePossible =
-  //       req.query.tradePossible === "true"
-  //         ? true
-  //         : req.query.tradePossible === "false"
-  //         ? false
-  //         : undefined;
+      const tradePossible =
+        req.query.tradePossible === "true"
+          ? true
+          : req.query.tradePossible === "false"
+          ? false
+          : undefined;
 
-  //     const priceMin =
-  //       typeof req.query.priceMin === "string"
-  //         ? Number(req.query.priceMin)
-  //         : undefined;
-  //     const priceMax =
-  //       typeof req.query.priceMax === "string"
-  //         ? Number(req.query.priceMax)
-  //         : undefined;
+      const priceMin =
+        typeof req.query.priceMin === "string"
+          ? Number(req.query.priceMin)
+          : undefined;
+      const priceMax =
+        typeof req.query.priceMax === "string"
+          ? Number(req.query.priceMax)
+          : undefined;
 
-  //     const result = await ProductRepository.findProducts(
-  //       category,
-  //       location,
-  //       condition,
-  //       tradePossible,
-  //       priceMin,
-  //       priceMax,
-  //       name
-  //     );
-  //     if (!result) {
-  //       return next(ApiError.internal("Unexpected Error"));
-  //     }
-  //     res.json(result);
-  //   } catch (error) {
-  //     next(error); // пробрасываем в error middleware
-  //   }
-  // }
+      const result = await ProductRepository.findProducts(
+        category,
+        location,
+        condition,
+        tradePossible,
+        priceMin,
+        priceMax,
+        name
+      );
+
+      if (!result) {
+        return next(ApiError.internal("Unexpected Error"));
+      }
+      res.json(result);
+    } catch (error) {
+      next(error); // пробрасываем в error middleware
+    }
+  }
 
   async searchOne(req: Request, res: Response, next: NextFunction) {
     try {

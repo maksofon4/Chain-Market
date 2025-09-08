@@ -1,57 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { ProductModal } from "Functions/ProductModal/ProductModal";
+import React, { useState, useEffect, useContext } from "react";
+import { ProductModal } from "Components/ProductModal/ProductModal";
+import { Product } from "models/product";
+import { SessionInfo } from "models/express-session";
+import { SessionContext } from "GlobalData";
 import "./selected.css";
+
 const SelectedList = () => {
+  const sessionInfo = useContext(SessionContext);
   const [products, setProducts] = useState<Product[]>([]);
-  const [imageBaseUrl, setImageBaseUrl] = useState("");
-  const [sessionInfo, setSessionInfo] = useState<SessionInfo | undefined>(
-    undefined
-  );
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [openedProduct, setOpenedProduct] = useState<Product | null>(null);
   const [usersInfo, setUsersInfo] = useState("");
 
-  interface Product {
-    productId: string;
-    userId: string;
-    name: string;
-    category: string;
-    description: string;
-    location: string;
-    priceUSD: string;
-    condition: string;
-    tradePossible: string;
-    contactDetails: {
-      email: string;
-      phoneNumber: string;
-    };
-    images: string[];
-    formattedDateTime: string;
-  }
-  interface SessionInfo {
-    userId: string;
-    username: string;
-    email: string;
-    password: string;
-    profilePhoto: string;
-    pinnedChats: string[];
-    selectedProducts: string[];
-  }
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sessionRes = await fetch(`/api/session-info`);
-        const sessionData = await sessionRes.json();
-        setSessionInfo(sessionData);
-        const productRes = await fetch(`/api/New-ads`);
+        // product data
+        const productRes = await fetch(`/api/user-favorite-products`);
         if (!productRes.ok) throw new Error("Failed to fetch product data");
-        const usersRes = await fetch(`/api/users`);
-        const usersInfo = await usersRes.json();
-        const { products, imageBaseUrl } = await productRes.json();
+        const products = await productRes.json();
+        // user data
+        const userIds = products.map((product) => product.userId);
+        const userRes = await fetch("/api/users-public-data", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ids: userIds }),
+        });
+        const users = await userRes.json();
         setProducts(products);
-        setImageBaseUrl(imageBaseUrl);
-        setUsersInfo(usersInfo);
+        setUsersInfo(users);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -62,7 +39,7 @@ const SelectedList = () => {
 
   useEffect(() => {
     if (sessionInfo) {
-      const selectedIds = sessionInfo.selectedProducts ?? [];
+      const selectedIds = sessionInfo.user.selectedProducts ?? [];
       const filteredProducts = products.filter((product) =>
         selectedIds.includes(product.productId)
       );
@@ -71,17 +48,17 @@ const SelectedList = () => {
   }, [sessionInfo, products]);
 
   const removeFromFavorites = async (productId: string) => {
-    const removeRes = await fetch("/api/remove-product", {
+    const removeRes = await fetch("/api/remove-product-from-favorites", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        userId: sessionInfo?.userId,
         productIds: [productId],
       }),
     });
     if (!removeRes.ok) return;
+    sessionInfo?.refreshUser();
     const updateList = selectedProducts.filter(
       (product) => product.productId !== productId
     );
@@ -93,7 +70,7 @@ const SelectedList = () => {
         <ProductModal
           uploadedImgs={true}
           allUsersData={usersInfo}
-          sessionInfo={sessionInfo}
+          sessionInfo={sessionInfo.user}
           product={openedProduct}
           onClose={() => setOpenedProduct(null)}
         />
@@ -110,10 +87,7 @@ const SelectedList = () => {
             className={`selected-product`}
             onClick={() => setOpenedProduct(product)}
           >
-            <img
-              src={`${imageBaseUrl}${product.images?.[0]}`}
-              alt={product.name}
-            />
+            <img src={`${product.images?.[0]}`} alt={product.name} />
             <div className="product-info">
               <p className="selected-name">{product.name}</p>
               <ul>
@@ -124,7 +98,7 @@ const SelectedList = () => {
                   {product.formattedDateTime}
                 </li>
               </ul>
-              <p className="selected-price">{product.priceUSD}$</p>
+              <p className="selected-price">{product.price}$</p>
             </div>
 
             <button

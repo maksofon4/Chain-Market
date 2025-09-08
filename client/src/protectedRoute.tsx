@@ -1,6 +1,6 @@
 import React, { ReactNode, useEffect, useState, useContext } from "react";
 import { Navigate } from "react-router-dom";
-import Header from "./mainPage/Header/header";
+import Header from "./Components/Header/header";
 import { SessionContext } from "GlobalData";
 
 interface ProtectedRouteProps {

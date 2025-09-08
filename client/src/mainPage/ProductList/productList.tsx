@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from "react";
 import { SessionInfo } from "models/express-session";
 import { Product } from "models/product";
-import { ProductModal } from "Functions/ProductModal/ProductModal";
+import { ProductModal } from "Components/ProductModal/ProductModal";
 import "./productList.css";
 import { SessionContext } from "GlobalData";
+import {
+  toggleFavorite,
+  isFavorite,
+} from "Functions/FavoriteProducts/favoriteProducts";
 
-interface userInfo {
-  profilePhoto: string;
-  userId: string;
-  username: string;
-}
+import { usersInfo } from "models/users";
 
 const ProductList = () => {
   const sessionInfo = useContext(SessionContext);
@@ -18,7 +18,7 @@ const ProductList = () => {
   const [selectedProducts, setSelectedProducts] = useState<string[] | null>(
     null
   );
-  const [usersInfo, setUsersInfo] = useState<userInfo[] | null>(null);
+  const [usersInfo, setUsersInfo] = useState<usersInfo[] | null>(null);
   const [openedProduct, setOpenedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -48,49 +48,17 @@ const ProductList = () => {
     fetchData();
   }, []);
 
-  const isFavorite = (productId) => {
-    if (selectedProducts) {
-      return selectedProducts.includes(productId);
-    }
-    return false;
-  };
-
   const addRemoveFavorites = async (
     event: React.MouseEvent,
     productId: string
   ) => {
     event.stopPropagation();
-    if (!selectedProducts) return;
-    if (selectedProducts.includes(productId)) {
-      const updatedSelectedData = selectedProducts.filter(
-        (product) => product !== productId
-      );
-      setSelectedProducts(updatedSelectedData);
-      const removeReq = await fetch("/api/remove-product", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: sessionInfo?.userId,
-          productIds: [productId],
-        }),
-      });
-      if (!removeReq.ok) return;
-    } else {
-      const updatedSelectedData = [...selectedProducts, productId];
-      setSelectedProducts(updatedSelectedData);
-      const selectReq = await fetch("/api/add-product-to-favorites", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          productIds: [productId],
-        }),
-      });
-      if (!selectReq.ok) return;
-    }
+
+    const updated = await toggleFavorite(productId, selectedProducts);
+    if (!updated) return;
+
+    setSelectedProducts(updated);
+    sessionInfo?.refreshUser();
   };
 
   return (
@@ -126,7 +94,7 @@ const ProductList = () => {
               <button
                 onClick={(e) => addRemoveFavorites(e, product.productId)}
                 className={
-                  isFavorite(product.productId)
+                  isFavorite(product.productId, selectedProducts)
                     ? "selectedButton Added"
                     : "selectedButton"
                 }

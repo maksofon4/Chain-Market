@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { SessionContext } from "GlobalData";
-import ProductImageUploader from "Functions/ProductImageUploader";
-import { ProductModal } from "Functions/ProductModal/ProductModal";
+import ProductImageUploader from "Components/ProductImageUploader/ProductImageUploader";
+import { ProductModal } from "Components/ProductModal/ProductModal";
 import { categories, cities } from "clientSideInfo";
 import "./addProudct.css";
 import { Product } from "models/product";
@@ -198,7 +198,7 @@ const AddProduct = () => {
         <ProductModal
           uploadedImgs={false}
           allUsersData={userdata}
-          sessionInfo={sessionInfo}
+          sessionInfo={sessionInfo.user}
           product={openedProduct}
           onClose={() => setOpenedProduct(null)}
         />

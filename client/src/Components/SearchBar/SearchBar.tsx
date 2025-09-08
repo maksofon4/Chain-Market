@@ -1,27 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { cities } from "clientSideInfo";
 import "./SearchBar.css";
 
 interface SearchBarProps {
-  onSearchChange: (value: string) => void;
-  onLocationChange: (value: string) => void;
-  onSearch: () => void;
+  onSearch: (data: { name: string | null; location: string | null }) => void;
+  parentSearchTerm: string;
+  parentLocation: string;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({
-  onSearchChange,
-  onLocationChange,
   onSearch,
+  parentSearchTerm,
+  parentLocation,
 }) => {
   // State for managing search input and location input
-  const [searchTerm, setSearchTerm] = useState("");
-  const [location, setLocation] = useState("");
+  const [searchTerm, setSearchTerm] = useState(parentSearchTerm ?? "");
+  const [location, setLocation] = useState(parentLocation ?? "");
   const [suggestions, setSuggestions] = useState<string[] | []>([]);
+
+  useEffect(() => {
+    setSearchTerm(parentSearchTerm ?? "");
+  }, [parentSearchTerm]);
+
+  useEffect(() => {
+    setLocation(parentLocation ?? "");
+  }, [parentLocation]);
 
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    onSearchChange(e.target.value);
   };
 
   // Handle location input change
@@ -36,26 +43,24 @@ const SearchBar: React.FC<SearchBarProps> = ({
       );
       setSuggestions(filteredCities);
     } else {
-      onLocationChange("");
       setSuggestions([]);
     }
   };
 
   // Handle suggestion click (select a city)
   const handleSuggestionClick = (city) => {
-    onLocationChange(city);
-    setLocation(city); // Set the location input field to the selected city
+    setLocation(city);
     setSuggestions([]); // Clear the suggestions
   };
 
   // Handle search button click
   const handleSearchClick = () => {
-    onSearch();
+    onSearch({ name: searchTerm, location: location });
   };
 
   return (
     <div className="search-bar">
-      <div className="searchInput">
+      <div className="searchInput px-2">
         <svg className="icon icon-search">
           <use xlinkHref="/symbol-defs.svg#icon-search"></use>
         </svg>
@@ -68,7 +73,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         />
       </div>
 
-      <div className="location-input">
+      <div className="location-input px-2">
         <svg className="icon icon-location">
           <use xlinkHref="/symbol-defs.svg#icon-location"></use>
         </svg>
@@ -81,7 +86,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
         {suggestions.length > 0 && (
           <div className="suggestions">
             {suggestions.map((city, index) => (
-              <p key={index} onClick={() => handleSuggestionClick(city)}>
+              <p
+                key={index}
+                onClick={() => {
+                  handleSuggestionClick(city);
+                }}
+              >
                 {city}
               </p>
             ))}
