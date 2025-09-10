@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SessionContext } from "GlobalData";
+import { SessionContext } from "Components/GlobalData/GlobalData";
 import ProductImageUploader from "Components/ProductImageUploader/ProductImageUploader";
 import { ProductModal } from "Components/ProductModal/ProductModal";
 import { categories, cities } from "clientSideInfo";

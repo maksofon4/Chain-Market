@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ImageUploader from "../../Functions/cropImage";
+import ImageUploader from "../../Functions/media/cropImage";
 import "./ProductImageUploader.css";
 
 interface ProductImageUploaderProps {

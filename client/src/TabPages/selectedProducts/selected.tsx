@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { ProductModal } from "Components/ProductModal/ProductModal";
 import { Product } from "models/product";
 import { SessionInfo } from "models/express-session";
-import { SessionContext } from "GlobalData";
+import { SessionContext } from "Components/GlobalData/GlobalData";
 import "./selected.css";
 
 const SelectedList = () => {

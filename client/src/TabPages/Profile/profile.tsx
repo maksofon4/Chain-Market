@@ -1,7 +1,7 @@
 import { useState, useContext } from "react";
-import ImageUploader from "Functions/cropImage";
+import ImageUploader from "Functions/media/cropImage";
 import "./profile.css";
-import { SessionContext } from "GlobalData";
+import { SessionContext } from "Components/GlobalData/GlobalData";
 
 interface croppedData {
   croppedDataUrl: string;

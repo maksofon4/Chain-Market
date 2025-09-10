@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SessionContext } from "GlobalData";
+import { SessionContext } from "Components/GlobalData/GlobalData";
 import { SessionInfo } from "models/express-session";
 import "./header.css";
 import logo from "./logo_alt.png";

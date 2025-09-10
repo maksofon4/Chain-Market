@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import { categories } from "clientSideInfo";
 import { ProductModal } from "Components/ProductModal/ProductModal";
 import { Product } from "models/product";
-import { SessionContext } from "GlobalData";
+import { SessionContext } from "Components/GlobalData/GlobalData";
 import { usersInfo } from "models/users";
 import {
   isFavorite,
@@ -29,8 +29,8 @@ const SearchAds: React.FC = () => {
   const [categorySelectActive, setCategorySelectActive] =
     useState<boolean>(false);
   const [categoryIcon, setCategoryIcon] = useState<string | null>(null);
-  const [refreshQuerryString, setRefreshQuerryString] = useState<number>(0);
 
+  // UPDATE TO USEQUERRYSTATE Logic
   const queryString = useMemo(() => {
     const params = new URLSearchParams();
     if (category && category !== "Any") params.append("category", category);
@@ -52,7 +52,6 @@ const SearchAds: React.FC = () => {
     isTradePossible,
     name,
     location,
-    refreshQuerryString,
   ]);
 
   const firstRender = useRef(true);

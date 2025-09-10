@@ -3,7 +3,7 @@ import { SessionInfo } from "models/express-session";
 import { Product } from "models/product";
 import { ProductModal } from "Components/ProductModal/ProductModal";
 import "./productList.css";
-import { SessionContext } from "GlobalData";
+import { SessionContext } from "Components/GlobalData/GlobalData";
 import {
   toggleFavorite,
   isFavorite,

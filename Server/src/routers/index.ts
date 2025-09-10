@@ -4,6 +4,7 @@ const router = Router(); // просто вызываем функцию
 
 const authRouter = require("./authRoutes");
 const productRouter = require("./productRoutes");
+const chatsRouter = require("./chatRoutes");
 
 router.use(
   session({
@@ -20,5 +21,6 @@ router.use(
 
 router.use(authRouter);
 router.use(productRouter);
+router.use(chatsRouter);
 
 module.exports = router;

@@ -6,26 +6,16 @@ import { io, Socket } from "socket.io-client";
 import "./messages.css";
 import { Message } from "./chatHistory.tsx";
 import { ChatList } from "./sortChats.tsx";
+import { usersInfo } from "models/users.ts";
+import { SessionContext } from "Components/GlobalData/GlobalData.tsx";
+import { useContext } from "react";
 
 const Messages = () => {
-  interface SessionInfo {
-    userId: string;
-    username: string;
-    email: string;
-    profilePhoto: string;
-    pinnedChats: string[];
-    selectedProducts: string[];
-  }
+  const sessionInfo = useContext(SessionContext);
+  const user = sessionInfo?.user;
 
-  interface user {
-    userId: string;
-    username: string;
-    profilePhoto: string;
-  }
-
-  const [sessionInfo, setSessionInfo] = useState<SessionInfo | null>(null);
   const [chats, setChats] = useState<{ [chatId: string]: Message[] }>({});
-  const [usersInfo, setUsersInfo] = useState<user[] | null>(null);
+  const [usersInfo, setUsersInfo] = useState<usersInfo[] | null>(null);
   const [isChatSelected, setIsChatSelected] = useState(false);
   const [messageInput, setMessageInput] = useState("");
   const socketRef = useRef<Socket | null>(null);
@@ -61,16 +51,14 @@ const Messages = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sessionReq = await fetch(`/api/session-info`);
-        const chatHistoryRes = await fetch(`/api/chat-history`);
+        const chatHistoryRes = await fetch(`/api/chats-history`);
         const usersRes = await fetch(`/api/users`);
-        if (!chatHistoryRes.ok || !usersRes.ok || !sessionReq.ok)
+        if (!chatHistoryRes.ok || !usersRes.ok || !sessionInfo)
           throw new Error("Failed to fetch chat data");
-        const sessionInfo = await sessionReq.json();
         const chatData = await chatHistoryRes.json();
         const usersInfo = await usersRes.json();
-        setSessionInfo(sessionInfo);
-        setPinnedChats(sessionInfo.pinnedChats);
+
+        setPinnedChats(sessionInfo.user.pinnedChats);
         setUsersInfo(usersInfo);
         setChats(chatData);
       } catch (error) {
@@ -82,7 +70,7 @@ const Messages = () => {
   }, []);
 
   useEffect(() => {
-    if (!socketRef.current && sessionInfo?.userId) {
+    if (!socketRef.current && user?.userId) {
       socketRef.current = io("/", {
         path: "/socket.io",
         withCredentials: true,
@@ -92,8 +80,8 @@ const Messages = () => {
         console.log("Connected:", socketRef.current?.id);
       });
 
-      socketRef.current.emit("join", sessionInfo.userId);
-      console.log("User joined with ID:", sessionInfo.userId);
+      socketRef.current.emit("join", user.userId);
+      console.log("User joined with ID:", user.userId);
 
       socketRef.current.on("disconnect", () => {
         console.log("Disconnected");
@@ -106,10 +94,10 @@ const Messages = () => {
         socketRef.current = null;
       }
     };
-  }, [sessionInfo?.userId]);
+  }, [user?.userId]);
 
   useEffect(() => {
-    if (!socketRef.current || !sessionInfo?.userId) return;
+    if (!socketRef.current || !user?.userId) return;
     socketRef.current.on("private message", (message) => {
       if (!chats) {
         return;
@@ -121,7 +109,7 @@ const Messages = () => {
         }
 
         // Define your current user ID (replace with actual value or context)
-        const userId = sessionInfo.userId; // replace with actual user ID
+        const userId = user.userId; // replace with actual user ID
 
         // Check if the message is for the current user (either from or to)
         if (message.from === userId || message.to === userId) {
@@ -139,7 +127,7 @@ const Messages = () => {
         }
       });
     });
-  }, [sessionInfo?.userId]);
+  }, [user?.userId]);
 
   useEffect(() => {
     if (selectedChatId && chats && chats[selectedChatId]) {
@@ -301,7 +289,7 @@ const Messages = () => {
   };
 
   const pinChats = async () => {
-    const userId = sessionInfo?.userId;
+    const userId = user?.userId;
     if (!isPinButtonActive) {
       setPinButtonActive(true);
       storeSelectedChats(pinnedChats);
@@ -331,7 +319,7 @@ const Messages = () => {
   };
 
   const deleteChats = async () => {
-    const userId = sessionInfo?.userId;
+    const userId = user?.userId;
     if (!isDeleteButtonActive) {
       storeSelectedChats([]);
       setDeleteButtonActive(true);
