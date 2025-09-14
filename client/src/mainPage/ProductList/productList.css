@@ -1,0 +1,123 @@
+:root {
+  --bright-color: #ffae00;
+  --border-color: #797979;
+  --input-background-color: rgb(131, 131, 131);
+  --input-container-color: #464646;
+  --svg-color: white;
+  --text-color: white;
+}
+
+.product-list-container button {
+  border: none;
+}
+
+.product-list-container h1 {
+  font-size: clamp(0.5rem, calc(2vw + 1rem), 1.5rem);
+  color: white;
+  text-align: start;
+  width: 100%;
+}
+
+.product-list-container {
+  padding-top: min(1em, 3%);
+  padding-left: min(2em, 5%);
+  padding-right: min(2em, 5%);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1000px;
+  background-color: var(--input-container-color);
+}
+
+.product {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  position: relative;
+  width: 90%;
+  padding: min(3em, 3%);
+  text-align: start;
+  cursor: pointer;
+  color: var(--text-color);
+  background-color: var(--input-background-color);
+  height: 100%;
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.product p {
+  margin: 0;
+}
+
+.name {
+  font-size: clamp(1rem, calc(2vw + 0.2rem), 1.2rem);
+  font-weight: bold;
+  max-width: 100%; /* ограниченная ширина обязательно */
+  overflow: hidden; /* скрываем всё, что выходит за пределы */
+  white-space: nowrap; /* не переносим текст */
+  text-overflow: ellipsis; /* добавляем "..." */
+  display: inline-block; /* или block/flex-item (не inline!) */
+  vertical-align: top;
+}
+
+.product img {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  height: auto;
+  width: 90%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0.5em;
+  margin: 0 auto;
+}
+
+.product-info ul {
+  margin: 0;
+  padding: 0;
+  list-style-position: inside;
+}
+
+.price {
+  font-size: clamp(1rem, calc(2vw + 0.4rem), 1.5rem);
+  font-weight: bold;
+  padding: 0 0 1vh 0;
+}
+
+/*hover*/
+.product:hover {
+  background-color: #6e6e6e;
+}
+
+.product:hover .product-info {
+  color: white;
+  opacity: 0.9;
+}
+
+.selectedButton {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  padding: 5px;
+  top: 0px;
+  right: 0px;
+  cursor: pointer;
+  background: none;
+}
+
+.selectedButton svg {
+  fill: #ebebeb;
+  padding: min(1em, 5%);
+  border-radius: 10%;
+  width: 30px;
+  height: 30px;
+  background-color: var(--input-container-color);
+}
+
+.Added svg {
+  fill: var(--bright-color);
+}

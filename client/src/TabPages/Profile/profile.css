@@ -1,0 +1,409 @@
+:root {
+  --header-color: rgb(32, 32, 32);
+  --text-color: white;
+  --text-hover-color: #a7a7a7;
+  --svg-color: white;
+  --input-container-color: #464646;
+  --container-background: rgb(48, 48, 48);
+  --svg-hover: #8a8a8a;
+  --input-name: white;
+  --confirm-button: #ffae00;
+  --confirm-button-hover: #e69d00;
+}
+
+.profileSettingsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.profileItemContainer {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  max-width: 900px;
+  padding: 5px 30px 5px 30px;
+  background-color: var(--text-hover-color);
+  overflow: hidden;
+}
+
+.profileItemContainer .icon-arrow-down {
+  transition: transform 0.3s ease-in-out;
+}
+
+.profileItem svg {
+  fill: #ffff;
+}
+
+.profileItem {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  cursor: pointer;
+}
+
+.profileItemActive {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+}
+
+.profileItemText {
+  color: white;
+  font-size: 20px;
+  margin: 0;
+}
+
+.profileItem .icon-arrow-down {
+  width: 25px;
+  height: 25px;
+  transform: rotate(-90deg);
+  margin-left: auto;
+}
+
+.Active .icon-arrow-down {
+  transform: rotate(90deg);
+}
+
+.profileOptionDropDown {
+  visibility: hidden;
+  max-height: 0px;
+  transition: visibility 0.3s ease-in-out, max-height 0.3s ease-in-out,
+    margin-bottom 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 0px;
+}
+
+.Active .profileOptionDropDown {
+  visibility: visible;
+  max-height: 600px;
+  margin-bottom: 20px;
+}
+
+.profileItemTextSecondary {
+  font-size: 15px;
+  color: var(--input-name);
+}
+
+.borderLine {
+  align-self: center;
+  margin-top: 20px;
+  width: 100%;
+  border-bottom: 1px solid var(--svg-hover);
+}
+
+.confirmChangesButton {
+  all: unset;
+  color: white;
+  text-align: center;
+  margin-top: 20px;
+  padding: 10px 25px 10px 25px;
+  border-radius: 5px;
+  width: 20%;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: var(--confirm-button);
+}
+
+.confirmChangesButton:hover {
+  background-color: var(--confirm-button-hover);
+}
+
+.inputWrapper {
+  position: relative;
+  width: 60%;
+}
+
+.profileSettingsContainer .showPasswordButton {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.profileSettingsContainer .showPasswordButton svg {
+  margin: 0;
+  vertical-align: baseline;
+}
+
+.profileOptionDropDown input {
+  all: unset;
+  width: 100%;
+  height: 40px;
+  padding: 5px;
+  color: white;
+  border-radius: 5px;
+  box-sizing: border-box;
+  background-color: var(--svg-hover);
+}
+
+/*Update Photo*/
+
+.image-text-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.sideText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  padding: 40px 40px 40px 20px;
+  width: 80%;
+}
+
+.sideText span {
+  display: none;
+}
+
+.sideText ul {
+  list-style-position: inside;
+  padding: 0;
+  margin: 0;
+}
+
+.sideText li,
+.sideText p {
+  color: white;
+  font-size: 20px;
+}
+
+.sideText p {
+  font-weight: bold;
+}
+
+.sideText a {
+  color: white;
+  border-bottom: 2px solid white;
+}
+
+.image-uploader-container {
+  width: 50%;
+  height: 50%;
+}
+
+.image-uploader-container .prevImage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 100%;
+  height: 100%;
+}
+
+#change-photo-word {
+  visibility: hidden;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  background-color: #0000007c;
+  color: white;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+}
+
+.prevImage label:hover #change-photo-word {
+  visibility: visible;
+}
+
+.cropper-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed; /* Fixed to the viewport */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000; /* Ensure it's on top */
+}
+
+.cropping-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  background-color: #000000a1;
+  padding: 10px 20px 10px 20px;
+  border-radius: 20px;
+  position: absolute;
+  bottom: 10%;
+  user-select: none; /* Prevents text selection */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none;
+}
+
+.cropping-buttons button {
+  all: unset;
+  padding: 10px 25px 10px 25px;
+  min-width: 50px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.cropping-buttons .cancel-crop-button {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  color: white;
+}
+
+.cancel-crop-button:hover {
+  background-color: #47474780;
+}
+
+.cropping-buttons .save-crop-button {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  color: white;
+  background-color: var(--confirm-button);
+}
+
+.save-crop-button:hover {
+  background-color: var(--confirm-button-hover);
+}
+
+.image-uploader-container label {
+  display: flex;
+  flex-direction: row;
+}
+
+.image-uploader-container h2 {
+  color: white;
+  font-size: 20px;
+}
+
+.prevImage input {
+  all: unset;
+  display: none;
+  width: 100%;
+}
+
+#remove-img-button {
+  all: unset;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#remove-img-button svg {
+  fill: red;
+  padding: 5px;
+  border-radius: 20px;
+  width: 25px;
+  height: 25px;
+  background-color: white;
+}
+
+.imgWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 300px;
+  max-height: 300px;
+  aspect-ratio: 1/1;
+  cursor: pointer;
+}
+
+.imgWrapper img {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 1200px) {
+  .sideText {
+    width: 50%;
+  }
+}
+
+@media (max-width: 1100px) {
+  .image-uploader-container {
+    width: 50%;
+    height: 50%;
+  }
+}
+
+@media (max-width: 1000px) {
+  .sideText {
+    padding: 20px 20px 0px 20px;
+  }
+  .sideText li,
+  .sideText p {
+    color: white;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 800px) {
+  .sideText {
+    padding: 40px 20px 0px 20px;
+  }
+}
+
+@media (max-width: 655px) {
+  .inputWrapper {
+    width: 100%;
+  }
+  .confirmChangesButton {
+    width: 50%;
+  }
+  .sideText span {
+    display: inline;
+  }
+  .sideText ul {
+    display: none;
+  }
+  .sideText p {
+    margin: 0;
+  }
+}
+
+@media (max-width: 550px) {
+  .sideText p {
+    margin: 0;
+    font-size: 12px;
+  }
+  .sideText {
+    padding: 0;
+    width: 100%;
+  }
+  .image-text-container {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 500px) {
+  .confirmChangesButton {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .image-uploader-container {
+    width: 100%;
+    height: 100%;
+  }
+  .image-uploader-container label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}

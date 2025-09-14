@@ -1,0 +1,238 @@
+:root {
+  --header-color: rgb(32, 32, 32);
+  --text-color: white;
+  --text-hover-color: #a7a7a7;
+  --svg-color: white;
+  --input-container-color: #464646;
+  --container-background: rgb(48, 48, 48);
+  --button-background-hover: #e79e00;
+  --button-background: #ffae00;
+}
+
+.inputName {
+  color: var(--button-background);
+}
+
+.alert {
+  display: none;
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+}
+
+.authentication-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  min-height: 700px;
+  height: 100vh;
+}
+
+.authentication-container .mode-name {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  padding: 10px 0 10px 0;
+}
+
+.authentication-container .mode-name a {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.authentication-container .mode-name a {
+  text-decoration: none;
+  font-weight: bold;
+  color: var(--text-hover-color);
+  padding: 5px;
+  cursor: pointer;
+}
+
+.mode-name a.active {
+  color: var(--button-background);
+  border-bottom: 2px solid var(--button-background);
+}
+
+.divider1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  background-color: var(--container-background);
+  background-size: cover;
+  padding: 20px 20px 50px 20px;
+  margin: 20px 20px 50px 20px;
+  border-radius: 20px;
+  width: 40%;
+  max-height: 1000px;
+  max-width: 500px;
+}
+
+.authentication-container form {
+  display: flex;
+  gap: 20px;
+}
+
+.authentication-container .form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.authentication-container form {
+  width: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.authentication-container label {
+  position: relative;
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  width: 100%;
+  box-sizing: content-box;
+}
+
+.authentication-container .showPasswordButton {
+  position: absolute;
+  right: 10px;
+  bottom: 50%;
+  padding: 0;
+  transform: translateY(50%);
+  height: 20px;
+}
+
+.authentication-container svg {
+  fill: white;
+  vertical-align: baseline;
+}
+
+.authentication-container input {
+  width: 100%;
+  padding: 10px;
+  font-size: 1em;
+  border: 1px solid var(--input-container-color);
+  border-radius: 4px;
+  background-color: var(--text-hover-color);
+  color: white;
+  box-sizing: border-box;
+}
+
+.authentication-container input:focus {
+  outline: none; /* Removes default outline */
+  box-shadow: 0 0 5px var(--button-background); /* Adds a blue glow effect */
+  border: 1px solid var(--button-background); /* Optional: Change border color */
+}
+
+.checkbox label {
+  display: flex;
+}
+
+.checkbox a {
+  color: var(--button-background);
+}
+
+.checkbox {
+  display: flex;
+  flex-direction: row;
+  font-size: 20px;
+}
+
+.checkbox p {
+  font-weight: lighter;
+  color: var(--text-hover-color);
+  margin: 0;
+}
+
+#checkboxContainer {
+  position: relative;
+  display: inline;
+  margin: 5px;
+}
+
+.checkbox input {
+  height: 20px;
+  width: 20px;
+  opacity: 0;
+  margin: 10px;
+}
+
+.checkbox #checkboxSpan {
+  height: 25px;
+  width: 25px;
+  border: 2px solid var(--text-hover-color);
+  background-color: var(--text-color);
+  border-radius: 2px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.checkbox input:checked + #checkboxSpan {
+  border: 2px solid var(--button-background);
+}
+
+.checkbox #checkboxSpan::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: 5px;
+  border: solid white;
+  border-width: 0px 3px 3px 0px;
+  transform: rotate(45deg);
+  opacity: 0;
+}
+
+.checkbox input:checked ~ #checkboxSpan::after {
+  width: 40%;
+  height: 60%;
+  opacity: 1;
+}
+
+.checkbox input:checked ~ #checkboxSpan {
+  background-color: var(--button-background);
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--button-background);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.submitBtn:hover {
+  background-color: var(--button-background-hover);
+}
+
+@media (max-width: 985px) {
+  .divider1 {
+    width: 90%;
+  }
+}
+
+@media (max-width: 450px) {
+  .authentication-container form {
+    width: 95%;
+  }
+  .authentication-container h2 {
+    width: 95;
+  }
+}

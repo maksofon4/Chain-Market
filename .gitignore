@@ -1,0 +1,10 @@
+node_modules/
+Server/public/
+Server/chats/
+Server/dataFolder/
+.idea/
+.env
+Server/src/router.ts
+Server/data/chatsPhotos
+Server/data/productPhotos
+Server/data/profilePhotos

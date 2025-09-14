@@ -1,0 +1,148 @@
+:root {
+  --product-image-uploader-container: #8a8a8a;
+  --img-input-placeholder: rgb(230, 230, 230);
+  --p-color: white;
+  --save-button: #ffae00;
+  --save-button-hover: #e69d00;
+}
+
+.product-image-uploader-container {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1/1;
+}
+
+.product-image-uploader-container label {
+  cursor: pointer;
+  display: inline;
+}
+
+.img-input-container {
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--product-image-uploader-container);
+}
+
+.product-image-uploader-container #new-photo-input {
+  display: none;
+}
+
+.input-icons-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.input-icons-wrapper svg {
+  fill: var(--img-input-placeholder);
+}
+
+.input-icons-wrapper p {
+  color: var(--img-input-placeholder);
+}
+
+/*Update Photo*/
+
+.product-img-prev {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 100%;
+  height: 100%;
+}
+
+.product-img-cropper-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+}
+
+.product-img-cropping-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  background-color: #000000a1;
+  padding: 10px 20px 10px 20px;
+  border-radius: 20px;
+  position: absolute;
+  bottom: 10%;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+.product-img-cropping-buttons button {
+  all: unset;
+  padding: 10px 25px 10px 25px;
+  min-width: 50px;
+  text-align: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.product-img-cropping-buttons .product-img-cancel-crop-button {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  color: white;
+}
+
+.product-img-cancel-crop-button:hover {
+  background-color: #47474780;
+}
+
+.product-img-cropping-buttons .product-img-save-crop-button {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  color: white;
+  background-color: var(--save-button);
+}
+
+.product-img-save-crop-button:hover {
+  background-color: var(--save-button-hover);
+}
+
+#remove-product-img-button {
+  all: unset;
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#remove-product-img-button svg {
+  fill: red;
+  padding: 5px;
+  border-radius: 20px;
+  width: 25px;
+  height: 25px;
+  background-color: white;
+}
+
+.product-img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 300px;
+  max-height: 300px;
+  aspect-ratio: 1/1;
+  cursor: pointer;
+}
+
+.product-img-wrapper img {
+  width: 100%;
+  height: 100%;
+}

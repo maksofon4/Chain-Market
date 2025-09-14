@@ -1,0 +1,130 @@
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #464646;
+  padding: 10px;
+
+  width: 100%;
+  max-width: 1000px;
+  box-sizing: border-box;
+}
+
+.search-bar input::placeholder {
+  color: white;
+}
+
+.searchInput {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgb(131, 131, 131);
+  padding: 5px;
+  flex: 1;
+  border-radius: 0; /* Sharp edges */
+}
+
+.location-input {
+  display: flex;
+  align-items: center;
+  background: rgb(131, 131, 131);
+  padding: 5px;
+  width: 36%;
+  border-radius: 0; /* Sharp edges */
+}
+
+.searchInput input,
+.location-input input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+  padding: 5px;
+  background-color: rgb(131, 131, 131);
+  color: white;
+}
+
+.search-bar button {
+  background-color: #ffae00;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 0; /* Sharp edges */
+  font-size: 16px;
+}
+
+.search-bar button:hover {
+  background-color: #e69d00;
+}
+
+/* Styling for icons */
+.icon {
+  width: 20px;
+  height: 20px;
+  fill: white;
+}
+
+.location-input {
+  position: relative;
+}
+
+.suggestions {
+  width: 100%;
+  border: 2px solid #797979;
+  color: white;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: rgb(121, 121, 121);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  text-align: left;
+}
+
+.suggestions::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track (the background of the scrollbar) */
+.suggestions::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+/* Scrollbar handle */
+.suggestions::-webkit-scrollbar-thumb {
+  background: #464646;
+  border-radius: 10px;
+}
+
+/* Scrollbar handle on hover */
+.suggestions::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.suggestions p {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestions p:hover {
+  background-color: #f1f1f1;
+  color: #313131;
+}
+
+@media (max-width: 1000px) {
+  .search-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .location-input {
+    width: 100%;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+}

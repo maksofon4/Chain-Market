@@ -1,0 +1,24 @@
+.main-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 50px;
+  background-color: rgb(48, 48, 48);
+  width: 60%;
+  margin-top: min(15em, 14%);
+  margin-bottom: min(10vh, 10%);
+  padding: min(5em, 5%);
+}
+
+html {
+  background-position: top;
+  background-size: cover;
+}
+
+@media (max-width: 1500px) {
+  .main-page {
+    width: 90%;
+  }
+}

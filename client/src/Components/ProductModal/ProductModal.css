@@ -1,0 +1,337 @@
+:root {
+  --overflowWindow: #464646;
+  --headerInfo: #a7a7a7;
+  --text: white;
+  --darker-text: rgb(231, 231, 231);
+  --special-text: #e69d00;
+  --special-text-transparent: rgba(255, 160, 17, 0.1);
+}
+
+.transparent-background {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1200;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  background-color: #00000075;
+}
+
+.overflowWindow {
+  flex-direction: column;
+  justify-content: center;
+  position: fixed;
+  overflow-y: auto;
+  background-color: var(--overflowWindow);
+  box-sizing: border-box;
+  width: 40%;
+  height: 100vh;
+  padding: 0px 20px 20px 20px;
+  gap: 5px;
+  z-index: 1000;
+  left: 50%;
+  top: 0;
+  box-sizing: border-box;
+  transform: translateX(-50%);
+}
+
+.closeButton {
+  all: unset;
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 20px;
+  padding: 5px 20px 5px 20px;
+  border-radius: 5px;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background-color: rgb(218, 0, 0);
+}
+
+.overflowWindow::-webkit-scrollbar {
+  display: none;
+}
+
+.productHeaderInfo {
+  color: var(--text);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 25px;
+  border-bottom: 1px solid #888;
+}
+
+.productHeaderInfo p {
+  margin: 0;
+}
+
+.productHeaderInfo .releaseDate {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.productHeaderInfo img {
+  height: 90px;
+  width: 90px;
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.productHeaderInfo .username {
+  font-weight: bolder;
+}
+
+.overflowWindow .productImgs {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  padding: 20px;
+}
+
+.overflowWindow .productImgs img {
+  height: 500px;
+  width: 500px;
+  aspect-ratio: 1/1;
+  margin: 10px;
+  object-fit: cover;
+}
+
+.productImgs button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.productImgs button:hover {
+  background-color: #888888a2;
+}
+
+.productImgs button svg {
+  width: 30px;
+  height: 30px;
+}
+
+#left-button svg {
+  fill: var(--darker-text);
+}
+
+#right-button svg {
+  transform: rotate(180deg);
+  fill: var(--darker-text);
+}
+
+.productInfo button {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  margin: 20px 0px 20px 0px;
+  color: white;
+  font-size: 25px;
+  background-color: var(--special-text);
+  border-radius: 5px;
+  width: 200px;
+  cursor: pointer;
+}
+
+.productInfo button:hover {
+  background-color: #d49100;
+}
+
+.overflowWindow .productInfo {
+  width: 100%;
+}
+
+.overflowWindow .productInfo ul {
+  margin: 0px;
+  width: 70%;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.overflowWindow .productInfo li {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--special-text);
+  background-color: var(--special-text-transparent);
+  color: var(--special-text);
+  padding: 10px;
+  border-radius: 5px;
+  text-wrap: nowrap;
+}
+
+.currentProductName {
+  font-size: 35px;
+  color: var(--text);
+}
+
+.currentProductPrice {
+  font-size: 40px;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.currentProductLocation {
+  font-size: 25px;
+  color: var(--text);
+}
+
+.description {
+  color: var(--darker-text);
+  word-wrap: break-word;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.contactDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.contactDetails p {
+  font-size: 30px;
+  color: var(--special-text);
+}
+
+.contactDetails ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.contactDetails li {
+  display: inline-block;
+  padding: 10px;
+  color: var(--special-text);
+  border: 1px solid var(--special-text);
+  background-color: var(--special-text-transparent);
+  margin: 5px 0;
+}
+
+@media (max-width: 1600px) {
+  .overflowWindow .productImgs img {
+    height: 400px;
+    width: 400px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .overflowWindow {
+    width: 60%;
+
+    padding: 0px 20px 20px 20px;
+  }
+}
+
+@media (max-width: 800px) {
+  .overflowWindow {
+    width: 70%;
+    padding: 0px 20px 20px 20px;
+  }
+}
+
+@media (max-width: 700px) {
+  .overflowWindow .productImgs img {
+    height: 350px;
+    width: 350px;
+  }
+}
+
+@media (max-width: 600px) {
+  .overflowWindow {
+    width: 100%;
+    padding: 0px 20px 20px 20px;
+  }
+}
+
+@media (max-width: 500px) {
+  .overflowWindow {
+    width: 100%;
+    padding: 0px 20px 20px 20px;
+  }
+
+  .productHeaderInfo .username {
+    max-width: 150px;
+    overflow: hidden;
+    font-size: 15px;
+  }
+  .productHeaderInfo .releaseDate {
+    font-size: 15px;
+  }
+
+  .closeButton {
+    font-size: 15px;
+    padding: 3px 10px 3px 10px;
+    border-radius: 5px;
+  }
+
+  .productImgs button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .overflowWindow .productImgs {
+    padding: 20px;
+  }
+
+  .overflowWindow .productImgs img {
+    height: 280px;
+    width: 280px;
+    margin: 5px;
+    object-fit: cover;
+  }
+
+  .overflowWindow .productInfo li {
+    padding: 5px;
+    font-size: 15px;
+    border-radius: 5px;
+    text-wrap: nowrap;
+  }
+  .productInfo button {
+    padding: 5px;
+    margin: 20px 0px 20px 0px;
+    font-size: 20px;
+    width: 200px;
+  }
+  .currentProductName {
+    font-size: 25px;
+    color: var(--text);
+  }
+
+  .currentProductPrice {
+    font-size: 25px;
+    font-weight: bold;
+    color: var(--text);
+  }
+
+  .currentProductLocation {
+    font-size: 20px;
+    color: var(--text);
+  }
+}
+@media (max-width: 400px) {
+  .overflowWindow .productImgs img {
+    height: 250px;
+    width: 250px;
+    margin: 5px;
+    object-fit: cover;
+  }
+}

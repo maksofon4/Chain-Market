@@ -1,0 +1,96 @@
+:root {
+  --border-color: #797979;
+  --filter-item: rgb(131, 131, 131);
+  --input-container-color: #464646;
+  --svg-color: white;
+  --dark-overlay: #0000007c;
+}
+
+.searchAds-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(48, 48, 48);
+  width: 80%;
+  margin-top: min(15em, 14%);
+  margin-bottom: min(10vh, 10%);
+  padding: min(5em, 5%);
+}
+
+.search-filters {
+  width: 100%;
+  display: flex;
+  max-width: 1000px;
+  background-color: var(--input-container-color);
+}
+
+.filter-item {
+  padding: 10px 20px 10px 20px;
+  background-color: var(--filter-item);
+  color: white;
+  border-radius: 5px;
+  /* white-space: nowrap; */
+  cursor: pointer;
+  user-select: none;
+  /* min-width: 150px; */
+}
+
+.filter-item .price-input {
+  all: unset;
+  padding: 3px 5px 3px 5px;
+  max-width: 100px;
+  background-color: var(--filter-item-input-background);
+}
+
+.filter-item .price-input::-webkit-outer-spin-button,
+.filter-item .price-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+@media (max-width: 1500px) {
+  .searchAds-container {
+    width: 80%;
+  }
+}
+
+/* products */
+.product-search-type {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  padding: min(3em, 3%);
+  text-align: start;
+  cursor: pointer;
+  color: var(--text-color);
+  background-color: var(--input-background-color);
+  height: 100%;
+}
+
+.product-search-type-description {
+  max-height: 100px;
+  overflow: hidden;
+}
+
+.product-search-type img {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0.5em;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .product-search-type {
+    flex-direction: column;
+  }
+
+  .product-search-type img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1/1;
+  }
+}
