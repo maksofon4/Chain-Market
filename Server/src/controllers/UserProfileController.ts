@@ -15,23 +15,27 @@ class UserProfileController {
 
       // 1. Проверка авторизации
       if (!req.session.userId) {
-        return next(ApiError.badRequest("Not authenticated"));
+        throw ApiError.badRequest("Not authenticated");
+      }
+
+      if (!password) {
+        throw ApiError.badRequest("Password is required for the operation");
       }
 
       // 2. Найти пользователя
       const user = await UserRepository.findOneById(req.session.userId);
       if (!user) {
-        return next(ApiError.badRequest("User not found"));
+        throw ApiError.badRequest("User not found");
       }
       const validCredentials = await bcrypt.compare(password, user.password);
 
       if (!validCredentials) {
-        return next(ApiError.badRequest("Invalid Credentials"));
+        throw ApiError.badRequest("Invalid Credentials");
       }
 
       // 3. Проверка файла
       if (!req.file) {
-        return next(ApiError.badRequest("No file uploaded"));
+        throw ApiError.badRequest("No file uploaded");
       }
 
       // 4. Обновить путь к фото
@@ -40,7 +44,7 @@ class UserProfileController {
 
       res.status(200).json({ message: "success", user: updatedUser });
     } catch (error) {
-      return next(ApiError.internal("Unexpected Error"));
+      next(error);
     }
   }
 
@@ -49,80 +53,56 @@ class UserProfileController {
     res: Response,
     next: NextFunction
   ) {
-    const { email, username, currentpassword, password } = req.body;
-    if (!req.session.userId) {
-      return next(ApiError.badRequest("Not authenticated"));
-    }
-    const userId = req.session.userId;
-
     try {
+      const { email, username, currentpassword, password } = req.body;
+      if (!req.session.userId) {
+        throw ApiError.badRequest("Not authenticated");
+      }
+      const userId = req.session.userId;
+
       const user = await UserRepository.findOneById(userId);
 
       if (!user) {
-        res.status(404).json({ message: "User not found." });
-        return;
+        throw ApiError.internal("Failed to find user");
       }
 
       let updated = false;
-      // Update email or username if provided
+      let isPasswordCorrect = await bcrypt.compare(
+        currentpassword,
+        user.password
+      );
 
-      if (email && currentpassword) {
-        const isMatch = await bcrypt.compare(currentpassword, user.password);
-        if (isMatch) {
-          user.email = email;
-          const updateUserRes = await UserRepository.saveUser(user);
-          if (updateUserRes) {
-            updated = true;
-          } else {
-            return next(ApiError.internal("Unexpected Error"));
-          }
-        } else {
-          return next(ApiError.badRequest("Account password is incorrect."));
-        }
-      }
-      if (username && currentpassword) {
-        const isMatch = await bcrypt.compare(currentpassword, user.password);
-
-        if (isMatch) {
-          user.user_name = username;
-          const updateUserRes = await UserRepository.saveUser(user); //ERROR
-          if (updateUserRes) {
-            updated = true;
-          } else {
-            next(ApiError.internal("Unexpected Error"));
-          }
-        } else {
-          return next(ApiError.badRequest("Account password is incorrect."));
-        }
+      if (!email && !username && !password) {
+        throw ApiError.badRequest("No values were passed for change");
       }
 
-      // Handle password change if current password is provided
-      if (password && currentpassword) {
-        const isMatch = await bcrypt.compare(currentpassword, user.password);
+      if (!isPasswordCorrect) {
+        throw ApiError.badRequest("Account password is incorrect.");
+      }
 
-        if (isMatch) {
-          const hashedPassword = await bcrypt.hash(password, 10);
-          user.password = hashedPassword;
-          const updateUserRes = await UserRepository.saveUser(user);
-          if (updateUserRes) {
-            updated = true;
-          } else {
-            return next(ApiError.internal("Unexpected Error"));
-          }
-        } else {
-          return next(ApiError.badRequest("Account password is incorrect."));
-        }
+      if (email) {
+        user.email = email;
+      }
+      if (username) {
+        user.user_name = username;
+      }
+
+      if (password) {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        user.password = hashedPassword;
+      }
+      const updateUserRes = await UserRepository.saveUser(user);
+      if (updateUserRes) {
+        updated = true;
       }
 
       if (updated) {
         res
           .status(200)
           .json({ message: "Your account has been updated successfully" });
-      } else {
-        res.status(400).json({ message: "No changes detected." });
       }
     } catch (error) {
-      next(ApiError.internal("Unexpected Error"));
+      next(error);
     }
   }
 
@@ -134,11 +114,17 @@ class UserProfileController {
     try {
       const userId = req.session.userId;
       const { productIds } = req.body;
-      if (!userId || !productIds) return;
+
+      if (!userId) {
+        throw ApiError.badRequest("Not authenticated");
+      }
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        throw ApiError.badRequest("Expected non-empty array of product IDs");
+      }
 
       const user = await UserRepository.findOneById(userId);
       if (!user) {
-        return next(ApiError.badRequest("User not found"));
+        throw ApiError.badRequest("User not found");
       }
 
       user.selected_products = [...user.selected_products, ...productIds];
@@ -148,8 +134,8 @@ class UserProfileController {
           .status(200)
           .json({ message: "The Product has been added to favorites" });
       }
-    } catch {
-      return next(ApiError.internal("Unexpected Error"));
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -162,16 +148,18 @@ class UserProfileController {
       const userId = req.session.userId;
       const { productIds } = req.body;
 
-      if (!userId || !productIds) {
-        return next(ApiError.badRequest("Missing userId or productIds"));
+      if (!userId) {
+        throw ApiError.badRequest("Not authenticated");
+      }
+      if (!Array.isArray(productIds) || productIds.length === 0) {
+        throw ApiError.badRequest("Expected non-empty array of product IDs");
       }
 
       const user = await UserRepository.findOneById(userId);
       if (!user) {
-        return next(ApiError.badRequest("User not found"));
+        throw ApiError.badRequest("User not found");
       }
 
-      // ✅ remove the given productIds from favorites
       user.selected_products = user.selected_products.filter(
         (productId: string) => !productIds.includes(productId)
       );
@@ -183,9 +171,8 @@ class UserProfileController {
           .status(200)
           .json({ message: "The products have been removed from favorites" });
       }
-    } catch (err) {
-      console.error("Error removing favorites:", err);
-      return next(ApiError.internal("Unexpected Error"));
+    } catch (error) {
+      next(error);
     }
   }
 }

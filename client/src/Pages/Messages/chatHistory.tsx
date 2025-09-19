@@ -22,7 +22,6 @@ const MessagesList: React.FC<Props> = ({
   chatHistory,
   onMediaSelect,
 }) => {
-  // Get the messages for the current chat
   const messages = chatHistory[chatId] || [];
 
   // Separate old and new messages based on the 'status'
@@ -95,7 +94,6 @@ const MessagesList: React.FC<Props> = ({
 
   return (
     <div id="messages" ref={messagesContainerRef}>
-      {/* Render old messages first */}
       {oldMessages.map((msg, index) => renderMessage(msg, index))}
 
       {newMessages.length > 0 ? (
@@ -106,7 +104,6 @@ const MessagesList: React.FC<Props> = ({
         <div ref={messagesContainerRef}></div>
       )}
 
-      {/* Render new messages */}
       {newMessages.map((msg, index) => renderMessage(msg, index))}
     </div>
   );

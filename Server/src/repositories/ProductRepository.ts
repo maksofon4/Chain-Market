@@ -2,13 +2,17 @@ import { promises as fs } from "fs";
 import path from "path";
 import { productPhotosDir } from "../config/env";
 import { Product, ProductInput } from "../models/Product";
-import postgreSql from "../../data/dataBase/postgre";
+import postgreSql from "../dataBase/postgre";
+import ApiError from "../error/ApiError";
 
 const productPhotosDest = `../${productPhotosDir}`;
 
 export class ProductRepository {
-  static async getRecentProducts(quantity: number): Promise<Product[]> {
-    const query = `
+  static async getRecentProducts(
+    quantity: number
+  ): Promise<Product[] | undefined> {
+    try {
+      const query = `
     SELECT 
         p.product_id AS "productId",
         p.user_id AS "userId",
@@ -37,20 +41,26 @@ export class ProductRepository {
     LIMIT ${quantity};
   `;
 
-    const { rows } = await postgreSql.query(query);
+      const { rows } = await postgreSql.query(query);
 
-    const products = rows.map((product) => ({
-      ...product,
-      images: product.images.map(
-        (url: string) => `http://localhost:3001/productPhotos/${url}`
-      ),
-    }));
+      if (rows.length === 0) return undefined;
 
-    return products;
+      const products = rows.map((product) => ({
+        ...product,
+        images: product.images.map(
+          (url: string) => `http://localhost:3001/productPhotos/${url}`
+        ),
+      }));
+
+      return products;
+    } catch (error) {
+      throw ApiError.internal("Unexpected error occured while finding chats");
+    }
   }
 
-  static async findById(id: string): Promise<Product | null> {
-    const query = `
+  static async findById(id: string): Promise<Product | undefined> {
+    try {
+      const query = `
     SELECT 
         p.product_id AS "productId",
         p.user_id AS "userId",
@@ -77,19 +87,22 @@ export class ProductRepository {
     GROUP BY p.product_id
     LIMIT 1;
   `;
+      const values = [id];
+      const { rows } = await postgreSql.query(query, values);
 
-    const values = [id];
-    const result = await postgreSql.query(query, values);
+      if (rows.length === 0) return undefined;
 
-    if (result.rows.length === 0) {
-      return null;
+      return rows[0] as Product;
+    } catch (error) {
+      throw ApiError.internal(
+        "Unexpected error during finding product by id: occured"
+      );
     }
-
-    return result.rows[0] as Product;
   }
 
-  static async findManyById(ids: string[]): Promise<Product[]> {
-    const query = `
+  static async findManyById(ids: string[]): Promise<Product[] | undefined> {
+    try {
+      const query = `
     SELECT 
         p.product_id AS "productId",
         p.user_id AS "userId",
@@ -118,21 +131,29 @@ export class ProductRepository {
     ORDER BY p.posted_at DESC;
   `;
 
-    const values = [ids]; // pass as array
-    const { rows } = await postgreSql.query(query, values);
+      const values = [ids]; // pass as array
+      const { rows } = await postgreSql.query(query, values);
 
-    const products = rows.map((product) => ({
-      ...product,
-      images: product.images.map(
-        (url: string) => `http://localhost:3001/productPhotos/${url}`
-      ),
-    }));
+      if (rows.length === 0) return undefined;
 
-    return products;
+      const products = rows.map((product) => ({
+        ...product,
+        images: product.images.map(
+          (url: string) => `http://localhost:3001/productPhotos/${url}`
+        ),
+      }));
+
+      return products;
+    } catch (error) {
+      throw ApiError.internal(
+        "Unexpected error occured during finding products by id"
+      );
+    }
   }
 
-  static async findByUserId(id: string): Promise<Product[] | null> {
-    const query = `
+  static async findByUserId(id: string): Promise<Product[] | undefined> {
+    try {
+      const query = `
     SELECT 
     p.product_id AS "productId",
     p.user_id AS "userId",
@@ -166,30 +187,36 @@ ORDER BY p.posted_at DESC;
 
   `;
 
-    const { rows } = await postgreSql.query(query, [id]);
+      const { rows } = await postgreSql.query(query, [id]);
 
-    const postedProducts = rows.map((product) => {
-      const validLinksImages = product.images.map(
-        (image: { url: string }) =>
-          `http://localhost:3001/productPhotos/${image.url}`
+      if (rows.length === 0) return undefined;
+
+      const postedProducts = rows.map((product) => {
+        const validLinksImages = product.images.map(
+          (image: { url: string }) =>
+            `http://localhost:3001/productPhotos/${image.url}`
+        );
+
+        return {
+          ...product,
+          images: validLinksImages,
+        };
+      });
+
+      return postedProducts;
+    } catch (error) {
+      throw ApiError.internal(
+        "Unexpected error occured during finding products by user id"
       );
-
-      return {
-        ...product,
-        images: validLinksImages,
-      };
-    });
-
-    return postedProducts;
+    }
   }
 
-  static async create(product: ProductInput): Promise<Product | null> {
+  static async create(product: ProductInput): Promise<Product | undefined> {
     const client = await postgreSql.connect();
     try {
       await client.query("BEGIN");
 
-      // 1. Вставляем сам продукт
-      const productResult = await client.query(
+      const { rows } = await client.query(
         `INSERT INTO products (
         user_id,
         name,
@@ -218,9 +245,12 @@ ORDER BY p.posted_at DESC;
         ]
       );
 
-      const productId = productResult.rows[0].product_id;
+      if (rows.length === 0) {
+        throw ApiError.internal("Failed to create product");
+      }
 
-      // 2. Вставляем изображения, если есть
+      const productId = rows[0].product_id;
+
       if (product.images.length > 0) {
         const placeholders: string[] = [];
         const values: string[] = [productId];
@@ -233,22 +263,28 @@ ORDER BY p.posted_at DESC;
         const query = `
         INSERT INTO product_images (product_id, image_url, position)
         VALUES ${placeholders.join(", ")}
+        RETURNING *
       `;
 
-        await client.query(query, values);
+        const imagesRes = await client.query(query, values);
+        if (imagesRes.rows.length === 0)
+          throw ApiError.internal(
+            "Unexpected error occured during saving images"
+          );
       }
 
       await client.query("COMMIT");
-      return productResult.rows[0] ?? null;
-    } catch (err) {
+      return rows[0] ?? null;
+    } catch (error) {
       await client.query("ROLLBACK");
-      throw err;
+      if (error instanceof ApiError) throw error;
+      throw ApiError.internal("Unexpected error occured during saving product");
     } finally {
       client.release();
     }
   }
 
-  static async remove(productId: string): Promise<boolean> {
+  static async remove(productId: string) {
     const client = await postgreSql.connect();
 
     try {
@@ -259,6 +295,9 @@ ORDER BY p.posted_at DESC;
         [productId]
       );
 
+      if (imagesRes.rows.length === 0)
+        throw ApiError.badRequest("Failed to find product images");
+
       const imageUrls: string[] = imagesRes.rows.map((row) => row.image_url);
 
       const deleteProductRes = await client.query(
@@ -267,7 +306,7 @@ ORDER BY p.posted_at DESC;
       );
 
       if (deleteProductRes.rowCount === 0) {
-        throw new Error(`Product with ID ${productId} not found.`);
+        throw ApiError.badRequest(`Failed to delete product`);
       }
 
       for (const url of imageUrls) {
@@ -284,11 +323,13 @@ ORDER BY p.posted_at DESC;
       }
 
       await client.query("COMMIT");
-      return true;
-    } catch (err) {
+    } catch (error) {
       await client.query("ROLLBACK");
-      console.error("Ошибка при удалении товара:", err);
-      return false;
+      console.error("Ошибка при удалении товара:", error);
+      if (error instanceof ApiError) throw error;
+      throw ApiError.internal(
+        "Failed to remove product.Unexpected error occured"
+      );
     } finally {
       client.release();
     }
@@ -303,49 +344,50 @@ ORDER BY p.posted_at DESC;
     priceMax?: number,
     name?: string
   ): Promise<Product[]> {
-    const values: any[] = [];
-    const conditions: string[] = [];
+    try {
+      const values: any[] = [];
+      const conditions: string[] = [];
 
-    if (category) {
-      values.push(category.toLowerCase());
-      conditions.push(`LOWER(p.category) = $${values.length}`);
-    }
+      if (category) {
+        values.push(category.toLowerCase());
+        conditions.push(`LOWER(p.category) = $${values.length}`);
+      }
 
-    if (location) {
-      values.push(`%${location.toLowerCase()}%`);
-      conditions.push(`LOWER(p.location) LIKE $${values.length}`);
-    }
+      if (location) {
+        values.push(`%${location.toLowerCase()}%`);
+        conditions.push(`LOWER(p.location) LIKE $${values.length}`);
+      }
 
-    if (condition) {
-      values.push(condition.toLowerCase());
-      conditions.push(`LOWER(p.condition) = $${values.length}`);
-    }
+      if (condition) {
+        values.push(condition.toLowerCase());
+        conditions.push(`LOWER(p.condition) = $${values.length}`);
+      }
 
-    if (tradePossible !== undefined) {
-      values.push(tradePossible);
-      conditions.push(`p.trade_possible = $${values.length}`);
-    }
+      if (tradePossible !== undefined) {
+        values.push(tradePossible);
+        conditions.push(`p.trade_possible = $${values.length}`);
+      }
 
-    if (priceMin !== undefined) {
-      values.push(priceMin);
-      conditions.push(`p.price >= $${values.length}`);
-    }
+      if (priceMin !== undefined) {
+        values.push(priceMin);
+        conditions.push(`p.price >= $${values.length}`);
+      }
 
-    if (priceMax !== undefined) {
-      values.push(priceMax);
-      conditions.push(`p.price <= $${values.length}`);
-    }
+      if (priceMax !== undefined) {
+        values.push(priceMax);
+        conditions.push(`p.price <= $${values.length}`);
+      }
 
-    if (name) {
-      values.push(`%${name.toLowerCase()}%`);
-      conditions.push(`LOWER(p.name) LIKE $${values.length}`);
-    }
+      if (name) {
+        values.push(`%${name.toLowerCase()}%`);
+        conditions.push(`LOWER(p.name) LIKE $${values.length}`);
+      }
 
-    const whereClause = conditions.length
-      ? `WHERE ${conditions.join(" AND ")}`
-      : "";
+      const whereClause = conditions.length
+        ? `WHERE ${conditions.join(" AND ")}`
+        : "";
 
-    const query = `
+      const query = `
     SELECT 
         p.product_id AS "productId",
         p.user_id AS "userId",
@@ -373,13 +415,21 @@ ORDER BY p.posted_at DESC;
     ORDER BY p.posted_at DESC
   `;
 
-    const { rows } = await postgreSql.query(query, values);
+      const { rows } = await postgreSql.query(query, values);
 
-    return rows.map((product) => ({
-      ...product,
-      images: product.images.map(
-        (url: string) => `http://localhost:3001/productPhotos/${url}`
-      ),
-    }));
+      if (rows.length === 0) return [];
+
+      return rows.map((product) => ({
+        ...product,
+        images: product.images.map(
+          (url: string) => `http://localhost:3001/productPhotos/${url}`
+        ),
+      }));
+    } catch (error) {
+      if (error instanceof ApiError) throw error;
+      throw ApiError.internal(
+        "Unexpected error occured. Failed to find products"
+      );
+    }
   }
 }

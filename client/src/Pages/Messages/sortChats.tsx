@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { userProfilePhoto, userName } from "Functions/Users/usersInfo";
 import { Message } from "models/messages";
 
@@ -56,9 +56,9 @@ export const Chat = ({
   isDeleteButtonActive: boolean;
   selectedChats: string[];
 }) => {
-  const newMessages = messages.filter(
-    (message) => message.status === "new"
-  ).length;
+  const newMessages = useMemo(() => {
+    return messages.filter((m) => m.status === "new").length;
+  }, [messages]);
   return (
     <div onClick={onClick} key={otherUserId} className="chat">
       <img

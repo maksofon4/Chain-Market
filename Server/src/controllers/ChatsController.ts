@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import e, { Request, Response, NextFunction } from "express";
 import { SessionRequest } from "../models/express-session";
 import { ChatsRepository } from "../repositories/ChatsRepository";
 import ApiError from "../error/ApiError";
@@ -26,7 +26,48 @@ class ChatsController {
       }
       res.json(history);
     } catch (error) {
-      return next(ApiError.internal("Unexpected Error"));
+      next(error);
+    }
+  }
+
+  async checkMessagesForChatOwner(
+    req: SessionRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { userId } = req.session;
+      const { forUserId } = req.body;
+
+      if (!userId || !forUserId) {
+        return next(
+          ApiError.badRequest("The request must consits of two values")
+        );
+      }
+
+      const chats = await ChatsRepository.findChatsByIds(userId, forUserId);
+
+      if (chats.length < 2) {
+        throw ApiError.internal(
+          `Couldn't find chats, expected 2 values but querry returned 1 or less`
+        );
+      }
+
+      const ownersChat = chats.find(
+        (chat) =>
+          chat.owner_user_id === userId && chat.with_user_id === forUserId
+      );
+
+      if (!ownersChat) {
+        return next(ApiError.badRequest("The chat does not exist"));
+      }
+
+      await ChatsRepository.markMessagesAsChecked(
+        ownersChat.owner_user_id,
+        forUserId
+      );
+    } catch (error) {
+      next(error);
     }
   }
 }
@@ -52,58 +93,58 @@ export const socketController = (server: HttpServer) => {
       socket.emit("join");
     });
 
-    // Listen for private messages
     socket.on("private message", async (data: messageFromClient) => {
-      const { toUserId, message, sentAt } = data;
-      const fromUserId = socket.userId; // Use the session ID stored in the socket
-      if (!fromUserId) return;
+      try {
+        const { toUserId, message } = data;
+        const fromUserId = socket.userId;
+        if (!fromUserId) throw ApiError.internal("Connection lost");
 
-      let chats = await ChatsRepository.findChatsByIds(toUserId, fromUserId);
+        let chats = await ChatsRepository.findChatsByIds(toUserId, fromUserId);
 
-      if (!chats || chats.length === 0) {
-        const userIds = [toUserId, fromUserId];
-        chats = await ChatsRepository.createChats(userIds);
-
-        if (!chats || chats.length === 0) {
-          throw new Error("Failed to create chat");
+        if (chats.length === 0) {
+          const userIds = [toUserId, fromUserId];
+          chats = await ChatsRepository.createChats(userIds);
         }
-      }
 
-      const messageforDb = {
-        senderId: fromUserId,
-        receiverId: toUserId,
-        content: message,
-        sentAt: sentAt,
-      };
+        const messageforDb = {
+          senderId: fromUserId,
+          receiverId: toUserId,
+          content: message,
+        };
 
-      const writeMessageRes = await ChatsRepository.writeMessage(messageforDb);
+        const writeMessageRes = await ChatsRepository.writeMessage(
+          messageforDb
+        );
 
-      if (!writeMessageRes) throw new Error("Failed to save the message");
+        const messageFromDb = {
+          id: writeMessageRes.id,
+          from: writeMessageRes.fromUserId,
+          to: writeMessageRes.toUserId,
+          content: writeMessageRes.content,
+          status: writeMessageRes.status,
+          timestamp: writeMessageRes.sentAt,
+        };
+        socket.emit("private message", messageFromDb);
 
-      // Emit the message to the sender
-
-      socket.emit("private message", {
-        from: fromUserId,
-        to: toUserId,
-        content: message,
-        status: "checked",
-        sentAt: sentAt,
-      });
-
-      // Check if the recipient is connected
-      const recipientSocketId = connectedUsers[toUserId];
-      if (recipientSocketId) {
-        const recipientSocket = io.sockets.sockets.get(recipientSocketId);
-        if (recipientSocket) {
-          // Emit the message to the recipient
-          recipientSocket.emit("private message", {
-            from: fromUserId,
-            to: toUserId,
-            message,
-            status: "new",
-            sentAt,
+        // Check if the recipient is connected
+        const recipientSocketId = connectedUsers[toUserId];
+        if (recipientSocketId) {
+          const recipientSocket = io.sockets.sockets.get(recipientSocketId);
+          if (recipientSocket) {
+            // Emit the message to the recipient
+            recipientSocket.emit("private message", messageFromDb);
+          }
+        }
+      } catch (error) {
+        if (error instanceof ApiError) {
+          socket.emit("error", {
+            status: error.status,
+            message: error.message,
           });
+        } else {
+          socket.emit("error", { status: 500, message: "Unexpected error" });
         }
+        console.error("Socket error:", error);
       }
     });
 

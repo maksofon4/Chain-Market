@@ -8,7 +8,6 @@ class AuthController {
   async registration(req: Request, res: Response, next: NextFunction) {
     try {
       const { username, email, password } = req.body;
-      // 1. Проверка, переданы ли данные
       if (!email || !password) {
         return next(ApiError.badRequest("Email and password are required"));
       }
@@ -20,31 +19,28 @@ class AuthController {
       }
 
       const newUser = { username, email, password };
-      const result = await UserRepository.create(newUser);
-      if (!result) {
-        // return next(ApiError.internal("Unexpected Error"));
-        res.json(result);
-      }
+      await UserRepository.create(newUser);
+
       res.json("User Registered Successfully");
     } catch (error) {
-      next(error); // пробрасываем в error middleware
+      next(error);
     }
   }
 
   async login(req: SessionRequest, res: Response, next: NextFunction) {
-    const { email, password } = req.body;
-    const user = await UserRepository.findByEmail(email);
+    try {
+      const { email, password } = req.body;
+      const user = await UserRepository.findByEmail(email);
 
-    if (!user) {
-      return next(ApiError.badRequest("User does not exist"));
-    }
+      if (!user) {
+        throw ApiError.badRequest("User does not exist");
+      }
 
-    const validCredentials = await bcrypt.compare(password, user.password);
-    if (!validCredentials) {
-      return next(ApiError.badRequest("Invalid Credentials"));
-    }
+      const validCredentials = await bcrypt.compare(password, user.password);
+      if (!validCredentials) {
+        throw ApiError.badRequest("Invalid Credentials");
+      }
 
-    if (validCredentials) {
       req.session.userId = user.user_id;
       res.status(200).json({
         userId: user.user_id,
@@ -54,6 +50,8 @@ class AuthController {
         pinnedChats: user.pinned_chats,
         selectedProducts: user.selected_products,
       });
+    } catch (error) {
+      next(error);
     }
   }
 
@@ -62,7 +60,7 @@ class AuthController {
       const { userId } = req.session;
 
       if (!userId) {
-        return next(ApiError.badRequest("Not authenticated"));
+        throw ApiError.badRequest("Not authenticated");
       }
       const userData = await UserRepository.findOneById(userId);
 
@@ -72,7 +70,7 @@ class AuthController {
 
       next();
     } catch (error) {
-      return next(ApiError.internal("Unexpected Error"));
+      next(error);
     }
   }
 
@@ -104,7 +102,7 @@ class AuthController {
         selectedProducts: user.selected_products,
       });
     } catch (error) {
-      return next(ApiError.internal("Unexpected error"));
+      return next(error);
     }
   }
 

@@ -123,20 +123,17 @@ const Messages = () => {
           return prevChats;
         }
 
-        // Define your current user ID (replace with actual value or context)
-        const userId = user.userId; // replace with actual user ID
+        const userId = user.userId;
 
-        // Check if the message is for the current user (either from or to)
         if (message.from === userId || message.to === userId) {
-          const chatKey = message.from === userId ? message.to : message.from; // Use the other user as the chat key
-          const chatMessages = prevChats[chatKey] || []; // Get existing messages for that user, or empty array
+          const chatKey = message.from === userId ? message.to : message.from;
+          const chatMessages = prevChats[chatKey] || [];
           if (message.from === userId) message.status = "checked";
           return {
             ...prevChats,
-            [chatKey]: [...chatMessages, message], // Add new message to the chat
+            [chatKey]: [...chatMessages, message],
           };
         } else {
-          // If the message is not for the current user, don't update chats
           console.log("Message not for the current user.");
           return prevChats;
         }
@@ -197,7 +194,6 @@ const Messages = () => {
         },
         body: JSON.stringify({
           forUserId: currentChatId,
-          newStatus: "checked",
         }),
       });
 
@@ -274,7 +270,6 @@ const Messages = () => {
       socketRef.current.emit("private message", {
         toUserId: selectedChatId,
         message: messageData,
-        sentAt: new Date().toISOString(),
       });
       markAsChecked(selectedChatId);
       setMessageInput("");

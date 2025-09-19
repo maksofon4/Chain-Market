@@ -17,5 +17,4 @@ export interface messageFromClient {
   message: object;
   files?: string[];
   fromUserId: string;
-  sentAt: string;
 }

@@ -7,13 +7,13 @@ class UsersController {
     try {
       const { ids } = req.body;
       if (!Array.isArray(ids) || ids.length === 0) {
-        return next(ApiError.badRequest("No user ids were passed"));
+        throw ApiError.badRequest("No user ids were passed");
       }
 
       // Получаем пользователей параллельно
       const users = await UserRepository.findManyById(ids);
       if (!users) {
-        return next(ApiError.internal("The data request has failed"));
+        throw ApiError.internal("The data request has failed");
       }
       const userData = users.map((user) => ({
         userId: user.user_id,

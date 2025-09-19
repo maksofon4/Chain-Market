@@ -16,7 +16,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
   const navigate = useNavigate();
 
   const navigateUserToChat = (userId, product) => {
+    // ADD CHECK ISAUTH
     localStorage.setItem("product", JSON.stringify(product));
+
     navigate(`/messages/chat/${userId}`);
   };
   const nextImage = () => {

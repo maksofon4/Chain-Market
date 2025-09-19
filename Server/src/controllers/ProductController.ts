@@ -21,9 +21,13 @@ class ProductController {
 
       const { userId } = req.session;
 
-      if (!userId) return;
+      if (!userId) throw ApiError.badRequest("Not authenticated");
 
       const files = req.files as Express.Multer.File[];
+
+      if (files.length === 0) {
+        throw ApiError.internal("Failed to save product images");
+      }
 
       const imageFilenames = files?.map((file) => file.filename) || [];
 
@@ -42,10 +46,8 @@ class ProductController {
 
       console.log(newProduct);
 
-      const result = await ProductRepository.create(newProduct);
-      if (!result) {
-        return next(ApiError.internal("Unexpected Error"));
-      }
+      await ProductRepository.create(newProduct);
+
       res.json("Product Uploaded Successfully");
     } catch (error) {
       next(error); // пробрасываем в error middleware
@@ -57,24 +59,27 @@ class ProductController {
     res: Response,
     next: NextFunction
   ) {
-    const { userId } = req.session;
+    try {
+      const { userId } = req.session;
 
-    if (!userId) {
-      return next(ApiError.internal("Unexpected Error"));
+      if (!userId) {
+        return next(ApiError.internal("Not authenticated"));
+      }
+      const user = await UserRepository.findOneById(userId);
+
+      if (!user) throw ApiError.badRequest("Not authenticated");
+
+      const productIds = user.selected_products;
+
+      const result = await ProductRepository.findManyById(productIds);
+
+      if (!result) {
+        return next(ApiError.internal("Unexpected Error"));
+      }
+      res.json(result);
+    } catch (error) {
+      next(error);
     }
-
-    const user = await UserRepository.findOneById(userId);
-
-    if (!user) return next(ApiError.internal("Unexpected Error"));
-
-    const productIds = user.selected_products;
-
-    const result = await ProductRepository.findManyById(productIds);
-
-    if (!result) {
-      return next(ApiError.internal("Unexpected Error"));
-    }
-    res.json(result);
   }
 
   async getPostedProducts(
@@ -82,28 +87,36 @@ class ProductController {
     res: Response,
     next: NextFunction
   ) {
-    const { userId } = req.session;
+    try {
+      const { userId } = req.session;
 
-    if (!userId) {
-      return next(ApiError.badRequest("Not Authenticated"));
+      if (!userId) {
+        throw ApiError.badRequest("Not Authenticated");
+      }
+
+      const result = await ProductRepository.findByUserId(userId);
+
+      if (!result) {
+        return next(ApiError.internal("Unexpected Error"));
+      }
+      res.json(result);
+    } catch (error) {
+      next(error);
     }
-
-    const result = await ProductRepository.findByUserId(userId);
-
-    if (!result) {
-      return next(ApiError.internal("Unexpected Error"));
-    }
-    res.json(result);
   }
 
   async removing(req: Request, res: Response, next: NextFunction) {
     try {
       const { productId } = req.body;
 
-      const result = await ProductRepository.remove(productId);
-      if (!result) {
-        return next(ApiError.internal("Unexpected Error"));
+      const product = await ProductRepository.findById(productId);
+
+      if (!product) {
+        throw ApiError.badRequest("The product does not exist");
       }
+
+      await ProductRepository.remove(productId);
+
       res.json("Product Removed Successfully");
     } catch (error) {
       next(error); // пробрасываем в error middleware
@@ -149,12 +162,9 @@ class ProductController {
         name
       );
 
-      if (!result) {
-        return next(ApiError.internal("Unexpected Error"));
-      }
       res.json(result);
     } catch (error) {
-      next(error); // пробрасываем в error middleware
+      next(error);
     }
   }
 
@@ -162,23 +172,21 @@ class ProductController {
     try {
       const { id } = req.params;
 
+      if (!id) {
+        throw ApiError.badRequest(`Expected product Id but got ${id}`);
+      }
+
       const result = await ProductRepository.findById(id);
 
-      if (!result) {
-        return next(ApiError.internal("Unexpected Error"));
-      }
       res.json(result);
     } catch (error) {
-      next(error); // пробрасываем в error middleware
+      next(error);
     }
   }
   async getRecentProducts(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await ProductRepository.getRecentProducts(20);
 
-      if (!result) {
-        return next(ApiError.internal("Unexpected Error"));
-      }
       res.json(result);
     } catch (error) {
       next(error); // пробрасываем в error middleware

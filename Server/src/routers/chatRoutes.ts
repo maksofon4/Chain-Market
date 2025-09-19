@@ -11,4 +11,10 @@ router.get(
   ChatsController.getChatsHistory
 );
 
+router.post(
+  "/update-message-status",
+  AuthController.authCheck,
+  ChatsController.checkMessagesForChatOwner
+);
+
 module.exports = router;
