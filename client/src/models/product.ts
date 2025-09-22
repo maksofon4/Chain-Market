@@ -1,4 +1,4 @@
-import { SessionInfo } from "./express-session";
+import { User } from "./user";
 
 export interface Product {
   productId: string;
@@ -21,7 +21,7 @@ export interface Product {
 export interface ProductModalProps {
   uploadedImgs: boolean;
   allUsersData: any;
-  sessionInfo?: SessionInfo;
+  userInfo: User | null;
   product: Product;
   onClose: () => void;
 }

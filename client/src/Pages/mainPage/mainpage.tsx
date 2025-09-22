@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./mainPage.css";
 import Categories from "./Categories/SectionCategories";
-import SearchBar from "../Components/SearchBar/SearchBar";
+import SearchBar from "../../Components/SearchBar/SearchBar";
 import ProductList from "./ProductList/productList";
 import { useNavigate } from "react-router-dom";
 

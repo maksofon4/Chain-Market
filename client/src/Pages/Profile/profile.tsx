@@ -1,7 +1,8 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import ImageUploader from "Functions/media/cropImage";
 import "./profile.css";
-import { SessionContext } from "Components/GlobalData/GlobalData";
+import { useAppDispatch, useAppSelector } from "hooks/redux";
+import { fetchUser } from "store/reducers/userReducer/ActionCreator";
 
 interface croppedData {
   croppedDataUrl: string;
@@ -9,7 +10,8 @@ interface croppedData {
 }
 
 const ProfileSettings = () => {
-  const { user, refreshUser } = useContext(SessionContext);
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state) => state.userReducer);
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [visiblePasswords, setVisiblePasswords] = useState<number[]>([]);
   const [email, setEmail] = useState<string | undefined>(undefined);
@@ -55,7 +57,7 @@ const ProfileSettings = () => {
         if (response.ok) {
           const result = await response.json();
           alert(result.message);
-          refreshUser();
+          dispatch(fetchUser());
         } else {
           const error = await response.json();
           alert(error.message || "An error occurred.");
@@ -80,7 +82,7 @@ const ProfileSettings = () => {
         if (response.ok) {
           const result = await response.json();
           alert(result.message);
-          refreshUser();
+          dispatch(fetchUser());
         } else {
           const error = await response.json();
           alert(error.message || "An error occurred.");

@@ -1,23 +1,15 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SessionContext } from "Components/GlobalData/GlobalData";
-import { SessionInfo } from "models/express-session";
 import "./header.css";
 import logo from "./logo_alt.png";
+import { useAppSelector } from "hooks/redux";
 
 const Header = () => {
-  const sessionInfo = useContext(SessionContext);
+  const { isAuth } = useAppSelector((state) => state.userReducer);
 
-  const [isAuth, setAuth] = useState<boolean | null>(null);
   const [isBurgerToggled, setBurgerToggled] = useState<Boolean>(false);
 
   const navigate = useNavigate();
-
-  const refreshUser = sessionInfo?.refreshUser;
-
-  useEffect(() => {
-    setAuth(sessionInfo.user.userId !== undefined);
-  }, [sessionInfo]);
 
   const toggleBurger = () => {
     if (isBurgerToggled) {
@@ -34,8 +26,7 @@ const Header = () => {
       });
 
       if (res.ok) {
-        await refreshUser?.();
-        console.log("sessionInfo:", sessionInfo);
+        console.log("sessionInfo:");
       } else {
         console.error("Logout failed");
       }

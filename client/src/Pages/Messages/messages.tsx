@@ -7,13 +7,10 @@ import "./messages.css";
 import { Message } from "models/messages.ts";
 import { ChatList } from "./sortChats.tsx";
 import { usersInfo } from "models/users.ts";
-import { SessionContext } from "Components/GlobalData/GlobalData.tsx";
-import { useContext } from "react";
+import { useAppSelector } from "hooks/redux.ts";
 
 const Messages = () => {
-  const sessionInfo = useContext(SessionContext);
-  const user = sessionInfo?.user;
-
+  const { user } = useAppSelector((state) => state.userReducer);
   const [chats, setChats] = useState<{ [chatId: string]: Message[] }>({});
   const [usersInfo, setUsersInfo] = useState<usersInfo[] | null>(null);
   const [isChatSelected, setIsChatSelected] = useState(false);
@@ -71,10 +68,10 @@ const Messages = () => {
         const users = await userRes.json();
         setUsersInfo(users);
 
-        if (!chatHistoryRes.ok || !users || !sessionInfo) {
+        if (!chatHistoryRes.ok || !users || !user) {
           throw new Error("Failed to fetch chat data");
         }
-        setPinnedChats(sessionInfo.user.pinnedChats);
+        setPinnedChats(user.pinnedChats);
         setChats(chatData);
       } catch (error) {
         console.error("Error fetching chat data:", error);

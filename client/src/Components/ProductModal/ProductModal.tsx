@@ -7,7 +7,7 @@ import "./ProductModal.css";
 export const ProductModal: React.FC<ProductModalProps> = ({
   uploadedImgs,
   allUsersData,
-  sessionInfo,
+  userInfo,
   product,
   onClose,
 }) => {
@@ -94,7 +94,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                 : "Trade is not possible"}
             </li>
           </ul>
-          {sessionInfo && sessionInfo.userId !== product.userId && (
+          {(!userInfo || userInfo.userId !== product.userId) && (
             <button
               className="messageUserButton"
               onClick={() => navigateUserToChat(product.userId, product)}

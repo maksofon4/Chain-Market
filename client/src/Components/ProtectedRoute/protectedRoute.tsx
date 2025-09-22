@@ -1,15 +1,22 @@
-import React, { ReactNode, useEffect, useState, useContext } from "react";
+import React, { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import Header from "../Header/header";
-import { SessionContext } from "Components/GlobalData/GlobalData";
+import { useAppSelector } from "hooks/redux";
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const sessionInfo = useContext(SessionContext);
-  if (!sessionInfo.user.userId) {
+  const { user, isLoading, initialized } = useAppSelector(
+    (state) => state.userReducer
+  );
+
+  if (!initialized || isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
   return (

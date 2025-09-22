@@ -1,30 +1,26 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SessionInfo } from "models/express-session";
 import { Product } from "models/product";
 import { ProductModal } from "Components/ProductModal/ProductModal";
 import "./productList.css";
-import { SessionContext } from "Components/GlobalData/GlobalData";
 import {
   toggleFavorite,
   isFavorite,
 } from "Functions/FavoriteProducts/favoriteProducts";
+import { useAppSelector } from "hooks/redux";
 
 import { usersInfo } from "models/users";
 
 const ProductList = () => {
-  const sessionInfo = useContext(SessionContext);
+  const { user } = useAppSelector((state) => state.userReducer);
   const [products, setProducts] = useState<Product[]>([]);
 
-  const [selectedProducts, setSelectedProducts] = useState<string[] | null>(
-    null
-  );
+  const [selectedProducts, setSelectedProducts] = useState<string[] | []>([]);
   const [usersInfo, setUsersInfo] = useState<usersInfo[] | null>(null);
   const [openedProduct, setOpenedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const sessionData = sessionInfo;
         const productRes = await fetch(`/api/recent-products`);
         if (!productRes.ok) throw new Error("Failed to fetch product data");
         const products = await productRes.json();
@@ -36,7 +32,7 @@ const ProductList = () => {
         });
         const users = await userRes.json();
 
-        setSelectedProducts(sessionData.user.selectedProducts);
+        setSelectedProducts(user ? user.selectedProducts : []);
         setUsersInfo(users);
 
         setProducts(products);
@@ -67,7 +63,7 @@ const ProductList = () => {
         <ProductModal
           uploadedImgs={true}
           allUsersData={usersInfo}
-          sessionInfo={sessionInfo.user}
+          userInfo={user}
           product={openedProduct}
           onClose={() => setOpenedProduct(null)}
         />

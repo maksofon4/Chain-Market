@@ -1,54 +1,19 @@
-import React, {
-  ReactNode,
-  useEffect,
-  useState,
-  createContext,
-  useCallback,
-} from "react";
+import React, { ReactNode, useEffect } from "react";
+import { useAppDispatch } from "hooks/redux";
+import { fetchUser } from "store/reducers/userReducer/ActionCreator";
 
 interface GlobalDataProps {
   children: ReactNode;
 }
 
-interface SessionContextType {
-  user: any;
-  refreshUser: () => Promise<void>;
-}
-
-export const SessionContext = createContext<SessionContextType | null>(null);
-
 const GlobalData: React.FC<GlobalDataProps> = ({ children }) => {
-  const [isAuth, setIsAuth] = useState<boolean | null>(null);
-  const [user, setUser] = useState<any | undefined>();
-
-  const fetchData = useCallback(async () => {
-    try {
-      const sessionInfoReq = await fetch(`/api/auth`, {
-        credentials: "include",
-      });
-      const sessionInfo = await sessionInfoReq.json();
-
-      sessionInfo.userId ? setIsAuth(true) : setIsAuth(false);
-
-      setUser(sessionInfo);
-    } catch (e) {
-      setIsAuth(false);
-      setUser(undefined);
-      console.error("Error fetching data:", e);
-    }
-  }, []);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    dispatch(fetchUser());
+  }, []);
 
-  if (isAuth === null) return <div>Loading...</div>;
-
-  return (
-    <SessionContext.Provider value={{ user, refreshUser: fetchData }}>
-      {children}
-    </SessionContext.Provider>
-  );
+  return <>{children}</>;
 };
 
 export default GlobalData;
