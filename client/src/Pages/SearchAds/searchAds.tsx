@@ -1,20 +1,19 @@
 import SearchBar from "Components/SearchBar/SearchBar";
 import "./searchAds.css";
-import { useState, useContext, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { categories } from "clientSideInfo";
 import { ProductModal } from "Components/ProductModal/ProductModal";
 import { Product } from "models/product";
-import { SessionContext } from "Components/GlobalData/GlobalData";
 import { usersInfo } from "models/users";
 import {
   isFavorite,
   toggleFavorite,
 } from "Functions/FavoriteProducts/favoriteProducts";
+import { useFetchUserQuery } from "services/userService";
 
 const SearchAds: React.FC = () => {
-  const sessionInfo = useContext(SessionContext);
-
+  const { data: user } = useFetchUserQuery();
   const [products, setProducts] = useState<Product[]>([]);
   const [usersInfo, setUsersInfo] = useState<usersInfo[] | null>(null);
   const [condition, setCondition] = useState<string | null>(null);
@@ -111,8 +110,8 @@ const SearchAds: React.FC = () => {
   }, [queryString]);
 
   useEffect(() => {
-    setSelectedProducts(sessionInfo?.user.selectedProducts);
-  }, [sessionInfo]);
+    setSelectedProducts(user.selectedProducts);
+  }, [user]);
 
   const addRemoveFavorites = async (
     event: React.MouseEvent,
@@ -250,11 +249,10 @@ const SearchAds: React.FC = () => {
         </div>
       </div>
       <div className="product-list-container pb-3">
-        {openedProduct && (
+        {openedProduct && user && (
           <ProductModal
-            uploadedImgs={true}
             allUsersData={usersInfo}
-            sessionInfo={sessionInfo.user}
+            userInfo={user}
             product={openedProduct}
             onClose={() => setOpenedProduct(null)}
           />

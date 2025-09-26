@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { userProfilePhoto, userName } from "Functions/Users/usersInfo.ts";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, data } from "react-router-dom";
 import MessagesList from "./chatHistory.tsx";
 import { io, Socket } from "socket.io-client";
 import "./messages.css";
 import { Message } from "models/messages.ts";
 import { ChatList } from "./sortChats.tsx";
 import { usersInfo } from "models/users.ts";
-import { useAppSelector } from "hooks/redux.ts";
+import { useFetchUserQuery } from "services/userService.ts";
 
 const Messages = () => {
-  const { user } = useAppSelector((state) => state.userReducer);
+  const { data: user } = useFetchUserQuery();
   const [chats, setChats] = useState<{ [chatId: string]: Message[] }>({});
   const [usersInfo, setUsersInfo] = useState<usersInfo[] | null>(null);
   const [isChatSelected, setIsChatSelected] = useState(false);
@@ -437,10 +437,10 @@ const Messages = () => {
                 />
                 <p>{userName(usersInfo, selectedChatId)}</p>
               </div>
-              {sessionInfo && selectedChatId && chats ? (
+              {user && selectedChatId && chats ? (
                 <MessagesList
                   chatId={selectedChatId} // Pass chatId as prop
-                  sessionUserId={sessionInfo.user.userId} // Pass sessionUserId
+                  sessionUserId={user.userId} // Pass sessionUserId
                   chatHistory={chats} // Pass the entire chat history
                   onMediaSelect={(src) => setMediaSelectedSrc(src)}
                 />

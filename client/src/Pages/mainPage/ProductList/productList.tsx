@@ -6,13 +6,12 @@ import {
   toggleFavorite,
   isFavorite,
 } from "Functions/FavoriteProducts/favoriteProducts";
-import { useAppSelector } from "hooks/redux";
-
 import { usersInfo } from "models/users";
+import { useFetchUserQuery } from "services/userService";
 
 const ProductList = () => {
-  const { user } = useAppSelector((state) => state.userReducer);
   const [products, setProducts] = useState<Product[]>([]);
+  const { data: user, refetch: refetchUser } = useFetchUserQuery();
 
   const [selectedProducts, setSelectedProducts] = useState<string[] | []>([]);
   const [usersInfo, setUsersInfo] = useState<usersInfo[] | null>(null);
@@ -54,14 +53,13 @@ const ProductList = () => {
     if (!updated) return;
 
     setSelectedProducts(updated);
-    sessionInfo?.refreshUser();
+    refetchUser();
   };
 
   return (
     <div className="product-list-container pb-3">
-      {openedProduct && (
+      {openedProduct && user && (
         <ProductModal
-          uploadedImgs={true}
           allUsersData={usersInfo}
           userInfo={user}
           product={openedProduct}

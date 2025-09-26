@@ -1,8 +1,7 @@
 import { useState } from "react";
 import ImageUploader from "Functions/media/cropImage";
 import "./profile.css";
-import { useAppDispatch, useAppSelector } from "hooks/redux";
-import { fetchUser } from "store/reducers/userReducer/ActionCreator";
+import { useFetchUserQuery } from "services/userService";
 
 interface croppedData {
   croppedDataUrl: string;
@@ -10,8 +9,7 @@ interface croppedData {
 }
 
 const ProfileSettings = () => {
-  const dispatch = useAppDispatch();
-  const { user } = useAppSelector((state) => state.userReducer);
+  const { data: user, refetch: refetchUser } = useFetchUserQuery();
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [visiblePasswords, setVisiblePasswords] = useState<number[]>([]);
   const [email, setEmail] = useState<string | undefined>(undefined);
@@ -57,7 +55,7 @@ const ProfileSettings = () => {
         if (response.ok) {
           const result = await response.json();
           alert(result.message);
-          dispatch(fetchUser());
+          refetchUser();
         } else {
           const error = await response.json();
           alert(error.message || "An error occurred.");
@@ -66,7 +64,7 @@ const ProfileSettings = () => {
         console.error("Error:", error);
       }
     } else {
-      if (!user || !profileImage?.croppedImgFile || !accountPassword) return;
+      if (!data || !profileImage?.croppedImgFile || !accountPassword) return;
 
       const formData = new FormData();
       console.log(profileImage.croppedImgFile);
@@ -82,7 +80,6 @@ const ProfileSettings = () => {
         if (response.ok) {
           const result = await response.json();
           alert(result.message);
-          dispatch(fetchUser());
         } else {
           const error = await response.json();
           alert(error.message || "An error occurred.");

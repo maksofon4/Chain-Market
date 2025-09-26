@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProductModal } from "Components/ProductModal/ProductModal";
 import { Product } from "models/product";
-import { SessionInfo } from "models/express-session";
-import { SessionContext } from "Components/GlobalData/GlobalData";
 import "./selected.css";
+import { useFetchUserQuery } from "services/userService";
 
 const SelectedList = () => {
-  const sessionInfo = useContext(SessionContext);
+  const { data: user, refetch } = useFetchUserQuery();
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [openedProduct, setOpenedProduct] = useState<Product | null>(null);
@@ -38,14 +37,14 @@ const SelectedList = () => {
   }, []);
 
   useEffect(() => {
-    if (sessionInfo) {
-      const selectedIds = sessionInfo.user.selectedProducts ?? [];
+    if (user) {
+      const selectedIds = user.selectedProducts ?? [];
       const filteredProducts = products.filter((product) =>
         selectedIds.includes(product.productId)
       );
       setSelectedProducts(filteredProducts);
     }
-  }, [sessionInfo, products]);
+  }, [user, products]);
 
   const removeFromFavorites = async (productId: string) => {
     const removeRes = await fetch("/api/remove-product-from-favorites", {
@@ -58,7 +57,7 @@ const SelectedList = () => {
       }),
     });
     if (!removeRes.ok) return;
-    sessionInfo?.refreshUser();
+    refetch();
     const updateList = selectedProducts.filter(
       (product) => product.productId !== productId
     );
@@ -66,11 +65,10 @@ const SelectedList = () => {
   };
   return (
     <div className="selected-product-list-container">
-      {openedProduct && (
+      {openedProduct && user && (
         <ProductModal
-          uploadedImgs={true}
           allUsersData={usersInfo}
-          sessionInfo={sessionInfo.user}
+          userInfo={user}
           product={openedProduct}
           onClose={() => setOpenedProduct(null)}
         />

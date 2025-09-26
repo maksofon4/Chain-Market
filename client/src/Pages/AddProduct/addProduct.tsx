@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { SessionContext } from "Components/GlobalData/GlobalData";
 import ProductImageUploader from "Components/ProductImageUploader/ProductImageUploader";
 import { ProductModal } from "Components/ProductModal/ProductModal";
 import { categories, cities } from "clientSideInfo";
@@ -8,11 +7,12 @@ import { Product } from "models/product";
 import { validateProduct } from "./validateProduct";
 import Alert from "./alert";
 import { useNavigate } from "react-router-dom";
+import { useFetchUserQuery } from "services/userService";
 
 const AddProduct = () => {
   const navigate = useNavigate();
+  const { data: user } = useFetchUserQuery();
   const [status, setStatus] = useState<string | null>(null);
-  const sessionInfo = useContext(SessionContext);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [nameSymbols, setNameSymbols] = useState<number>();
   const [descriptionSymbols, setDescriptionSymbols] = useState<number>();
@@ -60,9 +60,9 @@ const AddProduct = () => {
   };
   const userdata = [
     {
-      userId: sessionInfo?.user.userId,
-      username: sessionInfo?.user.username,
-      profilePhoto: sessionInfo?.user.profilePhoto,
+      userId: user?.userId,
+      username: user?.username,
+      profilePhoto: user?.profilePhoto,
     },
   ];
 
@@ -78,7 +78,7 @@ const AddProduct = () => {
     },
     productCategory: productCategory,
     condition: condition,
-    sessionInfo: sessionInfo,
+    sessionInfo: user,
   };
 
   const showProductPreview = () => {
@@ -92,7 +92,7 @@ const AddProduct = () => {
     const filteredImgs = images.filter((img) => img !== null);
     const product: Product = {
       productId: "none",
-      userId: sessionInfo?.user.userId!,
+      userId: user?.userId!,
       name: productName!,
       category: productCategory!,
       description: descriptionText!,
@@ -194,11 +194,10 @@ const AddProduct = () => {
           if (status === "success") navigate("/");
         }}
       />
-      {openedProduct && sessionInfo && (
+      {openedProduct && user && (
         <ProductModal
-          uploadedImgs={false}
           allUsersData={userdata}
-          sessionInfo={sessionInfo.user}
+          userInfo={user}
           product={openedProduct}
           onClose={() => setOpenedProduct(null)}
         />

@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { ProductModal } from "Components/ProductModal/ProductModal";
 import { Product } from "models/product";
-import { SessionInfo } from "models/express-session";
-import { SessionContext } from "Components/GlobalData/GlobalData";
 import { useNavigate } from "react-router-dom";
+import { useFetchUserQuery } from "services/userService";
 
 import "./posted.css";
 
 const PostedList = () => {
-  const sessionInfo = useContext(SessionContext);
+  const { data: user } = useFetchUserQuery();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
 
@@ -47,10 +46,10 @@ const PostedList = () => {
   };
   return (
     <div className="posted-product-list-container">
-      {openedProduct && (
+      {openedProduct && user && (
         <ProductModal
-          allUsersData={[sessionInfo?.user]}
-          sessionInfo={sessionInfo.user}
+          allUsersData={[user]}
+          userInfo={user}
           product={openedProduct}
           onClose={() => setOpenedProduct(null)}
         />

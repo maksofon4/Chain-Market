@@ -19,7 +19,6 @@ export interface Product {
 }
 
 export interface ProductModalProps {
-  uploadedImgs: boolean;
   allUsersData: any;
   userInfo: User | null;
   product: Product;

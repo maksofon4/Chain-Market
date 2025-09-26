@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import "./ProductModal.css";
 
 export const ProductModal: React.FC<ProductModalProps> = ({
-  uploadedImgs,
   allUsersData,
   userInfo,
   product,
@@ -68,14 +67,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
               </svg>
             </button>
           )}
-          <img
-            src={
-              uploadedImgs
-                ? `${product.images[currentImageIndex]}`
-                : `${product.images[currentImageIndex]}`
-            }
-            alt="Product"
-          />
+          <img src={`${product.images[currentImageIndex]}`} alt="Product" />
           {product.images.length > 1 && (
             <button onClick={nextImage} id="right-button">
               <svg width="24" height="24">

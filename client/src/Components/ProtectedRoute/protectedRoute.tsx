@@ -1,22 +1,21 @@
 import React, { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import Header from "../Header/header";
-import { useAppSelector } from "hooks/redux";
+
+import { useFetchUserQuery } from "services/userService";
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { user, isLoading, initialized } = useAppSelector(
-    (state) => state.userReducer
-  );
+  const { data, isLoading } = useFetchUserQuery();
 
-  if (!initialized || isLoading) {
+  if (!data || isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (!user) {
+  if (!data) {
     return <Navigate to="/login" replace />;
   }
   return (

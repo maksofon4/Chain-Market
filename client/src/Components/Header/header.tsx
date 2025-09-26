@@ -1,15 +1,21 @@
-import { useContext, useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./header.css";
 import logo from "./logo_alt.png";
-import { useAppSelector } from "hooks/redux";
+import { useFetchUserQuery } from "services/userService";
 
 const Header = () => {
-  const { isAuth } = useAppSelector((state) => state.userReducer);
+  const navigate = useNavigate();
+  const { data } = useFetchUserQuery();
 
   const [isBurgerToggled, setBurgerToggled] = useState<Boolean>(false);
+  const [isAuth, setIsAuth] = useState<boolean>(false);
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (data) {
+      setIsAuth(true);
+    }
+  }, [data]);
 
   const toggleBurger = () => {
     if (isBurgerToggled) {
