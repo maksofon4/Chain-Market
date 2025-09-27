@@ -54,3 +54,53 @@ export const validateProduct = (product) => {
 
   return true;
 };
+
+export const setErrorAlertText = (errorType: string) => {
+  let errorMessage = "";
+
+  switch (errorType) {
+    case "network":
+      errorMessage = "Network error. Please check your connection.";
+      break;
+    case "server":
+      errorMessage = "Server error. Try again later.";
+      break;
+    case "invalidName":
+      errorMessage = "Invalid product name. Please check the form.";
+      break;
+    case "invalidCategory":
+      errorMessage = "You haven't specified the product category.";
+      break;
+    case "invalidDescription":
+      errorMessage = "The description is too short or empty.";
+      break;
+    case "invalidLocation":
+      errorMessage = "The city you specified does not exist or has a typo";
+      break;
+    case "invalidPrice":
+      errorMessage = "You haven't specified price or it has a typo";
+      break;
+    case "invalidStatus":
+      errorMessage = `Product condition (new/used) is not specified.`;
+      break;
+    case "invalidContactDetails":
+      errorMessage = `The contact details have to be specified.`;
+      break;
+    case "invalidEmail":
+      errorMessage = `Email is empty or consists of a typo.`;
+      break;
+    case "invalidPhoneNumber":
+      errorMessage = `Phone number is empty or consists of a typo.`;
+      break;
+    case "invalidImages":
+      errorMessage = `Product should have an image. Add at least one.`;
+      break;
+    case "Unexpected":
+      errorMessage = `An unexpected error occurred.`;
+      break;
+    default:
+      errorMessage = "An unexpected error occurred.";
+  }
+
+  return errorMessage;
+};

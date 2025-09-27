@@ -58,10 +58,10 @@ const ProductList = () => {
 
   return (
     <div className="product-list-container pb-3">
-      {openedProduct && user && (
+      {openedProduct && (
         <ProductModal
           allUsersData={usersInfo}
-          userInfo={user}
+          userInfo={user || null}
           product={openedProduct}
           onClose={() => setOpenedProduct(null)}
         />

@@ -1,7 +1,12 @@
 import { useState } from "react";
 import ImageUploader from "Functions/media/cropImage";
 import "./profile.css";
-import { useFetchUserQuery } from "services/userService";
+import {
+  useFetchUserQuery,
+  useUpdateProfileMutation,
+  useUpdateProfilePhotoMutation,
+} from "services/userService";
+import Alert from "Components/alert/alert";
 
 interface croppedData {
   croppedDataUrl: string;
@@ -9,7 +14,19 @@ interface croppedData {
 }
 
 const ProfileSettings = () => {
+  // RTK Querry
   const { data: user, refetch: refetchUser } = useFetchUserQuery();
+  const [
+    updateProfile,
+    { isLoading: isUpdatingProfile, error: updateProfileError },
+  ] = useUpdateProfileMutation();
+
+  const [
+    updateProfilePhoto,
+    { isLoading: isUpdatingPhoto, error: updatePhotoError },
+  ] = useUpdateProfilePhotoMutation();
+
+  // React
   const [openDropdown, setOpenDropdown] = useState<number | null>(null);
   const [visiblePasswords, setVisiblePasswords] = useState<number[]>([]);
   const [email, setEmail] = useState<string | undefined>(undefined);
@@ -19,6 +36,9 @@ const ProfileSettings = () => {
   const [username, setUsername] = useState<string | undefined>(undefined);
   const [newPassword, setNewPassword] = useState<string | undefined>(undefined);
   const [profileImage, setProfileImage] = useState<croppedData | null>(null);
+
+  const [alertStatus, setAlertStatus] = useState<string>("");
+  const [alertText, setAlertText] = useState<string>("");
 
   const toggleDropdown = (id: number | null) => {
     setOpenDropdown(openDropdown === id ? null : id);
@@ -46,22 +66,13 @@ const ProfileSettings = () => {
 
     if (infoType !== "profile-photo" && accountPassword) {
       try {
-        const response = await fetch("/api/update-profile", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          alert(result.message);
-          refetchUser();
-        } else {
-          const error = await response.json();
-          alert(error.message || "An error occurred.");
-        }
-      } catch (error) {
-        console.error("Error:", error);
+        const result = await updateProfile(data).unwrap();
+        setAlertText(result.message);
+        setAlertStatus("success");
+        refetchUser();
+      } catch (err: any) {
+        setAlertText(err?.data?.message || "Update failed");
+        setAlertStatus("Error");
       }
     } else {
       if (!data || !profileImage?.croppedImgFile || !accountPassword) return;
@@ -72,26 +83,27 @@ const ProfileSettings = () => {
       formData.append("profilePhoto", profileImage.croppedImgFile);
       formData.append("currentPassword", accountPassword);
       try {
-        const response = await fetch("/api/update-profile-photo", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          alert(result.message);
-        } else {
-          const error = await response.json();
-          alert(error.message || "An error occurred.");
-        }
-      } catch (error) {
-        console.error("Error:", error);
+        const result = await updateProfilePhoto(formData).unwrap();
+        setAlertText(result.message);
+        setAlertStatus("success");
+        setProfileImage(null);
+        refetchUser();
+      } catch (err: any) {
+        setAlertText(err?.data?.message || "Upload failed");
+        setAlertStatus("Error");
       }
     }
   };
 
   return (
     <div className="profileSettingsContainer">
+      <Alert
+        status={alertStatus}
+        text={alertText}
+        onClose={() => {
+          setAlertStatus("");
+        }}
+      />
       <div
         className={
           openDropdown === 1

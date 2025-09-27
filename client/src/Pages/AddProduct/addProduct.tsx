@@ -2,12 +2,13 @@ import React, { useState, useEffect, useContext } from "react";
 import ProductImageUploader from "Components/ProductImageUploader/ProductImageUploader";
 import { ProductModal } from "Components/ProductModal/ProductModal";
 import { categories, cities } from "clientSideInfo";
-import "./addProudct.css";
+import "./addProduct.css";
 import { Product } from "models/product";
 import { validateProduct } from "./validateProduct";
-import Alert from "./alert";
+import Alert from "Components/alert/alert";
 import { useNavigate } from "react-router-dom";
 import { useFetchUserQuery } from "services/userService";
+import { setErrorAlertText } from "./validateProduct";
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -39,6 +40,8 @@ const AddProduct = () => {
 
   const [images, setImages] = useState<string[]>([]);
   const [time, setTime] = useState<string>("");
+
+  const [alertText, setAlertText] = useState<string>("");
 
   const handleImageCropped = (croppedImg: string | null, index: number) => {
     setImages((prev) => {
@@ -82,10 +85,11 @@ const AddProduct = () => {
   };
 
   const showProductPreview = () => {
-    const vlidateResult = validateProduct(productData);
+    const validateResult = validateProduct(productData);
 
-    if (vlidateResult !== true) {
-      showErrorAlert(vlidateResult);
+    if (validateResult !== true) {
+      setAlertText(setErrorAlertText(validateResult));
+      showErrorAlert(validateResult);
       return;
     }
     updateTime();
@@ -116,6 +120,7 @@ const AddProduct = () => {
 
     if (vlidateResult !== true) {
       showErrorAlert(vlidateResult);
+
       return;
     }
     updateTime();
@@ -189,6 +194,7 @@ const AddProduct = () => {
     <div className="add-product-parent">
       <Alert
         status={status}
+        text={alertText}
         onClose={() => {
           setStatus(null);
           if (status === "success") navigate("/");

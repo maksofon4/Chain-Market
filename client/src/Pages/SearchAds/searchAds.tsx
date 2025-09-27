@@ -13,7 +13,7 @@ import {
 import { useFetchUserQuery } from "services/userService";
 
 const SearchAds: React.FC = () => {
-  const { data: user } = useFetchUserQuery();
+  const { data: user, refetch: refreshUser } = useFetchUserQuery();
   const [products, setProducts] = useState<Product[]>([]);
   const [usersInfo, setUsersInfo] = useState<usersInfo[] | null>(null);
   const [condition, setCondition] = useState<string | null>(null);
@@ -110,7 +110,7 @@ const SearchAds: React.FC = () => {
   }, [queryString]);
 
   useEffect(() => {
-    setSelectedProducts(user.selectedProducts);
+    setSelectedProducts(user ? user.selectedProducts : []);
   }, [user]);
 
   const addRemoveFavorites = async (
@@ -123,7 +123,7 @@ const SearchAds: React.FC = () => {
     if (!updated) return;
 
     setSelectedProducts(updated);
-    sessionInfo?.refreshUser();
+    refreshUser();
   };
 
   const handleConditionChange = () => {
@@ -249,10 +249,10 @@ const SearchAds: React.FC = () => {
         </div>
       </div>
       <div className="product-list-container pb-3">
-        {openedProduct && user && (
+        {openedProduct && (
           <ProductModal
             allUsersData={usersInfo}
-            userInfo={user}
+            userInfo={user || null}
             product={openedProduct}
             onClose={() => setOpenedProduct(null)}
           />

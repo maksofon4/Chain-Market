@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import Header from "../Header/header";
 
@@ -11,7 +11,7 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { data, isLoading } = useFetchUserQuery();
 
-  if (!data || isLoading) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 

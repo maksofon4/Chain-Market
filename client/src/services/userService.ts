@@ -10,6 +10,24 @@ export const userApi = createApi({
         url: `/auth`,
       }),
     }),
+    updateProfile: build.mutation<{ message: string }, Partial<User>>({
+      query: (data) => ({
+        url: "/update-profile",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    updateProfilePhoto: build.mutation<{ message: string }, FormData>({
+      query: (formData) => ({
+        url: "/update-profile-photo",
+        method: "POST",
+        body: formData,
+      }),
+    }),
   }),
 });
-export const { useFetchUserQuery } = userApi;
+export const {
+  useFetchUserQuery,
+  useUpdateProfileMutation,
+  useUpdateProfilePhotoMutation,
+} = userApi;
