@@ -66,6 +66,7 @@ class ChatsController {
         ownersChat.owner_user_id,
         forUserId
       );
+      res.status(200).json("message status was updated successfully");
     } catch (error) {
       next(error);
     }

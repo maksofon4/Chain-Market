@@ -1,18 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Message } from "models/messages";
-
-const formatDate = (timestamp: string) => {
-  return new Date(timestamp).toLocaleString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true, // Use 24-hour format if false
-  });
-};
+import { formatDate } from "./sortChats";
 
 interface Props {
-  chatId: string; // The chatId (the ID of the user you are chatting with)
-  sessionUserId: string; // The current user id from the session
-  chatHistory: { [userId: string]: Message[] }; // The entire chat history
+  chatId: string;
+  sessionUserId: string;
+  chatHistory: { [userId: string]: Message[] };
   onMediaSelect: (string) => void;
 }
 
@@ -24,9 +17,45 @@ const MessagesList: React.FC<Props> = ({
 }) => {
   const messages = chatHistory[chatId] || [];
 
+  const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
+  const [showNewMessagesBar, setShowNewMessagesBar] = useState<boolean>(false);
+
+  const staticCheckedMessagesRef = useRef<Message[]>([]);
+  const staticNewMessagesRef = useRef<Message[]>([]);
+  const staticAllMessagesRef = useRef<Message[]>([]);
+
   // Separate old and new messages based on the 'status'
   const oldMessages = messages.filter((msg) => msg.status !== "new");
   const newMessages = messages.filter((msg) => msg.status === "new");
+
+  useEffect(() => {
+    staticCheckedMessagesRef.current = oldMessages;
+    staticNewMessagesRef.current = newMessages;
+    staticAllMessagesRef.current = messages;
+    if (staticNewMessagesRef.current.length > 0) {
+      setShowNewMessagesBar(true);
+    }
+  }, [chatId]);
+
+  useEffect(() => {
+    const incomingMessages = messages.filter(
+      (msg) =>
+        !staticAllMessagesRef.current.some((prevMsg) => prevMsg.id === msg.id)
+    );
+
+    if (incomingMessages.length > 0) {
+      staticNewMessagesRef.current = [
+        ...staticNewMessagesRef.current,
+        ...incomingMessages,
+      ];
+      staticAllMessagesRef.current = [
+        ...staticAllMessagesRef.current,
+        ...incomingMessages,
+      ];
+    }
+
+    setCurrentMessages(staticNewMessagesRef.current);
+  }, [messages]);
 
   // Reference for the messages container
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
@@ -37,7 +66,7 @@ const MessagesList: React.FC<Props> = ({
       messagesContainerRef.current.scrollTop =
         messagesContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [currentMessages]);
 
   // Function to render individual messages
   const renderMessage = (msg: Message, index: number) => {
@@ -80,7 +109,7 @@ const MessagesList: React.FC<Props> = ({
                     key={index}
                     src={`/uploads/${img}`}
                     alt="message file"
-                    onClick={() => onMediaSelect(`/uploads/${img}`)}
+                    onClick={() => onMediaSelect(`${img}`)}
                   />
                 );
               })}
@@ -94,9 +123,11 @@ const MessagesList: React.FC<Props> = ({
 
   return (
     <div id="messages" ref={messagesContainerRef}>
-      {oldMessages.map((msg, index) => renderMessage(msg, index))}
+      {staticCheckedMessagesRef.current.map((msg, index) =>
+        renderMessage(msg, index)
+      )}
 
-      {newMessages.length > 0 ? (
+      {showNewMessagesBar ? (
         <div className="newMessagesBorder" ref={messagesContainerRef}>
           New messages
         </div>
@@ -104,7 +135,7 @@ const MessagesList: React.FC<Props> = ({
         <div ref={messagesContainerRef}></div>
       )}
 
-      {newMessages.map((msg, index) => renderMessage(msg, index))}
+      {currentMessages.map((msg, index) => renderMessage(msg, index))}
     </div>
   );
 };

@@ -14,6 +14,7 @@
   flex-direction: row;
   width: 90%;
   padding: 30px;
+  height: 90vh;
   background-color: rgba(255, 160, 17, 0.1);
   border: 2px solid var(--button-background);
   border-radius: 30px;
@@ -72,7 +73,6 @@
 .chats {
   display: flex;
   flex-direction: column;
-  min-height: 800px;
   width: 30%;
   background-color: var(--container-background);
   border-radius: 30px;
@@ -317,7 +317,7 @@
 .main-chat-window {
   position: relative;
   width: 70%;
-  height: 800px;
+  height: 100%;
   background-color: var(--container-background);
   display: flex;
   flex-direction: column;
@@ -494,7 +494,7 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 20px;
+  padding: 15px;
 }
 
 .currentUser img {

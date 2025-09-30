@@ -130,7 +130,7 @@ export class ChatsRepository {
       const insertQuery = `
       INSERT INTO messages (from_user_id, to_user_id, content)
       VALUES ($1, $2, $3)
-      RETURNING id, from_user_id AS "fromUserId", to_user_id AS "toUserId", content, sent_at AS "sentAt";
+      RETURNING id, from_user_id AS "fromUserId", to_user_id AS "toUserId", content, sent_at AS "sentAt", status;
     `;
 
       const values = [senderId, receiverId, content];

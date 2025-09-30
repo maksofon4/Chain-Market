@@ -8,9 +8,11 @@ import { Message } from "models/messages.ts";
 import { ChatList } from "./sortChats.tsx";
 import { usersInfo } from "models/users.ts";
 import { useFetchUserQuery } from "services/userService.ts";
+import { useFetchChatHistoryQuery } from "services/messageServices.ts";
 
 const Messages = () => {
   const { data: user } = useFetchUserQuery();
+  const { data: chats, error, isLoading } = useFetchChatHistoryQuery();
   const [chats, setChats] = useState<{ [chatId: string]: Message[] }>({});
   const [usersInfo, setUsersInfo] = useState<usersInfo[] | null>(null);
   const [isChatSelected, setIsChatSelected] = useState(false);
@@ -151,16 +153,12 @@ const Messages = () => {
       handleCheckboxChange(newChatId);
       return;
     }
-
-    setSelectedChatId((oldChatId) => {
-      if (oldChatId) markAsChecked(oldChatId);
-      return newChatId;
-    });
+    markAsChecked(newChatId);
+    setSelectedChatId(newChatId);
     navigate(`/messages/chat/${newChatId}`);
   };
 
   const handleChatExit = () => {
-    if (selectedChatId) markAsChecked(selectedChatId);
     setSelectedChatId(null);
     setIsChatSelected(false);
     navigate(`/messages`);
@@ -201,7 +199,6 @@ const Messages = () => {
         if (!prevChats) {
           return prevChats;
         }
-
         return {
           ...prevChats,
           [currentChatId]: prevChats[currentChatId].map((msg) => ({
@@ -220,12 +217,13 @@ const Messages = () => {
     selectedChatId: string,
     messageText: string | object
   ) => {
+    if (messageInput.trim().length < 0) return;
     let messageData = { text: messageText };
     let messageFiles = [];
 
     if (redirectedProduct) {
       const productJSON = JSON.parse(redirectedProduct);
-      if (productJSON.user.userId === selectedChatId) {
+      if (productJSON.userId === selectedChatId) {
         console.log(productJSON);
         messageData = {
           class: "redirectedProduct",
