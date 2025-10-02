@@ -475,6 +475,36 @@
   fill: var(--svg-hover);
 }
 
+/* Redicrected product preview */
+
+.redirected-product-name {
+  font-weight: bold;
+  color: var(--color-white);
+}
+
+.redirected-product-price {
+  font-weight: bold;
+  color: var(--color-white);
+}
+
+#cancelForwardButton {
+  background-color: red;
+  color: #fff;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+}
+
+.redirected-product {
+  position: relative;
+  background-color: var(--input-attachments-preview-background);
+}
+
+.redirected-product img {
+  width: 90px;
+  height: 90px;
+}
+
 .preSelectText {
   display: flex;
   align-items: center;
@@ -681,7 +711,7 @@
 
 @media (max-width: 1295px) {
   .message-product {
-    max-width: 50%;
+    max-width: 60%;
   }
 }
 
@@ -691,6 +721,9 @@
   }
   .main-chat-window {
     width: 60%;
+  }
+  .message-product {
+    max-width: 60%;
   }
 }
 

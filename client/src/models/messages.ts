@@ -1,5 +1,8 @@
-interface messageContent {
+import { Product } from "./product";
+
+export interface messageContent {
   text?: string;
+  product?: Product;
   attachments?: string[];
 }
 
@@ -12,3 +15,5 @@ export interface Message {
   file: string[];
   status: string;
 }
+
+export type allMessagesData = Record<string, Message[]>;

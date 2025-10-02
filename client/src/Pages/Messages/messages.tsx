@@ -2,22 +2,25 @@ import React, { useState, useEffect, useRef } from "react";
 import { userProfilePhoto, userName } from "Functions/Users/usersInfo.ts";
 import { useNavigate, useLocation, data } from "react-router-dom";
 import MessagesList from "./chatHistory.tsx";
-import { io, Socket } from "socket.io-client";
 import "./messages.css";
-import { Message } from "models/messages.ts";
 import { ChatList } from "./sortChats.tsx";
 import { usersInfo } from "models/users.ts";
 import { useFetchUserQuery } from "services/userService.ts";
-import { useFetchChatHistoryQuery } from "services/messageServices.ts";
+import { useSelector } from "react-redux";
+import { sendMessage } from "Components/MessagesProvider/messagesProvider.tsx";
+import { messageContent } from "models/messages.ts";
+// Types
+import { RootState } from "store/store.ts";
+import { Product } from "models/product.ts";
 
 const Messages = () => {
+  // RTK Qurry
   const { data: user } = useFetchUserQuery();
-  const { data: chats, error, isLoading } = useFetchChatHistoryQuery();
-  const [chats, setChats] = useState<{ [chatId: string]: Message[] }>({});
+  const chats = useSelector((state: RootState) => state.messages.items);
+
   const [usersInfo, setUsersInfo] = useState<usersInfo[] | null>(null);
   const [isChatSelected, setIsChatSelected] = useState(false);
   const [messageInput, setMessageInput] = useState("");
-  const socketRef = useRef<Socket | null>(null);
   const [isPinButtonActive, setPinButtonActive] = useState(false);
   const [isDeleteButtonActive, setDeleteButtonActive] = useState(false);
   const [selectedChats, storeSelectedChats] = useState<string[]>([]);
@@ -27,11 +30,19 @@ const Messages = () => {
   const [mediaSelectedSrc, setMediaSelectedSrc] = useState<
     string | undefined
   >();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
+  // Redirected Product states
+  const [redirectedProduct, setRedirectedProduct] = useState<string | null>(
+    localStorage.getItem("product")
+  );
+  const [redirectedProductJSON, setRedirectedProductJSON] =
+    useState<Product | null>(null);
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const location = useLocation();
   const navigate = useNavigate();
-  const redirectedProduct = localStorage.getItem("product");
 
   const chatIdFromURL = location.pathname.split("/").pop();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(
@@ -58,9 +69,7 @@ const Messages = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const chatHistoryRes = await fetch(`/api/chats-history`);
-        const chatData = await chatHistoryRes.json();
-        const userIds = getChatIds(chatData);
+        const userIds = getChatIds(chats);
         if (userIds.length === 0) return;
         const userRes = await fetch("/api/users-public-data", {
           method: "POST",
@@ -70,75 +79,21 @@ const Messages = () => {
         const users = await userRes.json();
         setUsersInfo(users);
 
-        if (!chatHistoryRes.ok || !users || !user) {
+        if (!chats || !users || !user) {
           throw new Error("Failed to fetch chat data");
         }
+        if (redirectedProduct) {
+          setRedirectedProductJSON(JSON.parse(redirectedProduct));
+        }
         setPinnedChats(user.pinnedChats);
-        setChats(chatData);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching chat data:", error);
       }
     };
 
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (!socketRef.current && user?.userId) {
-      socketRef.current = io("/", {
-        path: "/socket.io",
-        withCredentials: true,
-      });
-
-      socketRef.current.on("connect", () => {
-        console.log("Connected:", socketRef.current?.id);
-      });
-
-      socketRef.current.emit("join", user.userId);
-      console.log("User joined with ID:", user.userId);
-
-      socketRef.current.on("disconnect", () => {
-        console.log("Disconnected");
-      });
-    }
-
-    return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-        socketRef.current = null;
-      }
-    };
-  }, [user?.userId]);
-
-  useEffect(() => {
-    if (!socketRef.current || !user?.userId) return;
-    socketRef.current.on("private message", (message) => {
-      if (!chats) {
-        return;
-      }
-
-      setChats((prevChats) => {
-        if (!prevChats) {
-          return prevChats;
-        }
-
-        const userId = user.userId;
-
-        if (message.from === userId || message.to === userId) {
-          const chatKey = message.from === userId ? message.to : message.from;
-          const chatMessages = prevChats[chatKey] || [];
-          if (message.from === userId) message.status = "checked";
-          return {
-            ...prevChats,
-            [chatKey]: [...chatMessages, message],
-          };
-        } else {
-          console.log("Message not for the current user.");
-          return prevChats;
-        }
-      });
-    });
-  }, [user?.userId]);
+  }, [chats]);
 
   useEffect(() => {
     if (selectedChatId && chats && chats[selectedChatId]) {
@@ -153,7 +108,6 @@ const Messages = () => {
       handleCheckboxChange(newChatId);
       return;
     }
-    markAsChecked(newChatId);
     setSelectedChatId(newChatId);
     navigate(`/messages/chat/${newChatId}`);
   };
@@ -176,59 +130,19 @@ const Messages = () => {
     });
   };
 
-  const markAsChecked = async (currentChatId: string) => {
-    const newMessages = chats[currentChatId]?.filter(
-      (msg) => msg.from === currentChatId && msg.status !== "checked"
-    );
-    if (!newMessages || newMessages.length === 0) return;
-    try {
-      const response = await fetch(`/api/update-message-status`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          forUserId: currentChatId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update message status");
-      }
-      setChats((prevChats) => {
-        if (!prevChats) {
-          return prevChats;
-        }
-        return {
-          ...prevChats,
-          [currentChatId]: prevChats[currentChatId].map((msg) => ({
-            ...msg,
-            status: msg.from === currentChatId ? "checked" : msg.status,
-          })),
-        };
-      });
-      console.log("Message status updated successfully");
-    } catch (error) {
-      console.error("Error updating message status:", error);
-    }
-  };
-
   const handleSendMessage = async (
     selectedChatId: string,
-    messageText: string | object
+    messageText: string
   ) => {
     if (messageInput.trim().length < 0) return;
-    let messageData = { text: messageText };
-    let messageFiles = [];
+    let messageData: messageContent = { text: messageText };
+    let attachments = [];
 
-    if (redirectedProduct) {
-      const productJSON = JSON.parse(redirectedProduct);
-      if (productJSON.userId === selectedChatId) {
-        console.log(productJSON);
+    if (redirectedProductJSON) {
+      if (redirectedProductJSON.userId === selectedChatId) {
         messageData = {
-          class: "redirectedProduct",
-          product: redirectedProduct,
-          additionalMessage: messageText,
+          product: redirectedProductJSON,
+          text: messageText,
         };
       }
     }
@@ -250,7 +164,7 @@ const Messages = () => {
         console.log("Upload Response:", data);
 
         if (data.filePaths) {
-          messageFiles = data.filePaths;
+          attachments = data.filePaths;
           // Handle the uploaded file paths (e.g., show them in the chat)
           data.filePaths.forEach((filePath: string) => {
             console.log("File uploaded to:", filePath);
@@ -261,15 +175,11 @@ const Messages = () => {
         return;
       }
     }
-    if (socketRef.current) {
-      socketRef.current.emit("private message", {
-        toUserId: selectedChatId,
-        message: messageData,
-      });
-      markAsChecked(selectedChatId);
-      setMessageInput("");
+    sendMessage(selectedChatId, messageData);
+    setMessageInput("");
+    if (redirectedProduct) {
+      cancelForwardProduct();
     }
-    if (redirectedProduct) localStorage.removeItem("product");
   };
 
   const handleAttachFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -360,6 +270,12 @@ const Messages = () => {
     }
   };
 
+  const cancelForwardProduct = () => {
+    localStorage.removeItem("product");
+    setRedirectedProduct(null);
+    setRedirectedProductJSON(null);
+  };
+
   return (
     <div className="messages-container">
       {mediaSelectedSrc && (
@@ -374,7 +290,7 @@ const Messages = () => {
           </div>
         </div>
       )}
-      {!(isMobile && isChatSelected) && (
+      {!(isMobile && isChatSelected) && !isLoading && (
         <div className="chats">
           <div className="option-buttons">
             <p>
@@ -401,19 +317,21 @@ const Messages = () => {
             </p>
           </div>
 
-          <ChatList
-            chats={chats}
-            pinnedChats={pinnedChats}
-            handleChatSelect={handleChatSelect}
-            usersInfo={usersInfo}
-            selectedChat={selectedChatId}
-            isPinButtonActive={isPinButtonActive}
-            isDeleteButtonActive={isDeleteButtonActive}
-            selectedChats={selectedChats}
-          />
+          {!isLoading && (
+            <ChatList
+              chats={chats}
+              pinnedChats={pinnedChats}
+              handleChatSelect={handleChatSelect}
+              usersInfo={usersInfo}
+              selectedChat={selectedChatId}
+              isPinButtonActive={isPinButtonActive}
+              isDeleteButtonActive={isDeleteButtonActive}
+              selectedChats={selectedChats}
+            />
+          )}
         </div>
       )}
-      {(!isMobile || (isMobile && isChatSelected)) && (
+      {(!isMobile || (isMobile && isChatSelected)) && !isLoading && (
         <div className="main-chat-window">
           {!isChatSelected ? (
             <div className="preSelectText">
@@ -468,16 +386,26 @@ const Messages = () => {
                     ))}
                   </div>
                 )}
-                <div className="redirected-product" style={{ display: "none" }}>
-                  <img src="/images/piano2.jpg" alt="Product" />
-                  <div className="redirected-product-info">
-                    <p className="redirected-product-name">
-                      Acer Aspire Pure Silver
-                    </p>
-                    <p className="redirected-product-price">505$</p>
+                {redirectedProduct && (
+                  <div className="redirected-product d-flex gap-3 p-2">
+                    <img src={redirectedProductJSON?.images[0]} alt="Product" />
+                    <div className="redirected-product-info">
+                      <p className="redirected-product-name">
+                        {redirectedProductJSON?.name}
+                      </p>
+                      <p className="redirected-product-price">
+                        {redirectedProductJSON?.price}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => cancelForwardProduct()}
+                      id="cancelForwardButton"
+                      className="rounded-3"
+                    >
+                      Cancel
+                    </button>
                   </div>
-                  <button id="cancelForwardButton">Cancel</button>
-                </div>
+                )}
                 <p className="chatInputBox">
                   <label className="attach-file-label" htmlFor="attach-file">
                     <svg className="icon icon-attachment">

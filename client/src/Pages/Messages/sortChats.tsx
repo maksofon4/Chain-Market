@@ -43,7 +43,6 @@ export const ChatList: React.FC<Props> = ({
     otherUserId: userId,
     messages,
   }));
-
   const sortedChats = chatEntries.sort((a, b) => {
     const isPinnedA = pinnedChats.includes(a.otherUserId);
     const isPinnedB = pinnedChats.includes(b.otherUserId);

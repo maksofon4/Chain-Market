@@ -2,20 +2,33 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./header.css";
 import logo from "./logo_alt.png";
+import { allMessagesData } from "models/messages";
+
+// RTKQuerry
 import { useFetchUserQuery } from "services/userService";
+// Redux Slice
+import { useSelector } from "react-redux";
+import { RootState } from "store/store";
 
 const Header = () => {
   const navigate = useNavigate();
-  const { data } = useFetchUserQuery();
+
+  // RTKQuerry
+  const { data: user } = useFetchUserQuery();
+
+  // Redux Slice
+  const chats = useSelector((state: RootState) => state.messages.items);
 
   const [isBurgerToggled, setBurgerToggled] = useState<Boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
+  const [newMessages, setNewMessages] = useState<number>(0);
 
   useEffect(() => {
-    if (data) {
+    if (user) {
       setIsAuth(true);
+      setNewMessages(countNewMessages(chats));
     }
-  }, [data]);
+  }, [user, chats]);
 
   const toggleBurger = () => {
     if (isBurgerToggled) {
@@ -40,7 +53,13 @@ const Header = () => {
       console.error("Error during logout:", error);
     }
   };
-
+  const countNewMessages = (messagesData: allMessagesData): number => {
+    return Object.values(messagesData).reduce((count, messages) => {
+      return (
+        count + messages.filter((message) => message.status === "new").length
+      );
+    }, 0);
+  };
   return (
     <header className=" w-100">
       <div
@@ -57,9 +76,12 @@ const Header = () => {
           <div className="mx-3 nav-container d-flex align-items-center gap-3 ">
             <a
               onClick={() => navigate("/messages")}
-              className="m-0 text-decoration-none"
+              className="m-0 text-decoration-none position-relative"
             >
               Messages
+              {newMessages > 0 && (
+                <span className="headerMessagesCounter">{newMessages}</span>
+              )}
             </a>
             <a
               onClick={() => navigate("/selected-products")}
@@ -105,7 +127,10 @@ const Header = () => {
           </a>
         </div>
       </div>
-      <div className="mobile-content  justify-content-around p-2">
+      <div
+        className="mobile-content mx-auto justify-content-around p-2"
+        style={{ maxWidth: "800px" }}
+      >
         <a
           onClick={() => toggleBurger()}
           className="m-0 text-decoration-none d-flex flex-column align-items-center"
@@ -176,16 +201,21 @@ const Header = () => {
 
           <a
             onClick={() => navigate("/messages")}
-            className="m-0 text-decoration-none d-flex flex-column align-items-center"
+            className="m-0 text-decoration-none d-flex flex-column align-items-center "
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="currentColor"
-              className="bi bi-chat-left-text-fill"
-              viewBox="0 0 16 16"
-            >
-              <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z" />
-            </svg>
+            <div className="position-relative d-inline-block">
+              {newMessages > 0 && (
+                <span className="headerMessagesCounter">{newMessages}</span>
+              )}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                className="bi bi-chat-left-text-fill"
+                viewBox="0 0 16 16"
+              >
+                <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793zm3.5 1a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h9a.5.5 0 0 0 0-1zm0 2.5a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1z" />
+              </svg>
+            </div>
             Messages
           </a>
           {isAuth ? (

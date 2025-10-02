@@ -2,6 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { Message } from "models/messages";
 import { formatDate } from "./sortChats";
 
+// Redux toolkit slice
+import { useDispatch } from "react-redux";
+import { markMessagesChecked } from "store/reducers/messagesSlice";
+
+// RTKQuerry
+import { useMarkAsCheckedMutation } from "services/messageServices";
+
 interface Props {
   chatId: string;
   sessionUserId: string;
@@ -16,6 +23,11 @@ const MessagesList: React.FC<Props> = ({
   onMediaSelect,
 }) => {
   const messages = chatHistory[chatId] || [];
+  // RTKQuerry
+  const [markAsCheckedApi, markAsCheckedApiResult] = useMarkAsCheckedMutation();
+
+  // Redux Slice
+  const dispatch = useDispatch();
 
   const [currentMessages, setCurrentMessages] = useState<Message[]>([]);
   const [showNewMessagesBar, setShowNewMessagesBar] = useState<boolean>(false);
@@ -34,6 +46,7 @@ const MessagesList: React.FC<Props> = ({
     staticAllMessagesRef.current = messages;
     if (staticNewMessagesRef.current.length > 0) {
       setShowNewMessagesBar(true);
+      markAsChecked(chatId);
     }
   }, [chatId]);
 
@@ -82,10 +95,7 @@ const MessagesList: React.FC<Props> = ({
       return (
         <div key={index} className={`message-product ${messageClass}`}>
           <div className="redirected-product-container">
-            <img
-              src={"/uploads/" + product.images[0]}
-              alt={product.productName}
-            />
+            <img src={product.images[0]} alt={product.productName} />
             <p className="product-name">{product.name}</p>
             <p className="product-price">{product.price}$</p>
             <p className="product-location">{product.location}</p>
@@ -119,6 +129,15 @@ const MessagesList: React.FC<Props> = ({
         </div>
       );
     }
+  };
+
+  const markAsChecked = async (chatId: string) => {
+    if (!newMessages || newMessages.length === 0) return;
+
+    markAsCheckedApi(chatId);
+
+    if (!markAsCheckedApiResult) return;
+    dispatch(markMessagesChecked(chatId));
   };
 
   return (
